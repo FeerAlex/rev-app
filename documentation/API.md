@@ -1,0 +1,434 @@
+# API Документация
+
+## Domain Layer API
+
+### Repositories
+
+#### FactionRepository
+
+Интерфейс для работы с фракциями.
+
+```dart
+abstract class FactionRepository {
+  Future<List<Faction>> getAllFactions();
+  Future<Faction?> getFactionById(int id);
+  Future<int> addFaction(Faction faction);
+  Future<void> updateFaction(Faction faction);
+  Future<void> deleteFaction(int id);
+  Future<void> resetDailyFlags();
+  Future<void> reorderFactions(List<int> factionIds);
+}
+```
+
+**Методы:**
+
+- `getAllFactions()` - возвращает список всех фракций, отсортированный по полю `displayOrder`
+- `getFactionById(int id)` - возвращает фракцию по ID или null
+- `addFaction(Faction faction)` - добавляет новую фракцию, возвращает ID
+- `updateFaction(Faction faction)` - обновляет существующую фракцию
+- `deleteFaction(int id)` - удаляет фракцию по ID
+- `resetDailyFlags()` - сбрасывает отметки заказов для всех фракций
+- `reorderFactions(List<int> factionIds)` - изменяет порядок фракций согласно переданному списку ID
+
+#### SettingsRepository
+
+Интерфейс для работы с настройками.
+
+```dart
+abstract class SettingsRepository {
+  Future<Settings> getSettings();
+  Future<void> updateSettings(Settings settings);
+}
+```
+
+**Методы:**
+
+- `getSettings()` - возвращает текущие настройки (всегда возвращает объект, даже если в БД нет записи)
+- `updateSettings(Settings settings)` - обновляет настройки
+
+### Use Cases
+
+#### GetAllFactions
+
+Получение всех фракций.
+
+```dart
+class GetAllFactions {
+  Future<List<Faction>> call();
+}
+```
+
+#### AddFaction
+
+Добавление новой фракции.
+
+```dart
+class AddFaction {
+  Future<int> call(Faction faction);
+}
+```
+
+**Параметры:**
+- `faction` - фракция для добавления (id должен быть null)
+
+**Возвращает:** ID созданной фракции
+
+#### UpdateFaction
+
+Обновление существующей фракции.
+
+```dart
+class UpdateFaction {
+  Future<void> call(Faction faction);
+}
+```
+
+**Параметры:**
+- `faction` - фракция с обновленными данными (id обязателен)
+
+**Описание:**
+Обновляет фракцию в базе данных. В BLoC реализовано с оптимистичным обновлением UI - изменения отображаются мгновенно, сохранение в БД происходит в фоне. При ошибке состояние восстанавливается из БД.
+
+#### DeleteFaction
+
+Удаление фракции.
+
+```dart
+class DeleteFaction {
+  Future<void> call(int id);
+}
+```
+
+**Параметры:**
+- `id` - ID фракции для удаления
+
+#### GetSettings
+
+Получение настроек.
+
+```dart
+class GetSettings {
+  Future<Settings> call();
+}
+```
+
+**Возвращает:** объект Settings с текущими настройками
+
+#### UpdateSettings
+
+Обновление настроек.
+
+```dart
+class UpdateSettings {
+  Future<void> call(Settings settings);
+}
+```
+
+**Параметры:**
+- `settings` - объект Settings с обновленными настройками
+
+#### CalculateTimeToGoal
+
+Расчет времени до достижения цели (покупка сертификата).
+
+```dart
+class CalculateTimeToGoal {
+  Future<Duration?> call(Faction faction);
+}
+```
+
+**Параметры:**
+- `faction` - фракция для расчета
+
+**Возвращает:**
+- `Duration` - время до достижения цели
+- `null` - если расчет невозможен (нет дохода в день)
+- `Duration.zero` - если цель уже достигнута
+
+**Логика расчета:**
+1. Рассчитывается общая стоимость всех некупленных украшений и улучшений
+2. Добавляется стоимость сертификата (если не куплен)
+3. Вычитается текущая валюта
+4. Рассчитывается доход в день (заказы + доска)
+5. Вычисляется время: `(нужная валюта) / (валюта в день)`
+
+#### ResetDailyFlags
+
+Сброс ежедневных отметок.
+
+```dart
+class ResetDailyFlags {
+  Future<void> call();
+}
+```
+
+Сбрасывает отметки `orderCompleted` для всех фракций.
+
+#### ReorderFactions
+
+Изменение порядка фракций.
+
+```dart
+class ReorderFactions {
+  Future<void> call(List<int> factionIds);
+}
+```
+
+**Параметры:**
+- `factionIds` - список ID фракций в новом порядке
+
+**Описание:**
+Обновляет поле `displayOrder` для каждой фракции согласно её позиции в переданном списке. Используется для сохранения порядка после drag-and-drop в UI. Реализовано с оптимистичным обновлением UI - порядок обновляется мгновенно, сохранение в БД происходит в фоне.
+
+## Entities
+
+### Faction
+
+```dart
+class Faction {
+  final int? id;
+  final String name;
+  final int currency;
+  final ReputationLevel reputationLevel;
+  final bool hasOrder;
+  final bool orderCompleted;
+  final int? boardCurrency;
+  final bool hasCertificate;
+  final bool certificatePurchased;
+  final bool decorationRespectPurchased;
+  final bool decorationRespectUpgraded;
+  final bool decorationHonorPurchased;
+  final bool decorationHonorUpgraded;
+  final bool decorationAdorationPurchased;
+  final bool decorationAdorationUpgraded;
+  final int displayOrder; // Порядок отображения (по умолчанию 0)
+  
+  Faction copyWith({...});
+}
+```
+
+### Settings
+
+```dart
+class Settings {
+  final int? id;
+  final int itemPrice;
+  final int itemCountRespect;
+  final int itemCountHonor;
+  final int itemCountAdoration;
+  final int decorationPriceRespect;
+  final int decorationPriceHonor;
+  final int decorationPriceAdoration;
+  final int currencyPerOrder;
+  final int certificatePrice;
+  
+  Settings copyWith({...});
+  static Settings get defaultSettings;
+}
+```
+
+### ReputationLevel
+
+```dart
+enum ReputationLevel {
+  indifference,  // Равнодушие
+  friendliness,  // Дружелюбие
+  respect,       // Уважение
+  honor,         // Почтение
+  adoration,     // Преклонение
+  deification,   // Обожествление
+}
+
+extension ReputationLevelExtension on ReputationLevel {
+  String get displayName;  // Отображаемое имя на русском
+  int get value;          // Числовое значение (0-5)
+  static ReputationLevel fromValue(int value);
+}
+
+extension ReputationLevelColorExtension on ReputationLevel {
+  Color get color;  // Цвет для визуального отображения уровня
+}
+```
+
+**Цвета уровней:**
+- `indifference`: `#A1887F` (бледно-коричневый)
+- `friendliness`: `#388E3C` (темно-зеленый)
+- `respect`: `#4CAF50` (зеленый)
+- `honor`: `#26A69A` (бирюзовый)
+- `adoration`: `#2196F3` (синий)
+- `deification`: `#9C27B0` (фиолетовый)
+
+## Presentation Layer API
+
+### BLoC Events
+
+#### FactionBloc Events
+
+```dart
+// Загрузка всех фракций
+class LoadFactions extends FactionEvent;
+
+// Добавление фракции
+class AddFactionEvent extends FactionEvent {
+  final Faction faction;
+}
+
+// Обновление фракции
+class UpdateFactionEvent extends FactionEvent {
+  final Faction faction;
+}
+
+// Удаление фракции
+class DeleteFactionEvent extends FactionEvent {
+  final int id;
+}
+
+// Сброс ежедневных отметок
+class ResetDailyFlagsEvent extends FactionEvent;
+
+// Изменение порядка фракций
+class ReorderFactionsEvent extends FactionEvent {
+  final List<int> factionIds;
+}
+```
+
+#### SettingsBloc Events
+
+```dart
+// Загрузка настроек
+class LoadSettings extends SettingsEvent;
+
+// Обновление настроек
+class UpdateSettingsEvent extends SettingsEvent {
+  final Settings settings;
+}
+```
+
+### BLoC States
+
+#### FactionBloc States
+
+```dart
+// Начальное состояние
+class FactionInitial extends FactionState;
+
+// Загрузка
+class FactionLoading extends FactionState;
+
+// Загружено
+class FactionLoaded extends FactionState {
+  final List<Faction> factions;
+}
+
+// Ошибка
+class FactionError extends FactionState {
+  final String message;
+}
+```
+
+#### SettingsBloc States
+
+```dart
+// Начальное состояние
+class SettingsInitial extends SettingsState;
+
+// Загрузка
+class SettingsLoading extends SettingsState;
+
+// Загружено
+class SettingsLoaded extends SettingsState {
+  final Settings settings;
+}
+
+// Ошибка
+class SettingsError extends SettingsState {
+  final String message;
+}
+```
+
+## Utils API
+
+### TimeFormatter
+
+```dart
+class TimeFormatter {
+  static String formatDuration(Duration duration);
+}
+```
+
+Форматирует Duration в компактный формат с сокращениями.
+
+**Пример:**
+```dart
+TimeFormatter.formatDuration(Duration(days: 2, hours: 5, minutes: 30));
+// "2 д 5 ч 30 м"
+```
+
+**Формат:** Использует сокращения "д" (дни), "ч" (часы), "м" (минуты) вместо полных слов для компактности.
+
+### AppTheme
+
+```dart
+class AppTheme {
+  static const Color darkBackground;
+  static const Color darkerBackground;
+  static const Color cardBackground;
+  static const Color textPrimary;
+  static const Color textSecondary;
+  static const Color accentOrange;
+  static const Color accentBlue;
+  
+  static Color getReputationColor(ReputationLevel level);
+  static LinearGradient getReputationGradient(ReputationLevel level);
+  static ThemeData get darkTheme;
+}
+```
+
+Предоставляет темную тему приложения в стиле игры Revelation Online.
+
+**Основные цвета:**
+- `darkBackground`: `#1A1A1A`
+- `darkerBackground`: `#0F0F0F`
+- `cardBackground`: `#2A2A2A`
+- `accentOrange`: `#FF6B35`
+- `accentBlue`: `#4A90E2`
+
+**Методы:**
+- `getReputationColor()` - возвращает цвет для уровня репутации
+- `getReputationGradient()` - возвращает градиент для уровня репутации
+- `darkTheme` - геттер для получения полной темы Material
+
+### DailyResetHelper
+
+```dart
+class DailyResetHelper {
+  static Future<void> checkAndReset();
+}
+```
+
+Проверяет и сбрасывает ежедневные отметки при необходимости. Должен вызываться при запуске приложения.
+
+## ServiceLocator
+
+```dart
+class ServiceLocator {
+  static final ServiceLocator _instance = ServiceLocator._internal();
+  factory ServiceLocator() => _instance;
+  
+  Future<void> init();
+  Database get database;
+  FactionRepository get factionRepository;
+  SettingsRepository get settingsRepository;
+}
+```
+
+**Использование:**
+```dart
+// Инициализация (в main.dart)
+await ServiceLocator().init();
+
+// Получение репозиториев
+final factionRepo = ServiceLocator().factionRepository;
+final settingsRepo = ServiceLocator().settingsRepository;
+```
+
