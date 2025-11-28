@@ -37,16 +37,17 @@ class FactionActivitiesSection extends StatelessWidget {
               child: Card(
                 margin: EdgeInsets.zero,
                 child: CheckboxListTile(
+                  dense: true,
                   title: Row(
                     spacing: 8,
                     children: [
-                      Icon(Icons.shopping_cart, size: 18, color: Colors.green[300]),
-                      const Text('Заказы'),
+                      Icon(Icons.shopping_cart, size: 16, color: Colors.green[300]),
+                      const Text('Заказы', style: TextStyle(fontSize: 14)),
                     ],
                   ),
                   value: hasOrder,
                   activeColor: Colors.green,
-                  contentPadding: const EdgeInsets.only(left: 8),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                   onChanged: (value) {
                     onHasOrderChanged(value ?? false);
                   },
@@ -57,10 +58,11 @@ class FactionActivitiesSection extends StatelessWidget {
               child: Card(
                 margin: EdgeInsets.zero,
                 child: CheckboxListTile(
+                  dense: true,
                   title: Row(
                     spacing: 8,
                     children: [
-                      Icon(Icons.verified, size: 18, color: Colors.purple[300]),
+                      Icon(Icons.verified, size: 16, color: Colors.purple[300]),
                       const Flexible(
                         child: Text(
                           'Сертификат',
@@ -72,7 +74,7 @@ class FactionActivitiesSection extends StatelessWidget {
                   ),
                   value: hasCertificate,
                   activeColor: Colors.purple,
-                  contentPadding: const EdgeInsets.only(left: 8),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                   onChanged: (value) {
                     onHasCertificateChanged(value ?? false);
                   },

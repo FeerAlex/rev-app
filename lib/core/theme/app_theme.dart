@@ -37,8 +37,8 @@ class AppTheme {
       end: Alignment.bottomRight,
       colors: [
         color,
-        color.withOpacity(0.7),
-        color.withOpacity(0.5),
+        color.withValues(alpha: 0.7),
+        color.withValues(alpha: 0.5),
       ],
     );
   }
@@ -52,12 +52,10 @@ class AppTheme {
         primary: accentOrange,
         secondary: accentBlue,
         surface: cardBackground,
-        background: darkBackground,
         error: Color(0xFFE53935),
         onPrimary: textPrimary,
         onSecondary: textPrimary,
         onSurface: textPrimary,
-        onBackground: textPrimary,
         onError: textPrimary,
       ),
       appBarTheme: const AppBarTheme(

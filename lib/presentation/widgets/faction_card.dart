@@ -5,13 +5,11 @@ import 'faction_name_display.dart';
 import 'faction_currency_display.dart';
 import 'faction_activities_list.dart';
 import 'time_to_goal_widget.dart';
-import 'certificate_icon.dart';
 
 class FactionCard extends StatelessWidget {
   final Faction faction;
   final VoidCallback onTap;
   final VoidCallback? onOrderToggle;
-  final VoidCallback? onCertificateToggle;
   final VoidCallback? onBoardCurrencyTap;
   final VoidCallback? onCurrencyTap;
 
@@ -20,7 +18,6 @@ class FactionCard extends StatelessWidget {
     required this.faction,
     required this.onTap,
     this.onOrderToggle,
-    this.onCertificateToggle,
     this.onBoardCurrencyTap,
     this.onCurrencyTap,
   });
@@ -45,32 +42,21 @@ class FactionCard extends StatelessWidget {
               ),
             ),
           ),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.only(top: 8, left: 10, right: 10, bottom: 14),
           child: Row(
             children: [
-              const SizedBox(width: 4),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      spacing: 8,
                       children: [
                         FactionNameDisplay(name: faction.name),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          spacing: 8,
-                          children: [
-                            FactionCurrencyDisplay(
-                              currency: faction.currency,
-                              onTap: onCurrencyTap,
-                            ),
-                            if (faction.hasCertificate)
-                              CertificateIcon(
-                                isPurchased: faction.certificatePurchased,
-                                onTap: onCertificateToggle,
-                              ),
-                          ],
+                        FactionCurrencyDisplay(
+                          currency: faction.currency,
+                          onTap: onCurrencyTap,
                         ),
                       ],
                     ),

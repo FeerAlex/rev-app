@@ -26,6 +26,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
   late bool _hasOrder;
   late bool _orderCompleted;
   late bool _hasCertificate;
+  late bool _certificatePurchased;
   late bool _decorationRespectPurchased;
   late bool _decorationRespectUpgraded;
   late bool _decorationHonorPurchased;
@@ -42,6 +43,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
     _hasOrder = faction?.hasOrder ?? false;
     _orderCompleted = faction?.orderCompleted ?? false;
     _hasCertificate = faction?.hasCertificate ?? false;
+    _certificatePurchased = faction?.certificatePurchased ?? false;
     _decorationRespectPurchased = faction?.decorationRespectPurchased ?? false;
     _decorationRespectUpgraded = faction?.decorationRespectUpgraded ?? false;
     _decorationHonorPurchased = faction?.decorationHonorPurchased ?? false;
@@ -76,7 +78,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
       orderCompleted: _orderCompleted,
       boardCurrency: widget.faction?.boardCurrency,
       hasCertificate: _hasCertificate,
-      certificatePurchased: widget.faction?.certificatePurchased ?? false,
+      certificatePurchased: _certificatePurchased,
       decorationRespectPurchased: _decorationRespectPurchased,
       decorationRespectUpgraded: _decorationRespectUpgraded,
       decorationHonorPurchased: _decorationHonorPurchased,
@@ -170,6 +172,9 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
               onHasCertificateChanged: (value) {
                 setState(() {
                   _hasCertificate = value;
+                  if (!_hasCertificate) {
+                    _certificatePurchased = false;
+                  }
                 });
               },
             ),
@@ -211,6 +216,8 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
                 });
               },
             ),
+            // Секция сертификата
+            if (_hasCertificate) _buildCertificateSection(),
           ],
         ),
       ),
@@ -223,6 +230,54 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCertificateSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.verified, color: Colors.purple[300], size: 20),
+            const SizedBox(width: 8),
+            const Text(
+              'Сертификат',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Card(
+          margin: EdgeInsets.zero,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border(
+                left: BorderSide(
+                  color: Colors.purple,
+                  width: 4,
+                ),
+              ),
+            ),
+            padding: const EdgeInsets.only(right: 14),
+            child: Row(
+              children: [
+                Checkbox(
+                  value: _certificatePurchased,
+                  onChanged: (value) {
+                    setState(() {
+                      _certificatePurchased = value ?? false;
+                    });
+                  },
+                  activeColor: Colors.purple,
+                ),
+                const Text('Куплен', style: TextStyle(fontSize: 14)),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

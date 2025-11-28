@@ -20,17 +20,46 @@ class FactionBasicInfoSection extends StatelessWidget {
       children: [
         TextField(
           controller: nameController,
-          decoration: const InputDecoration(
+          style: const TextStyle(fontSize: 14),
+          decoration: InputDecoration(
             labelText: 'Название фракции',
-            border: OutlineInputBorder(),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFFF6B35), width: 2),
+            ),
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           ),
         ),
         const SizedBox(height: 16),
         DropdownButtonFormField<ReputationLevel>(
-          value: reputationLevel,
-          decoration: const InputDecoration(
+          initialValue: reputationLevel,
+          key: ValueKey(reputationLevel),
+          style: const TextStyle(fontSize: 14),
+          decoration: InputDecoration(
             labelText: 'Уровень репутации',
-            border: OutlineInputBorder(),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFFF6B35), width: 2),
+            ),
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           ),
           items: ReputationLevel.values.map((level) {
             return DropdownMenuItem(

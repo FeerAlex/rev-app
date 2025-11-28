@@ -72,7 +72,6 @@
 - `FactionActivitiesList` - список активностей фракции
 - `ActivityBadge` - бейдж активности
 - `BoardCurrencyBadge` - бейдж валюты с доски (с возможностью редактирования)
-- `CertificateIcon` - иконка сертификата (с возможностью переключения статуса)
 - `CurrencyInputDialog` - диалог для ввода/редактирования валюты
 - `FactionBasicInfoSection` - секция основной информации о фракции
 - `FactionActivitiesSection` - секция активностей и сертификата

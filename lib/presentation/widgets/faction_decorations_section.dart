@@ -54,6 +54,7 @@ class FactionDecorationsSection extends StatelessWidget {
           onRespectPurchasedChanged,
           onRespectUpgradedChanged,
         ),
+        const SizedBox(height: 8),
         _buildDecorationTile(
           ReputationLevel.honor.color,
           decorationHonorPurchased,
@@ -61,6 +62,7 @@ class FactionDecorationsSection extends StatelessWidget {
           onHonorPurchasedChanged,
           onHonorUpgradedChanged,
         ),
+        const SizedBox(height: 8),
         _buildDecorationTile(
           ReputationLevel.adoration.color,
           decorationAdorationPurchased,
@@ -80,7 +82,7 @@ class FactionDecorationsSection extends StatelessWidget {
     ValueChanged<bool> onUpgradedChanged,
   ) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.zero,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),

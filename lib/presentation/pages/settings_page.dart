@@ -133,9 +133,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _itemPriceController,
-                      decoration: const InputDecoration(
+                      style: const TextStyle(fontSize: 14),
+                      decoration: InputDecoration(
                         labelText: 'Цена 1 итемки',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFFF6B35), width: 2),
+                        ),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -148,9 +162,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _itemCountRespectController,
-                      decoration: const InputDecoration(
+                      style: const TextStyle(fontSize: 14),
+                      decoration: InputDecoration(
                         labelText: 'Для украшения "Уважение"',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFFF6B35), width: 2),
+                        ),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -158,9 +186,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _itemCountHonorController,
-                      decoration: const InputDecoration(
+                      style: const TextStyle(fontSize: 14),
+                      decoration: InputDecoration(
                         labelText: 'Для украшения "Почтение"',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFFF6B35), width: 2),
+                        ),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -168,9 +210,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _itemCountAdorationController,
-                      decoration: const InputDecoration(
+                      style: const TextStyle(fontSize: 14),
+                      decoration: InputDecoration(
                         labelText: 'Для украшения "Преклонение"',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFFF6B35), width: 2),
+                        ),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -183,9 +239,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _decorationPriceRespectController,
-                      decoration: const InputDecoration(
+                      style: const TextStyle(fontSize: 14),
+                      decoration: InputDecoration(
                         labelText: 'Украшение "Уважение"',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFFF6B35), width: 2),
+                        ),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -193,9 +263,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _decorationPriceHonorController,
-                      decoration: const InputDecoration(
+                      style: const TextStyle(fontSize: 14),
+                      decoration: InputDecoration(
                         labelText: 'Украшение "Почтение"',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFFF6B35), width: 2),
+                        ),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -203,9 +287,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _decorationPriceAdorationController,
-                      decoration: const InputDecoration(
+                      style: const TextStyle(fontSize: 14),
+                      decoration: InputDecoration(
                         labelText: 'Украшение "Преклонение"',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFFF6B35), width: 2),
+                        ),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -218,9 +316,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _currencyPerOrderController,
-                      decoration: const InputDecoration(
+                      style: const TextStyle(fontSize: 14),
+                      decoration: InputDecoration(
                         labelText: 'Валюта за заказ',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFFF6B35), width: 2),
+                        ),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -233,9 +345,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _certificatePriceController,
-                      decoration: const InputDecoration(
+                      style: const TextStyle(fontSize: 14),
+                      decoration: InputDecoration(
                         labelText: 'Стоимость сертификата',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFFF6B35), width: 2),
+                        ),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],

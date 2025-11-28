@@ -29,11 +29,31 @@ class _TimeToGoalWidgetState extends State<TimeToGoalWidget> {
   @override
   void didUpdateWidget(TimeToGoalWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Пересчитываем только если изменилась фракция (id или важные поля)
-    if (oldWidget.faction?.id != widget.faction?.id ||
-        oldWidget.faction?.currency != widget.faction?.currency ||
-        oldWidget.faction?.orderCompleted != widget.faction?.orderCompleted ||
-        oldWidget.faction?.certificatePurchased != widget.faction?.certificatePurchased) {
+    // Пересчитываем только если изменилась фракция (id или важные поля, влияющие на расчет)
+    final oldFaction = oldWidget.faction;
+    final newFaction = widget.faction;
+    
+    if (oldFaction == null || newFaction == null) {
+      if (oldFaction != newFaction) {
+        _calculateTime();
+      }
+      return;
+    }
+    
+    // Проверяем все поля, влияющие на расчет времени до цели
+    if (oldFaction.id != newFaction.id ||
+        oldFaction.currency != newFaction.currency ||
+        oldFaction.orderCompleted != newFaction.orderCompleted ||
+        oldFaction.certificatePurchased != newFaction.certificatePurchased ||
+        oldFaction.hasOrder != newFaction.hasOrder ||
+        oldFaction.hasCertificate != newFaction.hasCertificate ||
+        oldFaction.boardCurrency != newFaction.boardCurrency ||
+        oldFaction.decorationRespectPurchased != newFaction.decorationRespectPurchased ||
+        oldFaction.decorationRespectUpgraded != newFaction.decorationRespectUpgraded ||
+        oldFaction.decorationHonorPurchased != newFaction.decorationHonorPurchased ||
+        oldFaction.decorationHonorUpgraded != newFaction.decorationHonorUpgraded ||
+        oldFaction.decorationAdorationPurchased != newFaction.decorationAdorationPurchased ||
+        oldFaction.decorationAdorationUpgraded != newFaction.decorationAdorationUpgraded) {
       _calculateTime();
     }
   }

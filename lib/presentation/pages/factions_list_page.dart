@@ -61,7 +61,7 @@ class FactionsListPage extends StatelessWidget {
                 );
               },
               child: ReorderableListView(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 proxyDecorator: (child, index, animation) {
                   return Material(
                     color: Colors.transparent,
@@ -81,7 +81,7 @@ class FactionsListPage extends StatelessWidget {
                 final faction = state.factions[index];
                 return Container(
                   key: ValueKey('faction_${faction.id}'),
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: Dismissible(
                     key: ValueKey('dismissible_${faction.id}'),
                     direction: DismissDirection.startToEnd,
@@ -129,14 +129,6 @@ class FactionsListPage extends StatelessWidget {
                       onOrderToggle: () {
                         final updatedFaction = faction.copyWith(
                           orderCompleted: !faction.orderCompleted,
-                        );
-                        context.read<FactionBloc>().add(
-                              UpdateFactionEvent(updatedFaction),
-                            );
-                      },
-                      onCertificateToggle: () {
-                        final updatedFaction = faction.copyWith(
-                          certificatePurchased: !faction.certificatePurchased,
                         );
                         context.read<FactionBloc>().add(
                               UpdateFactionEvent(updatedFaction),
