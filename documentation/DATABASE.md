@@ -42,15 +42,15 @@
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `id` | INTEGER PRIMARY KEY | Уникальный идентификатор (всегда 1) |
-| `item_price` | INTEGER NOT NULL DEFAULT 0 | Цена одной итемки |
-| `item_count_respect` | INTEGER NOT NULL DEFAULT 1 | Количество итемок для украшения "Уважение" |
-| `item_count_honor` | INTEGER NOT NULL DEFAULT 3 | Количество итемок для украшения "Почтение" |
+| `item_price` | INTEGER NOT NULL DEFAULT 1788 | Цена одной итемки |
+| `item_count_respect` | INTEGER NOT NULL DEFAULT 3 | Количество итемок для украшения "Уважение" |
+| `item_count_honor` | INTEGER NOT NULL DEFAULT 4 | Количество итемок для украшения "Почтение" |
 | `item_count_adoration` | INTEGER NOT NULL DEFAULT 6 | Количество итемок для украшения "Преклонение" |
-| `decoration_price_respect` | INTEGER NOT NULL DEFAULT 0 | Стоимость украшения "Уважение" |
-| `decoration_price_honor` | INTEGER NOT NULL DEFAULT 0 | Стоимость украшения "Почтение" |
-| `decoration_price_adoration` | INTEGER NOT NULL DEFAULT 0 | Стоимость украшения "Преклонение" |
-| `currency_per_order` | INTEGER NOT NULL DEFAULT 0 | Валюта за выполнение заказа |
-| `certificate_price` | INTEGER NOT NULL DEFAULT 0 | Стоимость сертификата |
+| `decoration_price_respect` | INTEGER NOT NULL DEFAULT 7888 | Стоимость украшения "Уважение" |
+| `decoration_price_honor` | INTEGER NOT NULL DEFAULT 9888 | Стоимость украшения "Почтение" |
+| `decoration_price_adoration` | INTEGER NOT NULL DEFAULT 15888 | Стоимость украшения "Преклонение" |
+| `currency_per_order` | INTEGER NOT NULL DEFAULT 1000 | Валюта за выполнение заказа |
+| `certificate_price` | INTEGER NOT NULL DEFAULT 7888 | Стоимость сертификата |
 
 **Индексы:** нет
 
@@ -86,15 +86,15 @@ CREATE TABLE factions (
 ```sql
 CREATE TABLE settings (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  item_price INTEGER NOT NULL DEFAULT 0,
-  item_count_respect INTEGER NOT NULL DEFAULT 1,
-  item_count_honor INTEGER NOT NULL DEFAULT 3,
+  item_price INTEGER NOT NULL DEFAULT 1788,
+  item_count_respect INTEGER NOT NULL DEFAULT 3,
+  item_count_honor INTEGER NOT NULL DEFAULT 4,
   item_count_adoration INTEGER NOT NULL DEFAULT 6,
-  decoration_price_respect INTEGER NOT NULL DEFAULT 0,
-  decoration_price_honor INTEGER NOT NULL DEFAULT 0,
-  decoration_price_adoration INTEGER NOT NULL DEFAULT 0,
-  currency_per_order INTEGER NOT NULL DEFAULT 0,
-  certificate_price INTEGER NOT NULL DEFAULT 0
+  decoration_price_respect INTEGER NOT NULL DEFAULT 7888,
+  decoration_price_honor INTEGER NOT NULL DEFAULT 9888,
+  decoration_price_adoration INTEGER NOT NULL DEFAULT 15888,
+  currency_per_order INTEGER NOT NULL DEFAULT 1000,
+  certificate_price INTEGER NOT NULL DEFAULT 7888
 )
 ```
 

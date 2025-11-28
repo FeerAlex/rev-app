@@ -227,6 +227,17 @@ class Settings {
 }
 ```
 
+**Значения по умолчанию** (`defaultSettings`):
+- `itemPrice`: 1788
+- `itemCountRespect`: 3
+- `itemCountHonor`: 4
+- `itemCountAdoration`: 6
+- `decorationPriceRespect`: 7888
+- `decorationPriceHonor`: 9888
+- `decorationPriceAdoration`: 15888
+- `currencyPerOrder`: 1000
+- `certificatePrice`: 7888
+
 ### ReputationLevel
 
 ```dart

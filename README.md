@@ -1,16 +1,136 @@
-# rev_app
+# Документация проекта Rev App
 
-A new Flutter project.
+## Описание
 
-## Getting Started
+Rev App - это Flutter приложение для мониторинга активности во фракциях игры Revelation Online. Приложение позволяет отслеживать прогресс по каждой фракции, рассчитывать время до достижения цели и управлять настройками.
 
-This project is a starting point for a Flutter application.
+## Структура документации
 
-A few resources to get you started if this is your first Flutter project:
+1. **[documentation/ARCHITECTURE.md](documentation/ARCHITECTURE.md)** - Описание архитектуры приложения
+   - Слои архитектуры (Domain, Data, Presentation, Core)
+   - Поток данных
+   - Принципы проектирования
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+2. **[documentation/STRUCTURE.md](documentation/STRUCTURE.md)** - Структура проекта
+   - Организация файлов и папок
+   - Описание основных компонентов
+   - Расположение кода
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+3. **[documentation/DATABASE.md](documentation/DATABASE.md)** - Схема базы данных
+   - Описание таблиц
+   - SQL запросы создания
+   - Расположение БД
+
+4. **[documentation/USAGE.md](documentation/USAGE.md)** - Руководство пользователя
+   - Начало работы
+   - Работа с фракциями
+   - Расчет времени до цели
+   - Советы по использованию
+
+5. **[documentation/API.md](documentation/API.md)** - API документация
+   - Domain Layer API
+   - Use Cases
+   - Entities
+   - Presentation Layer API
+   - Utils API
+
+6. **[documentation/UI_DESIGN.md](documentation/UI_DESIGN.md)** - Дизайн пользовательского интерфейса
+   - Цветовая схема
+   - Компоненты UI
+   - Типографика
+   - Иконки и визуальные элементы
+
+7. **[documentation/Task.md](documentation/Task.md)** - Исходное техническое задание
+   - Требования к функциональности
+   - Описание бизнес-логики
+   - Формулы расчета
+
+## Быстрый старт
+
+### Установка зависимостей
+
+```bash
+flutter pub get
+```
+
+### Запуск приложения
+
+```bash
+flutter run
+```
+
+### Анализ кода
+
+```bash
+flutter analyze
+```
+
+## Основные возможности
+
+- ✅ Управление фракциями (добавление, редактирование, удаление свайпом)
+- ✅ Изменение порядка фракций (drag-and-drop с оптимистичным обновлением)
+- ✅ Отслеживание ежедневных активностей (заказы)
+- ✅ Автоматический сброс отметок в 0:00 МСК
+- ✅ Расчет времени до достижения цели (отображается в карточке фракции)
+- ✅ Настройка параметров (цены, валюты, итемки) - значения по умолчанию уже установлены
+- ✅ Отслеживание прогресса по украшениям и сертификатам
+- ✅ Указание наличия заказов во фракции
+- ✅ Редактирование валюты и валюты с доски через диалоги
+- ✅ Обновление списка через pull-to-refresh
+- ✅ Оптимистичные обновления UI (мгновенный отклик)
+- ✅ Локальное хранение данных (SQLite)
+- ✅ Темная тема в стиле игры Revelation Online
+- ✅ Цветные индикаторы для уровней репутации
+- ✅ Современный и интуитивный UI
+- ✅ Навигация через Drawer и BottomNavigationBar
+
+## Технологии
+
+- **Flutter** - фреймворк для разработки
+- **Clean Architecture** - архитектурный паттерн
+- **BLoC** - управление состоянием
+- **SQLite** - локальная база данных
+- **sqflite** - Flutter пакет для работы с SQLite
+
+## Структура проекта
+
+```
+lib/
+├── core/          # Ядро приложения (DI, утилиты)
+├── domain/        # Доменный слой (entities, use cases)
+├── data/          # Слой данных (DAO, репозитории)
+└── presentation/  # Слой представления (UI, BLoC)
+```
+
+## Зависимости
+
+Основные зависимости:
+- `sqflite` - работа с SQLite
+- `flutter_bloc` - управление состоянием
+- `equatable` - сравнение объектов
+- `intl` - форматирование
+- `timezone` - работа с часовыми поясами
+- `shared_preferences` - хранение простых данных
+
+## Разработка
+
+### Добавление новой функциональности
+
+1. Определите, к какому слою относится функциональность
+2. Создайте entity в domain/entities (если нужна новая сущность)
+3. Создайте use case в domain/usecases
+4. Реализуйте repository в data/repositories
+5. Создайте BLoC в presentation/bloc (если нужен)
+6. Создайте UI в presentation/pages или presentation/widgets
+
+### Тестирование
+
+В будущем планируется добавление unit и integration тестов.
+
+## Лицензия
+
+Проект создан для личного использования.
+
+## Контакты
+
+Если возникли вопросы по документации или коду, обращайтесь к разработчику.

@@ -22,15 +22,15 @@ class SettingsDao {
     await db.execute('''
       CREATE TABLE $tableName (
         $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
-        $columnItemPrice INTEGER NOT NULL DEFAULT 0,
-        $columnItemCountRespect INTEGER NOT NULL DEFAULT 1,
-        $columnItemCountHonor INTEGER NOT NULL DEFAULT 3,
+        $columnItemPrice INTEGER NOT NULL DEFAULT 1788,
+        $columnItemCountRespect INTEGER NOT NULL DEFAULT 3,
+        $columnItemCountHonor INTEGER NOT NULL DEFAULT 4,
         $columnItemCountAdoration INTEGER NOT NULL DEFAULT 6,
-        $columnDecorationPriceRespect INTEGER NOT NULL DEFAULT 0,
-        $columnDecorationPriceHonor INTEGER NOT NULL DEFAULT 0,
-        $columnDecorationPriceAdoration INTEGER NOT NULL DEFAULT 0,
-        $columnCurrencyPerOrder INTEGER NOT NULL DEFAULT 0,
-        $columnCertificatePrice INTEGER NOT NULL DEFAULT 0
+        $columnDecorationPriceRespect INTEGER NOT NULL DEFAULT 7888,
+        $columnDecorationPriceHonor INTEGER NOT NULL DEFAULT 9888,
+        $columnDecorationPriceAdoration INTEGER NOT NULL DEFAULT 15888,
+        $columnCurrencyPerOrder INTEGER NOT NULL DEFAULT 1000,
+        $columnCertificatePrice INTEGER NOT NULL DEFAULT 7888
       )
     ''');
 
@@ -38,15 +38,15 @@ class SettingsDao {
     final existing = await db.query(tableName);
     if (existing.isEmpty) {
       await db.insert(tableName, {
-        columnItemPrice: 0,
-        columnItemCountRespect: 1,
-        columnItemCountHonor: 3,
+        columnItemPrice: 1788,
+        columnItemCountRespect: 3,
+        columnItemCountHonor: 4,
         columnItemCountAdoration: 6,
-        columnDecorationPriceRespect: 0,
-        columnDecorationPriceHonor: 0,
-        columnDecorationPriceAdoration: 0,
-        columnCurrencyPerOrder: 0,
-        columnCertificatePrice: 0,
+        columnDecorationPriceRespect: 7888,
+        columnDecorationPriceHonor: 9888,
+        columnDecorationPriceAdoration: 15888,
+        columnCurrencyPerOrder: 1000,
+        columnCertificatePrice: 7888,
       });
     }
   }

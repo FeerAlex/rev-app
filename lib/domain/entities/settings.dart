@@ -52,15 +52,15 @@ class Settings {
   }
 
   static Settings get defaultSettings => const Settings(
-        itemPrice: 0,
-        itemCountRespect: 1,
-        itemCountHonor: 3,
+        itemPrice: 1788,
+        itemCountRespect: 3,
+        itemCountHonor: 4,
         itemCountAdoration: 6,
-        decorationPriceRespect: 0,
-        decorationPriceHonor: 0,
-        decorationPriceAdoration: 0,
-        currencyPerOrder: 0,
-        certificatePrice: 0,
+        decorationPriceRespect: 7888,
+        decorationPriceHonor: 9888,
+        decorationPriceAdoration: 15888,
+        currencyPerOrder: 1000,
+        certificatePrice: 7888,
       );
 }
 
