@@ -18,7 +18,7 @@
 | `reputation_level` | INTEGER NOT NULL DEFAULT 0 | Уровень репутации (0-5) |
 | `has_order` | INTEGER NOT NULL DEFAULT 0 | Есть ли заказы во фракции (0/1) |
 | `order_completed` | INTEGER NOT NULL DEFAULT 0 | Выполнен ли заказ (0/1) |
-| `board_currency` | INTEGER | Валюта с доски (NULL если доски нет) |
+| `work_currency` | INTEGER | Валюта с работы (NULL если работы нет) |
 | `has_certificate` | INTEGER NOT NULL DEFAULT 0 | Есть ли сертификат (0/1) |
 | `certificate_purchased` | INTEGER NOT NULL DEFAULT 0 | Куплен ли сертификат (0/1) |
 | `decoration_respect_purchased` | INTEGER NOT NULL DEFAULT 0 | Куплено украшение "Уважение" (0/1) |
@@ -68,7 +68,7 @@ CREATE TABLE factions (
   reputation_level INTEGER NOT NULL DEFAULT 0,
   has_order INTEGER NOT NULL DEFAULT 0,
   order_completed INTEGER NOT NULL DEFAULT 0,
-  board_currency INTEGER,
+  work_currency INTEGER,
   has_certificate INTEGER NOT NULL DEFAULT 0,
   certificate_purchased INTEGER NOT NULL DEFAULT 0,
   decoration_respect_purchased INTEGER NOT NULL DEFAULT 0,
@@ -110,7 +110,7 @@ CREATE TABLE settings (
 
 Приложение поддерживает миграции базы данных через `onUpgrade` в `ServiceLocator`. При изменении версии базы данных выполняется автоматическое обновление схемы.
 
-**Текущая версия БД:** 5
+**Текущая версия БД:** 6
 
 **Миграции:**
 - Версия 1 → 2: Добавлены колонки `has_order` в таблицу `factions` (по умолчанию 1)
@@ -123,6 +123,9 @@ CREATE TABLE settings (
   - Примечание: `order` - зарезервированное слово в SQLite, поэтому используется обратное экранирование в SQL-запросах
 - Версия 4 → 5:
   - Переименована колонка `order` в `display_order` для избежания конфликта с зарезервированным словом SQLite
+  - Таблица пересоздается с новым именем колонки, данные копируются из старой таблицы
+- Версия 5 → 6:
+  - Переименована колонка `board_currency` в `work_currency`
   - Таблица пересоздается с новым именем колонки, данные копируются из старой таблицы
 
 ## Резервное копирование

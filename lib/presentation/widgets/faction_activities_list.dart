@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
 import 'activity_badge.dart';
-import 'board_currency_badge.dart';
+import 'work_currency_badge.dart';
 
 class FactionActivitiesList extends StatelessWidget {
   final Faction faction;
   final VoidCallback? onOrderToggle;
-  final VoidCallback? onBoardCurrencyTap;
+  final VoidCallback? onWorkCurrencyTap;
 
   const FactionActivitiesList({
     super.key,
     required this.faction,
     this.onOrderToggle,
-    this.onBoardCurrencyTap,
+    this.onWorkCurrencyTap,
   });
 
   @override
@@ -34,9 +34,9 @@ class FactionActivitiesList extends StatelessWidget {
     }
 
     badges.add(
-      BoardCurrencyBadge(
-        boardCurrency: faction.boardCurrency,
-        onTap: onBoardCurrencyTap,
+      WorkCurrencyBadge(
+        workCurrency: faction.workCurrency,
+        onTap: onWorkCurrencyTap,
       ),
     );
 

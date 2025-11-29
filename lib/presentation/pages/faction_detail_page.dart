@@ -76,7 +76,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
       reputationLevel: _reputationLevel,
       hasOrder: _hasOrder,
       orderCompleted: _orderCompleted,
-      boardCurrency: widget.faction?.boardCurrency,
+      workCurrency: widget.faction?.workCurrency,
       hasCertificate: _hasCertificate,
       certificatePurchased: _certificatePurchased,
       decorationRespectPurchased: _decorationRespectPurchased,

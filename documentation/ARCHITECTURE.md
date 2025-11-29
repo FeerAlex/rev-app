@@ -71,7 +71,7 @@
 - `FactionCurrencyDisplay` - отображение валюты фракции (с возможностью редактирования)
 - `FactionActivitiesList` - список активностей фракции
 - `ActivityBadge` - бейдж активности
-- `BoardCurrencyBadge` - бейдж валюты с доски (с возможностью редактирования)
+- `WorkCurrencyBadge` - бейдж валюты с работы (с возможностью редактирования)
 - `CurrencyInputDialog` - диалог для ввода/редактирования валюты
 - `FactionBasicInfoSection` - секция основной информации о фракции
 - `FactionActivitiesSection` - секция активностей и сертификата

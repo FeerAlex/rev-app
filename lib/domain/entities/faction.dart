@@ -7,7 +7,7 @@ class Faction {
   final ReputationLevel reputationLevel;
   final bool hasOrder; // есть ли заказы во фракции
   final bool orderCompleted;
-  final int? boardCurrency; // null если доски нет
+  final int? workCurrency; // null если работы нет
   final bool hasCertificate;
   final bool certificatePurchased;
   final bool decorationRespectPurchased;
@@ -25,7 +25,7 @@ class Faction {
     required this.reputationLevel,
     required this.hasOrder,
     required this.orderCompleted,
-    this.boardCurrency,
+    this.workCurrency,
     required this.hasCertificate,
     required this.certificatePurchased,
     required this.decorationRespectPurchased,
@@ -44,7 +44,7 @@ class Faction {
     ReputationLevel? reputationLevel,
     bool? hasOrder,
     bool? orderCompleted,
-    int? boardCurrency,
+    int? workCurrency,
     bool? hasCertificate,
     bool? certificatePurchased,
     bool? decorationRespectPurchased,
@@ -62,7 +62,7 @@ class Faction {
       reputationLevel: reputationLevel ?? this.reputationLevel,
       hasOrder: hasOrder ?? this.hasOrder,
       orderCompleted: orderCompleted ?? this.orderCompleted,
-      boardCurrency: boardCurrency ?? this.boardCurrency,
+      workCurrency: workCurrency ?? this.workCurrency,
       hasCertificate: hasCertificate ?? this.hasCertificate,
       certificatePurchased: certificatePurchased ?? this.certificatePurchased,
       decorationRespectPurchased:

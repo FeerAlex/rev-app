@@ -153,21 +153,21 @@ class FactionsListPage extends StatelessWidget {
                           bloc.add(UpdateFactionEvent(updatedFaction));
                         }
                       },
-                      onBoardCurrencyTap: () async {
+                      onWorkCurrencyTap: () async {
                         final bloc = context.read<FactionBloc>();
                         final result = await showDialog<int?>(
                           context: context,
                           builder: (context) => CurrencyInputDialog(
-                            initialValue: faction.boardCurrency,
-                            title: 'Валюта с доски',
-                            labelText: 'Введите валюту с доски',
-                            hintText: 'Оставьте пустым, если доски нет',
+                            initialValue: faction.workCurrency,
+                            title: 'Валюта с работы',
+                            labelText: 'Введите валюту с работы',
+                            hintText: 'Оставьте пустым, если работы нет',
                             allowEmpty: true,
                           ),
                         );
                         if (result != null) {
                           final updatedFaction = faction.copyWith(
-                            boardCurrency: result,
+                            workCurrency: result,
                           );
                           bloc.add(UpdateFactionEvent(updatedFaction));
                         }

@@ -13,7 +13,7 @@ class FactionModel {
       ),
       hasOrder: (map[FactionDao.columnHasOrder] as int? ?? 0) == 1,
       orderCompleted: (map[FactionDao.columnOrderCompleted] as int) == 1,
-      boardCurrency: map[FactionDao.columnBoardCurrency] as int?,
+      workCurrency: map[FactionDao.columnWorkCurrency] as int?,
       hasCertificate: (map[FactionDao.columnHasCertificate] as int) == 1,
       certificatePurchased:
           (map[FactionDao.columnCertificatePurchased] as int) == 1,
@@ -60,8 +60,8 @@ class FactionModel {
     if (faction.id != null) {
       map[FactionDao.columnId] = faction.id;
     }
-    if (faction.boardCurrency != null) {
-      map[FactionDao.columnBoardCurrency] = faction.boardCurrency;
+    if (faction.workCurrency != null) {
+      map[FactionDao.columnWorkCurrency] = faction.workCurrency;
     }
 
     return map;

@@ -22,7 +22,7 @@ class ServiceLocator {
     
     _database = await openDatabase(
       path,
-      version: 5,
+      version: 6,
       onCreate: (db, version) async {
         await FactionDao.createTable(db);
         await SettingsDao.createTable(db);
@@ -94,11 +94,11 @@ class ServiceLocator {
           // Переименовываем новую таблицу
           await db.execute('ALTER TABLE ${SettingsDao.tableName}_new RENAME TO ${SettingsDao.tableName}');
           
-          // Миграция типов колонок factions (currency и boardCurrency) с REAL на INTEGER, если они были REAL
+          // Миграция типов колонок factions (currency и workCurrency) с REAL на INTEGER, если они были REAL
           // Проверяем, есть ли колонки с типом REAL (через pragma table_info)
           final tableInfo = await db.rawQuery('PRAGMA table_info(${FactionDao.tableName})');
           bool needsCurrencyMigration = false;
-          bool needsBoardCurrencyMigration = false;
+          bool needsWorkCurrencyMigration = false;
           
           for (var column in tableInfo) {
             final columnName = column['name'] as String;
@@ -106,12 +106,13 @@ class ServiceLocator {
             if (columnName == FactionDao.columnCurrency && columnType.toUpperCase().contains('REAL')) {
               needsCurrencyMigration = true;
             }
-            if (columnName == FactionDao.columnBoardCurrency && columnType.toUpperCase().contains('REAL')) {
-              needsBoardCurrencyMigration = true;
+            // Проверяем старую колонку board_currency для миграции
+            if (columnName == 'board_currency' && columnType.toUpperCase().contains('REAL')) {
+              needsWorkCurrencyMigration = true;
             }
           }
           
-          if (needsCurrencyMigration || needsBoardCurrencyMigration) {
+          if (needsCurrencyMigration || needsWorkCurrencyMigration) {
             // Пересоздаем таблицу factions
             await db.execute('''
               CREATE TABLE ${FactionDao.tableName}_new (
@@ -121,7 +122,7 @@ class ServiceLocator {
                 ${FactionDao.columnReputationLevel} INTEGER NOT NULL DEFAULT 0,
                 ${FactionDao.columnHasOrder} INTEGER NOT NULL DEFAULT 0,
                 ${FactionDao.columnOrderCompleted} INTEGER NOT NULL DEFAULT 0,
-                ${FactionDao.columnBoardCurrency} INTEGER,
+                ${FactionDao.columnWorkCurrency} INTEGER,
                 ${FactionDao.columnHasCertificate} INTEGER NOT NULL DEFAULT 0,
                 ${FactionDao.columnCertificatePurchased} INTEGER NOT NULL DEFAULT 0,
                 ${FactionDao.columnDecorationRespectPurchased} INTEGER NOT NULL DEFAULT 0,
@@ -137,9 +138,9 @@ class ServiceLocator {
             final currencyColumn = needsCurrencyMigration 
                 ? 'CAST(${FactionDao.columnCurrency} AS INTEGER)'
                 : FactionDao.columnCurrency;
-            final boardCurrencyColumn = needsBoardCurrencyMigration
-                ? 'CAST(${FactionDao.columnBoardCurrency} AS INTEGER)'
-                : FactionDao.columnBoardCurrency;
+            final workCurrencyColumn = needsWorkCurrencyMigration
+                ? 'CAST(board_currency AS INTEGER)'
+                : 'board_currency';
             
             await db.execute('''
               INSERT INTO ${FactionDao.tableName}_new (
@@ -149,7 +150,7 @@ class ServiceLocator {
                 ${FactionDao.columnReputationLevel},
                 ${FactionDao.columnHasOrder},
                 ${FactionDao.columnOrderCompleted},
-                ${FactionDao.columnBoardCurrency},
+                ${FactionDao.columnWorkCurrency},
                 ${FactionDao.columnHasCertificate},
                 ${FactionDao.columnCertificatePurchased},
                 ${FactionDao.columnDecorationRespectPurchased},
@@ -166,7 +167,7 @@ class ServiceLocator {
                 ${FactionDao.columnReputationLevel},
                 COALESCE(${FactionDao.columnHasOrder}, 0),
                 ${FactionDao.columnOrderCompleted},
-                $boardCurrencyColumn,
+                $workCurrencyColumn,
                 ${FactionDao.columnHasCertificate},
                 ${FactionDao.columnCertificatePurchased},
                 ${FactionDao.columnDecorationRespectPurchased},
@@ -216,7 +217,7 @@ class ServiceLocator {
               ${FactionDao.columnReputationLevel} INTEGER NOT NULL DEFAULT 0,
               ${FactionDao.columnHasOrder} INTEGER NOT NULL DEFAULT 0,
               ${FactionDao.columnOrderCompleted} INTEGER NOT NULL DEFAULT 0,
-              ${FactionDao.columnBoardCurrency} INTEGER,
+              ${FactionDao.columnWorkCurrency} INTEGER,
               ${FactionDao.columnHasCertificate} INTEGER NOT NULL DEFAULT 0,
               ${FactionDao.columnCertificatePurchased} INTEGER NOT NULL DEFAULT 0,
               ${FactionDao.columnDecorationRespectPurchased} INTEGER NOT NULL DEFAULT 0,
@@ -238,7 +239,7 @@ class ServiceLocator {
               ${FactionDao.columnReputationLevel},
               ${FactionDao.columnHasOrder},
               ${FactionDao.columnOrderCompleted},
-              ${FactionDao.columnBoardCurrency},
+              ${FactionDao.columnWorkCurrency},
               ${FactionDao.columnHasCertificate},
               ${FactionDao.columnCertificatePurchased},
               ${FactionDao.columnDecorationRespectPurchased},
@@ -256,7 +257,7 @@ class ServiceLocator {
               ${FactionDao.columnReputationLevel},
               ${FactionDao.columnHasOrder},
               ${FactionDao.columnOrderCompleted},
-              ${FactionDao.columnBoardCurrency},
+              board_currency,
               ${FactionDao.columnHasCertificate},
               ${FactionDao.columnCertificatePurchased},
               ${FactionDao.columnDecorationRespectPurchased},
@@ -266,6 +267,76 @@ class ServiceLocator {
               ${FactionDao.columnDecorationAdorationPurchased},
               ${FactionDao.columnDecorationAdorationUpgraded},
               COALESCE(`order`, 0)
+            FROM ${FactionDao.tableName}
+          ''');
+          
+          // Удаляем старую таблицу
+          await db.execute('DROP TABLE ${FactionDao.tableName}');
+          
+          // Переименовываем новую таблицу
+          await db.execute('ALTER TABLE ${FactionDao.tableName}_new RENAME TO ${FactionDao.tableName}');
+        }
+        if (oldVersion < 6) {
+          // Переименовываем колонку board_currency в work_currency
+          // SQLite не поддерживает ALTER TABLE RENAME COLUMN напрямую, поэтому пересоздаем таблицу
+          await db.execute('''
+            CREATE TABLE ${FactionDao.tableName}_new (
+              ${FactionDao.columnId} INTEGER PRIMARY KEY AUTOINCREMENT,
+              ${FactionDao.columnName} TEXT NOT NULL,
+              ${FactionDao.columnCurrency} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnReputationLevel} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnHasOrder} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnOrderCompleted} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnWorkCurrency} INTEGER,
+              ${FactionDao.columnHasCertificate} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnCertificatePurchased} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnDecorationRespectPurchased} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnDecorationRespectUpgraded} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnDecorationHonorPurchased} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnDecorationHonorUpgraded} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnDecorationAdorationPurchased} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnDecorationAdorationUpgraded} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnDisplayOrder} INTEGER NOT NULL DEFAULT 0
+            )
+          ''');
+          
+          // Копируем данные из старой таблицы в новую, переименовывая колонку
+          await db.execute('''
+            INSERT INTO ${FactionDao.tableName}_new (
+              ${FactionDao.columnId},
+              ${FactionDao.columnName},
+              ${FactionDao.columnCurrency},
+              ${FactionDao.columnReputationLevel},
+              ${FactionDao.columnHasOrder},
+              ${FactionDao.columnOrderCompleted},
+              ${FactionDao.columnWorkCurrency},
+              ${FactionDao.columnHasCertificate},
+              ${FactionDao.columnCertificatePurchased},
+              ${FactionDao.columnDecorationRespectPurchased},
+              ${FactionDao.columnDecorationRespectUpgraded},
+              ${FactionDao.columnDecorationHonorPurchased},
+              ${FactionDao.columnDecorationHonorUpgraded},
+              ${FactionDao.columnDecorationAdorationPurchased},
+              ${FactionDao.columnDecorationAdorationUpgraded},
+              ${FactionDao.columnDisplayOrder}
+            )
+            SELECT 
+              ${FactionDao.columnId},
+              ${FactionDao.columnName},
+              ${FactionDao.columnCurrency},
+              ${FactionDao.columnReputationLevel},
+              ${FactionDao.columnHasOrder},
+              ${FactionDao.columnOrderCompleted},
+              board_currency,
+              ${FactionDao.columnHasCertificate},
+              ${FactionDao.columnCertificatePurchased},
+              ${FactionDao.columnDecorationRespectPurchased},
+              ${FactionDao.columnDecorationRespectUpgraded},
+              ${FactionDao.columnDecorationHonorPurchased},
+              ${FactionDao.columnDecorationHonorUpgraded},
+              ${FactionDao.columnDecorationAdorationPurchased},
+              ${FactionDao.columnDecorationAdorationUpgraded},
+              ${FactionDao.columnDisplayOrder}
             FROM ${FactionDao.tableName}
           ''');
           

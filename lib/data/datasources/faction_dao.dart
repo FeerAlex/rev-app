@@ -8,7 +8,7 @@ class FactionDao {
   static const String columnReputationLevel = 'reputation_level';
   static const String columnHasOrder = 'has_order';
   static const String columnOrderCompleted = 'order_completed';
-  static const String columnBoardCurrency = 'board_currency';
+  static const String columnWorkCurrency = 'work_currency';
   static const String columnHasCertificate = 'has_certificate';
   static const String columnCertificatePurchased = 'certificate_purchased';
   static const String columnDecorationRespectPurchased =
@@ -38,7 +38,7 @@ class FactionDao {
         $columnReputationLevel INTEGER NOT NULL DEFAULT 0,
         $columnHasOrder INTEGER NOT NULL DEFAULT 0,
         $columnOrderCompleted INTEGER NOT NULL DEFAULT 0,
-        $columnBoardCurrency INTEGER,
+        $columnWorkCurrency INTEGER,
         $columnHasCertificate INTEGER NOT NULL DEFAULT 0,
         $columnCertificatePurchased INTEGER NOT NULL DEFAULT 0,
         $columnDecorationRespectPurchased INTEGER NOT NULL DEFAULT 0,

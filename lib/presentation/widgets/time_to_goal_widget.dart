@@ -47,7 +47,7 @@ class _TimeToGoalWidgetState extends State<TimeToGoalWidget> {
         oldFaction.certificatePurchased != newFaction.certificatePurchased ||
         oldFaction.hasOrder != newFaction.hasOrder ||
         oldFaction.hasCertificate != newFaction.hasCertificate ||
-        oldFaction.boardCurrency != newFaction.boardCurrency ||
+        oldFaction.workCurrency != newFaction.workCurrency ||
         oldFaction.decorationRespectPurchased != newFaction.decorationRespectPurchased ||
         oldFaction.decorationRespectUpgraded != newFaction.decorationRespectUpgraded ||
         oldFaction.decorationHonorPurchased != newFaction.decorationHonorPurchased ||

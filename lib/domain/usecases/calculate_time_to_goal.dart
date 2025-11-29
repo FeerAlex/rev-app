@@ -60,9 +60,9 @@ class CalculateTimeToGoal {
       currencyPerDay += settings.currencyPerOrder;
     }
     
-    // Валюта с доски (если указана)
-    if (faction.boardCurrency != null && faction.boardCurrency! > 0) {
-      currencyPerDay += faction.boardCurrency!;
+    // Валюта с работы (если указана)
+    if (faction.workCurrency != null && faction.workCurrency! > 0) {
+      currencyPerDay += faction.workCurrency!;
     }
 
     // Если нет дохода в день, вернуть null

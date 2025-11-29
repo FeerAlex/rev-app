@@ -149,7 +149,7 @@ class CalculateTimeToGoal {
 1. Рассчитывается общая стоимость всех некупленных украшений и улучшений
 2. Добавляется стоимость сертификата (если не куплен)
 3. Вычитается текущая валюта
-4. Рассчитывается доход в день (заказы + доска)
+4. Рассчитывается доход в день (заказы + работа)
 5. Вычисляется время: `(нужная валюта) / (валюта в день)`
 
 #### ResetDailyFlags
@@ -192,7 +192,7 @@ class Faction {
   final ReputationLevel reputationLevel;
   final bool hasOrder;
   final bool orderCompleted;
-  final int? boardCurrency;
+  final int? workCurrency;
   final bool hasCertificate;
   final bool certificatePurchased;
   final bool decorationRespectPurchased;

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
-class BoardCurrencyBadge extends StatelessWidget {
-  final int? boardCurrency;
+class WorkCurrencyBadge extends StatelessWidget {
+  final int? workCurrency;
   final VoidCallback? onTap;
 
-  const BoardCurrencyBadge({
+  const WorkCurrencyBadge({
     super.key,
-    this.boardCurrency,
+    this.workCurrency,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final hasValue = boardCurrency != null && boardCurrency! > 0;
-    final text = hasValue ? boardCurrency.toString() : 'Доска';
+    final hasValue = workCurrency != null && workCurrency! > 0;
+    final text = hasValue ? workCurrency.toString() : 'Работа';
     final color = Colors.amber;
 
     Widget badge = Container(
@@ -47,3 +47,4 @@ class BoardCurrencyBadge extends StatelessWidget {
     return badge;
   }
 }
+
