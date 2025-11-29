@@ -46,18 +46,20 @@ class CalculateTimeToGoal {
     }
 
     // Рассчитываем валюту в день
-    // Учитываем потенциальный доход от заказов (если они есть во фракции)
-    // и валюту с доски (если указана)
+    // Учитываем потенциальный доход от заказов (если они есть во фракции согласно статическому списку)
+    // и валюту с работы (если указана)
     int currencyPerDay = 0;
     
-    // Потенциальный доход от заказа (если заказы есть во фракции)
+    // Потенциальный доход от заказа (только если фракция имеет заказы согласно статическому списку)
+    // Если hasOrder = false, валюту с заказов не учитываем
     if (faction.hasOrder) {
       currencyPerDay += AppSettings.factions.currencyPerOrder;
     }
     
-    // Валюта с работы (если указана)
-    if (faction.workCurrency != null && faction.workCurrency! > 0) {
-      currencyPerDay += faction.workCurrency!;
+    // Потенциальный доход от работы (только если hasWork = true)
+    // Если hasWork = false, валюту с работы не учитываем
+    if (faction.hasWork) {
+      currencyPerDay += AppSettings.factions.currencyPerWork;
     }
 
     // Если нет дохода в день, вернуть null

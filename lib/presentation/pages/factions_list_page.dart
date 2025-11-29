@@ -134,6 +134,14 @@ class FactionsListPage extends StatelessWidget {
                               UpdateFactionEvent(updatedFaction),
                             );
                       },
+                      onWorkToggle: () {
+                        final updatedFaction = faction.copyWith(
+                          workCompleted: !faction.workCompleted,
+                        );
+                        context.read<FactionBloc>().add(
+                              UpdateFactionEvent(updatedFaction),
+                            );
+                      },
                       onCurrencyTap: () async {
                         final bloc = context.read<FactionBloc>();
                         final initialValue = faction.currency;

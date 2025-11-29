@@ -38,6 +38,9 @@ class FactionsSettings {
   /// Валюта за выполнение заказа
   final int currencyPerOrder = 100;
 
+  /// Валюта за выполнение работы
+  final int currencyPerWork = 100;
+
   /// Стоимость сертификата
   final int certificatePrice = 7888;
 }

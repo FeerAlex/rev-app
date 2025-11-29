@@ -6,23 +6,23 @@ class FactionsList {
 
   /// Фракции с заказами и работой (9 шт)
   static const List<FactionTemplate> factionsWithOrderAndWork = [
-    FactionTemplate(name: 'Жители Сулана', hasOrder: true, hasWork: true),
-    FactionTemplate(name: 'Фалмари', hasOrder: true, hasWork: true),
-    FactionTemplate(name: 'Грибной народ', hasOrder: true, hasWork: true),
-    FactionTemplate(name: 'Озёрная деревня', hasOrder: true, hasWork: true),
-    FactionTemplate(name: 'Медведи', hasOrder: true, hasWork: true),
-    FactionTemplate(name: 'Крылатые', hasOrder: true, hasWork: true),
-    FactionTemplate(name: 'Монастырь Сноу-Шу', hasOrder: true, hasWork: true),
-    FactionTemplate(name: 'Северные волки', hasOrder: true, hasWork: true),
-    FactionTemplate(name: 'Императорская академия', hasOrder: true, hasWork: true),
+    FactionTemplate(name: 'Жители Сулана', hasOrder: true, hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Фалмари', hasOrder: true, hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Грибной народ', hasOrder: true, hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Озёрная деревня', hasOrder: true, hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Медведи', hasOrder: true, hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Крылатые', hasOrder: true, hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Монастырь Сноу-Шу', hasOrder: true, hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Северные волки', hasOrder: true, hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Императорская академия', hasOrder: true, hasWork: true, hasCertificate: true),
   ];
 
   /// Фракции только с работой (4 шт)
   static const List<FactionTemplate> factionsWithWorkOnly = [
-    FactionTemplate(name: 'Кнотты', hasOrder: false, hasWork: true),
-    FactionTemplate(name: 'Калахар', hasOrder: false, hasWork: true),
-    FactionTemplate(name: 'Астерион', hasOrder: false, hasWork: true),
-    FactionTemplate(name: 'Лисы', hasOrder: false, hasWork: true),
+    FactionTemplate(name: 'Кнотты', hasOrder: false, hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Калахар', hasOrder: false, hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Астерион', hasOrder: false, hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Лисы', hasOrder: false, hasWork: true, hasCertificate: true),
   ];
 
   /// Все фракции
@@ -39,7 +39,9 @@ class FactionsList {
       hasOrder: template.hasOrder,
       orderCompleted: false,
       workCurrency: template.hasWork ? null : null, // nullable, пользователь введет значение
-      hasCertificate: false,
+      hasWork: template.hasWork,
+      workCompleted: false,
+      hasCertificate: template.hasCertificate,
       certificatePurchased: false,
       decorationRespectPurchased: false,
       decorationRespectUpgraded: false,
@@ -58,11 +60,13 @@ class FactionTemplate {
   final String name;
   final bool hasOrder;
   final bool hasWork;
+  final bool hasCertificate;
 
   const FactionTemplate({
     required this.name,
     required this.hasOrder,
     required this.hasWork,
+    required this.hasCertificate,
   });
 }
 

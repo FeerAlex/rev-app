@@ -18,7 +18,7 @@ class ServiceLocator {
     
     _database = await openDatabase(
       path,
-      version: 8,
+      version: 9,
       onCreate: (db, version) async {
         await FactionDao.createTable(db);
       },
@@ -361,6 +361,24 @@ class ServiceLocator {
           await db.execute('''
             ALTER TABLE ${FactionDao.tableName} 
             ADD COLUMN ${FactionDao.columnIsVisible} INTEGER NOT NULL DEFAULT 1
+          ''');
+        }
+        
+        if (oldVersion < 9) {
+          // Добавление колонок has_work и work_completed
+          await db.execute('''
+            ALTER TABLE ${FactionDao.tableName} 
+            ADD COLUMN ${FactionDao.columnHasWork} INTEGER NOT NULL DEFAULT 0
+          ''');
+          await db.execute('''
+            ALTER TABLE ${FactionDao.tableName} 
+            ADD COLUMN ${FactionDao.columnWorkCompleted} INTEGER NOT NULL DEFAULT 0
+          ''');
+          // Устанавливаем has_work = 1 для фракций, у которых есть workCurrency
+          await db.execute('''
+            UPDATE ${FactionDao.tableName} 
+            SET ${FactionDao.columnHasWork} = 1 
+            WHERE ${FactionDao.columnWorkCurrency} IS NOT NULL AND ${FactionDao.columnWorkCurrency} > 0
           ''');
         }
       },

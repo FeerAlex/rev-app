@@ -5,6 +5,7 @@ class FactionActivitiesSection extends StatelessWidget {
   final bool hasCertificate;
   final ValueChanged<bool> onHasOrderChanged;
   final ValueChanged<bool> onHasCertificateChanged;
+  final bool showOrderCheckbox;
 
   const FactionActivitiesSection({
     super.key,
@@ -12,6 +13,7 @@ class FactionActivitiesSection extends StatelessWidget {
     required this.hasCertificate,
     required this.onHasOrderChanged,
     required this.onHasCertificateChanged,
+    this.showOrderCheckbox = true,
   });
 
   @override
@@ -33,27 +35,28 @@ class FactionActivitiesSection extends StatelessWidget {
         Row(
           spacing: 8,
           children: [
-            Expanded(
-              child: Card(
-                margin: EdgeInsets.zero,
-                child: CheckboxListTile(
-                  dense: true,
-                  title: Row(
-                    spacing: 8,
-                    children: [
-                      Icon(Icons.shopping_cart, size: 16, color: Colors.green[300]),
-                      const Text('Заказы', style: TextStyle(fontSize: 14)),
-                    ],
+            if (showOrderCheckbox)
+              Expanded(
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  child: CheckboxListTile(
+                    dense: true,
+                    title: Row(
+                      spacing: 8,
+                      children: [
+                        Icon(Icons.shopping_cart, size: 16, color: Colors.green[300]),
+                        const Text('Заказы', style: TextStyle(fontSize: 14)),
+                      ],
+                    ),
+                    value: hasOrder,
+                    activeColor: Colors.green,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                    onChanged: (value) {
+                      onHasOrderChanged(value ?? false);
+                    },
                   ),
-                  value: hasOrder,
-                  activeColor: Colors.green,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-                  onChanged: (value) {
-                    onHasOrderChanged(value ?? false);
-                  },
                 ),
               ),
-            ),
             Expanded(
               child: Card(
                 margin: EdgeInsets.zero,

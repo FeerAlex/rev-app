@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/faction.dart';
+import '../../../core/constants/factions_list.dart';
 import '../bloc/faction/faction_bloc.dart';
 import '../bloc/faction/faction_event.dart';
-import '../widgets/faction_activities_section.dart';
+import '../widgets/faction_activities_block.dart';
+import '../widgets/faction_certificate_block.dart';
 import '../widgets/faction_decorations_section.dart';
 
 class FactionDetailPage extends StatefulWidget {
@@ -21,6 +23,8 @@ class FactionDetailPage extends StatefulWidget {
 class _FactionDetailPageState extends State<FactionDetailPage> {
   late bool _hasOrder;
   late bool _orderCompleted;
+  late bool _hasWork;
+  late bool _workCompleted;
   late bool _hasCertificate;
   late bool _certificatePurchased;
   late bool _decorationRespectPurchased;
@@ -36,6 +40,8 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
     final faction = widget.faction;
     _hasOrder = faction?.hasOrder ?? false;
     _orderCompleted = faction?.orderCompleted ?? false;
+    _hasWork = faction?.hasWork ?? false;
+    _workCompleted = faction?.workCompleted ?? false;
     _hasCertificate = faction?.hasCertificate ?? false;
     _certificatePurchased = faction?.certificatePurchased ?? false;
     _decorationRespectPurchased = faction?.decorationRespectPurchased ?? false;
@@ -66,6 +72,8 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
       hasOrder: _hasOrder,
       orderCompleted: _orderCompleted,
       workCurrency: widget.faction!.workCurrency,
+      hasWork: _hasWork,
+      workCompleted: _workCompleted,
       hasCertificate: _hasCertificate,
       certificatePurchased: _certificatePurchased,
       decorationRespectPurchased: _decorationRespectPurchased,
@@ -80,6 +88,27 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
 
     context.read<FactionBloc>().add(UpdateFactionEvent(faction));
     Navigator.of(context).pop();
+  }
+
+  bool _canFactionHaveOrders() {
+    if (widget.faction == null) return false;
+    final template = FactionsList.allFactions
+        .firstWhere((t) => t.name == widget.faction!.name, orElse: () => FactionTemplate(name: '', hasOrder: false, hasWork: false, hasCertificate: false));
+    return template.hasOrder;
+  }
+
+  bool _canFactionHaveWork() {
+    if (widget.faction == null) return false;
+    final template = FactionsList.allFactions
+        .firstWhere((t) => t.name == widget.faction!.name, orElse: () => FactionTemplate(name: '', hasOrder: false, hasWork: false, hasCertificate: false));
+    return template.hasWork;
+  }
+
+  bool _canFactionHaveCertificate() {
+    if (widget.faction == null) return false;
+    final template = FactionsList.allFactions
+        .firstWhere((t) => t.name == widget.faction!.name, orElse: () => FactionTemplate(name: '', hasOrder: false, hasWork: false, hasCertificate: false));
+    return template.hasCertificate;
   }
 
   void _deleteFaction() {
@@ -139,9 +168,11 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 24,
           children: [
-            FactionActivitiesSection(
+            FactionActivitiesBlock(
               hasOrder: _hasOrder,
-              hasCertificate: _hasCertificate,
+              hasWork: _hasWork,
+              showOrderCheckbox: _canFactionHaveOrders(),
+              showWorkCheckbox: _canFactionHaveWork(),
               onHasOrderChanged: (value) {
                 setState(() {
                   _hasOrder = value;
@@ -150,6 +181,18 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
                   }
                 });
               },
+              onHasWorkChanged: (value) {
+                setState(() {
+                  _hasWork = value;
+                  if (!_hasWork) {
+                    _workCompleted = false;
+                  }
+                });
+              },
+            ),
+            FactionCertificateBlock(
+              hasCertificate: _hasCertificate,
+              showCertificateCheckbox: _canFactionHaveCertificate(),
               onHasCertificateChanged: (value) {
                 setState(() {
                   _hasCertificate = value;
@@ -197,8 +240,6 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
                 });
               },
             ),
-            // Секция сертификата
-            if (_hasCertificate) _buildCertificateSection(),
           ],
         ),
       ),
@@ -214,51 +255,4 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
     );
   }
 
-  Widget _buildCertificateSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(Icons.verified, color: Colors.purple[300], size: 20),
-            const SizedBox(width: 8),
-            const Text(
-              'Сертификат',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Card(
-          margin: EdgeInsets.zero,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border(
-                left: BorderSide(
-                  color: Colors.purple,
-                  width: 4,
-                ),
-              ),
-            ),
-            padding: const EdgeInsets.only(right: 14),
-            child: Row(
-              children: [
-                Checkbox(
-                  value: _certificatePurchased,
-                  onChanged: (value) {
-                    setState(() {
-                      _certificatePurchased = value ?? false;
-                    });
-                  },
-                  activeColor: Colors.purple,
-                ),
-                const Text('Куплен', style: TextStyle(fontSize: 14)),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }

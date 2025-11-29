@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
 import 'activity_badge.dart';
-import 'work_currency_badge.dart';
 
 class FactionActivitiesList extends StatelessWidget {
   final Faction faction;
   final VoidCallback? onOrderToggle;
+  final VoidCallback? onWorkToggle;
   final VoidCallback? onWorkCurrencyTap;
 
   const FactionActivitiesList({
     super.key,
     required this.faction,
     this.onOrderToggle,
+    this.onWorkToggle,
     this.onWorkCurrencyTap,
   });
 
@@ -33,12 +34,21 @@ class FactionActivitiesList extends StatelessWidget {
       );
     }
 
-    badges.add(
-      WorkCurrencyBadge(
-        workCurrency: faction.workCurrency,
-        onTap: onWorkCurrencyTap,
-      ),
-    );
+    if (faction.hasWork) {
+      badges.add(
+        Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: ActivityBadge(
+            text: faction.workCurrency != null && faction.workCurrency! > 0
+                ? faction.workCurrency.toString()
+                : 'Работа',
+            color: Colors.amber,
+            isCompleted: faction.workCompleted,
+            onTap: onWorkToggle,
+          ),
+        ),
+      );
+    }
 
     if (badges.isEmpty) {
       return const SizedBox.shrink();

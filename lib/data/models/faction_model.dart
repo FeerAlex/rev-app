@@ -10,6 +10,8 @@ class FactionModel {
       hasOrder: (map[FactionDao.columnHasOrder] as int? ?? 0) == 1,
       orderCompleted: (map[FactionDao.columnOrderCompleted] as int) == 1,
       workCurrency: map[FactionDao.columnWorkCurrency] as int?,
+      hasWork: (map[FactionDao.columnHasWork] as int? ?? 0) == 1,
+      workCompleted: (map[FactionDao.columnWorkCompleted] as int? ?? 0) == 1,
       hasCertificate: (map[FactionDao.columnHasCertificate] as int) == 1,
       certificatePurchased:
           (map[FactionDao.columnCertificatePurchased] as int) == 1,
@@ -36,6 +38,8 @@ class FactionModel {
       FactionDao.columnCurrency: faction.currency,
       FactionDao.columnHasOrder: faction.hasOrder ? 1 : 0,
       FactionDao.columnOrderCompleted: faction.orderCompleted ? 1 : 0,
+      FactionDao.columnHasWork: faction.hasWork ? 1 : 0,
+      FactionDao.columnWorkCompleted: faction.workCompleted ? 1 : 0,
       FactionDao.columnHasCertificate: faction.hasCertificate ? 1 : 0,
       FactionDao.columnCertificatePurchased: faction.certificatePurchased ? 1 : 0,
       FactionDao.columnDecorationRespectPurchased:

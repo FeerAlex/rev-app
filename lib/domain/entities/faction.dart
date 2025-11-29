@@ -5,6 +5,8 @@ class Faction {
   final bool hasOrder; // есть ли заказы во фракции
   final bool orderCompleted;
   final int? workCurrency; // null если работы нет
+  final bool hasWork; // учитывать ли работу в калькуляторе
+  final bool workCompleted; // выполнена ли работа
   final bool hasCertificate;
   final bool certificatePurchased;
   final bool decorationRespectPurchased;
@@ -23,6 +25,8 @@ class Faction {
     required this.hasOrder,
     required this.orderCompleted,
     this.workCurrency,
+    required this.hasWork,
+    required this.workCompleted,
     required this.hasCertificate,
     required this.certificatePurchased,
     required this.decorationRespectPurchased,
@@ -42,6 +46,8 @@ class Faction {
     bool? hasOrder,
     bool? orderCompleted,
     int? workCurrency,
+    bool? hasWork,
+    bool? workCompleted,
     bool? hasCertificate,
     bool? certificatePurchased,
     bool? decorationRespectPurchased,
@@ -60,6 +66,8 @@ class Faction {
       hasOrder: hasOrder ?? this.hasOrder,
       orderCompleted: orderCompleted ?? this.orderCompleted,
       workCurrency: workCurrency ?? this.workCurrency,
+      hasWork: hasWork ?? this.hasWork,
+      workCompleted: workCompleted ?? this.workCompleted,
       hasCertificate: hasCertificate ?? this.hasCertificate,
       certificatePurchased: certificatePurchased ?? this.certificatePurchased,
       decorationRespectPurchased:
