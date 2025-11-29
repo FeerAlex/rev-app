@@ -1,11 +1,8 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../../data/datasources/faction_dao.dart';
-import '../../data/datasources/settings_dao.dart';
 import '../../data/repositories/faction_repository_impl.dart';
-import '../../data/repositories/settings_repository_impl.dart';
 import '../../domain/repositories/faction_repository.dart';
-import '../../domain/repositories/settings_repository.dart';
 
 class ServiceLocator {
   static final ServiceLocator _instance = ServiceLocator._internal();
@@ -14,7 +11,6 @@ class ServiceLocator {
 
   Database? _database;
   FactionRepository? _factionRepository;
-  SettingsRepository? _settingsRepository;
 
   Future<void> init() async {
     final databasesPath = await getDatabasesPath();
@@ -25,7 +21,6 @@ class ServiceLocator {
       version: 6,
       onCreate: (db, version) async {
         await FactionDao.createTable(db);
-        await SettingsDao.createTable(db);
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -43,57 +38,6 @@ class ServiceLocator {
           );
         }
         if (oldVersion < 3) {
-          // Миграция типов колонок settings с REAL на INTEGER
-          // SQLite не поддерживает изменение типа колонки, поэтому пересоздаем таблицу
-          await db.execute('''
-            CREATE TABLE ${SettingsDao.tableName}_new (
-              ${SettingsDao.columnId} INTEGER PRIMARY KEY AUTOINCREMENT,
-              ${SettingsDao.columnItemPrice} INTEGER NOT NULL DEFAULT 0,
-              ${SettingsDao.columnItemCountRespect} INTEGER NOT NULL DEFAULT 1,
-              ${SettingsDao.columnItemCountHonor} INTEGER NOT NULL DEFAULT 3,
-              ${SettingsDao.columnItemCountAdoration} INTEGER NOT NULL DEFAULT 6,
-              ${SettingsDao.columnDecorationPriceRespect} INTEGER NOT NULL DEFAULT 0,
-              ${SettingsDao.columnDecorationPriceHonor} INTEGER NOT NULL DEFAULT 0,
-              ${SettingsDao.columnDecorationPriceAdoration} INTEGER NOT NULL DEFAULT 0,
-              ${SettingsDao.columnCurrencyPerOrder} INTEGER NOT NULL DEFAULT 0,
-              ${SettingsDao.columnCertificatePrice} INTEGER NOT NULL DEFAULT 0
-            )
-          ''');
-          
-          // Копируем данные, преобразуя REAL в INTEGER
-          await db.execute('''
-            INSERT INTO ${SettingsDao.tableName}_new (
-              ${SettingsDao.columnId},
-              ${SettingsDao.columnItemPrice},
-              ${SettingsDao.columnItemCountRespect},
-              ${SettingsDao.columnItemCountHonor},
-              ${SettingsDao.columnItemCountAdoration},
-              ${SettingsDao.columnDecorationPriceRespect},
-              ${SettingsDao.columnDecorationPriceHonor},
-              ${SettingsDao.columnDecorationPriceAdoration},
-              ${SettingsDao.columnCurrencyPerOrder},
-              ${SettingsDao.columnCertificatePrice}
-            )
-            SELECT 
-              ${SettingsDao.columnId},
-              CAST(${SettingsDao.columnItemPrice} AS INTEGER),
-              ${SettingsDao.columnItemCountRespect},
-              ${SettingsDao.columnItemCountHonor},
-              ${SettingsDao.columnItemCountAdoration},
-              CAST(${SettingsDao.columnDecorationPriceRespect} AS INTEGER),
-              CAST(${SettingsDao.columnDecorationPriceHonor} AS INTEGER),
-              CAST(${SettingsDao.columnDecorationPriceAdoration} AS INTEGER),
-              CAST(${SettingsDao.columnCurrencyPerOrder} AS INTEGER),
-              CAST(${SettingsDao.columnCertificatePrice} AS INTEGER)
-            FROM ${SettingsDao.tableName}
-          ''');
-          
-          // Удаляем старую таблицу
-          await db.execute('DROP TABLE ${SettingsDao.tableName}');
-          
-          // Переименовываем новую таблицу
-          await db.execute('ALTER TABLE ${SettingsDao.tableName}_new RENAME TO ${SettingsDao.tableName}');
-          
           // Миграция типов колонок factions (currency и workCurrency) с REAL на INTEGER, если они были REAL
           // Проверяем, есть ли колонки с типом REAL (через pragma table_info)
           final tableInfo = await db.rawQuery('PRAGMA table_info(${FactionDao.tableName})');
@@ -350,14 +294,11 @@ class ServiceLocator {
     );
 
     final factionDao = FactionDao(_database!);
-    final settingsDao = SettingsDao(_database!);
 
     _factionRepository = FactionRepositoryImpl(factionDao);
-    _settingsRepository = SettingsRepositoryImpl(settingsDao);
   }
 
   Database get database => _database!;
   FactionRepository get factionRepository => _factionRepository!;
-  SettingsRepository get settingsRepository => _settingsRepository!;
 }
 

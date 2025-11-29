@@ -1,47 +1,42 @@
 import 'dart:math';
 import '../entities/faction.dart';
-import '../repositories/faction_repository.dart';
-import '../repositories/settings_repository.dart';
+import '../../core/constants/app_settings.dart';
 
 class CalculateTimeToGoal {
-  final FactionRepository factionRepository;
-  final SettingsRepository settingsRepository;
+  const CalculateTimeToGoal();
 
-  CalculateTimeToGoal(this.factionRepository, this.settingsRepository);
-
-  Future<Duration?> call(Faction faction) async {
-    final settings = await settingsRepository.getSettings();
+  Duration? call(Faction faction) {
 
     // Рассчитываем общую стоимость
     int totalCost = 0;
 
     // Украшение уважение
     if (!faction.decorationRespectPurchased) {
-      totalCost += settings.decorationPriceRespect;
+      totalCost += AppSettings.factions.decorationPriceRespect;
     }
     if (!faction.decorationRespectUpgraded) {
-      totalCost += settings.itemCountRespect * settings.itemPrice;
+      totalCost += AppSettings.factions.decorationUpgradeCostRespect;
     }
 
     // Украшение почтение
     if (!faction.decorationHonorPurchased) {
-      totalCost += settings.decorationPriceHonor;
+      totalCost += AppSettings.factions.decorationPriceHonor;
     }
     if (!faction.decorationHonorUpgraded) {
-      totalCost += settings.itemCountHonor * settings.itemPrice;
+      totalCost += AppSettings.factions.decorationUpgradeCostHonor;
     }
 
     // Украшение преклонение
     if (!faction.decorationAdorationPurchased) {
-      totalCost += settings.decorationPriceAdoration;
+      totalCost += AppSettings.factions.decorationPriceAdoration;
     }
     if (!faction.decorationAdorationUpgraded) {
-      totalCost += settings.itemCountAdoration * settings.itemPrice;
+      totalCost += AppSettings.factions.decorationUpgradeCostAdoration;
     }
 
     // Сертификат
     if (!faction.certificatePurchased && faction.hasCertificate) {
-      totalCost += settings.certificatePrice;
+      totalCost += AppSettings.factions.certificatePrice;
     }
 
     // Рассчитываем сколько валюты нужно
@@ -56,8 +51,8 @@ class CalculateTimeToGoal {
     int currencyPerDay = 0;
     
     // Потенциальный доход от заказа (если заказы есть во фракции)
-    if (faction.hasOrder && settings.currencyPerOrder > 0) {
-      currencyPerDay += settings.currencyPerOrder;
+    if (faction.hasOrder) {
+      currencyPerDay += AppSettings.factions.currencyPerOrder;
     }
     
     // Валюта с работы (если указана)

@@ -30,22 +30,6 @@ abstract class FactionRepository {
 - `resetDailyFlags()` - сбрасывает отметки заказов для всех фракций
 - `reorderFactions(List<int> factionIds)` - изменяет порядок фракций согласно переданному списку ID
 
-#### SettingsRepository
-
-Интерфейс для работы с настройками.
-
-```dart
-abstract class SettingsRepository {
-  Future<Settings> getSettings();
-  Future<void> updateSettings(Settings settings);
-}
-```
-
-**Методы:**
-
-- `getSettings()` - возвращает текущие настройки (всегда возвращает объект, даже если в БД нет записи)
-- `updateSettings(Settings settings)` - обновляет настройки
-
 ### Use Cases
 
 #### GetAllFactions
@@ -102,38 +86,14 @@ class DeleteFaction {
 **Параметры:**
 - `id` - ID фракции для удаления
 
-#### GetSettings
-
-Получение настроек.
-
-```dart
-class GetSettings {
-  Future<Settings> call();
-}
-```
-
-**Возвращает:** объект Settings с текущими настройками
-
-#### UpdateSettings
-
-Обновление настроек.
-
-```dart
-class UpdateSettings {
-  Future<void> call(Settings settings);
-}
-```
-
-**Параметры:**
-- `settings` - объект Settings с обновленными настройками
-
 #### CalculateTimeToGoal
 
 Расчет времени до достижения цели (покупка сертификата).
 
 ```dart
 class CalculateTimeToGoal {
-  Future<Duration?> call(Faction faction);
+  const CalculateTimeToGoal();
+  Duration? call(Faction faction);
 }
 ```
 
@@ -146,11 +106,13 @@ class CalculateTimeToGoal {
 - `Duration.zero` - если цель уже достигнута
 
 **Логика расчета:**
-1. Рассчитывается общая стоимость всех некупленных украшений и улучшений
+1. Рассчитывается общая стоимость всех некупленных украшений и улучшений (используются константы из `AppSettings.factions`)
 2. Добавляется стоимость сертификата (если не куплен)
 3. Вычитается текущая валюта
 4. Рассчитывается доход в день (заказы + работа)
 5. Вычисляется время: `(нужная валюта) / (валюта в день)`
+
+**Примечание:** Все стоимости хранятся как константы в `AppSettings.factions`, умножение не используется - применяются готовые суммы.
 
 #### ResetDailyFlags
 
@@ -207,36 +169,37 @@ class Faction {
 }
 ```
 
-### Settings
+### AppSettings
+
+Константы настроек приложения, организованные по функциональности.
 
 ```dart
-class Settings {
-  final int? id;
-  final int itemPrice;
-  final int itemCountRespect;
-  final int itemCountHonor;
-  final int itemCountAdoration;
-  final int decorationPriceRespect;
-  final int decorationPriceHonor;
-  final int decorationPriceAdoration;
-  final int currencyPerOrder;
-  final int certificatePrice;
+class AppSettings {
+  static const FactionsSettings factions = FactionsSettings._();
+  // TODO: map, bracket для будущих функций
+}
+
+class FactionsSettings {
+  const FactionsSettings._();
   
-  Settings copyWith({...});
-  static Settings get defaultSettings;
+  final int decorationUpgradeCostRespect = 5364;  // 3 * 1788
+  final int decorationUpgradeCostHonor = 7152;  // 4 * 1788
+  final int decorationUpgradeCostAdoration = 10728;  // 6 * 1788
+  final int decorationPriceRespect = 7888;
+  final int decorationPriceHonor = 9888;
+  final int decorationPriceAdoration = 15888;
+  final int currencyPerOrder = 100;
+  final int certificatePrice = 7888;
 }
 ```
 
-**Значения по умолчанию** (`defaultSettings`):
-- `itemPrice`: 1788
-- `itemCountRespect`: 3
-- `itemCountHonor`: 4
-- `itemCountAdoration`: 6
-- `decorationPriceRespect`: 7888
-- `decorationPriceHonor`: 9888
-- `decorationPriceAdoration`: 15888
-- `currencyPerOrder`: 1000
-- `certificatePrice`: 7888
+**Использование:**
+```dart
+AppSettings.factions.decorationPriceRespect
+AppSettings.factions.currencyPerOrder
+```
+
+**Примечание:** Все стоимости хранятся как готовые суммы (не используется умножение). Структура расширяема для будущих функций (карта, брактеат).
 
 ### ReputationLevel
 
@@ -303,18 +266,6 @@ class ReorderFactionsEvent extends FactionEvent {
 }
 ```
 
-#### SettingsBloc Events
-
-```dart
-// Загрузка настроек
-class LoadSettings extends SettingsEvent;
-
-// Обновление настроек
-class UpdateSettingsEvent extends SettingsEvent {
-  final Settings settings;
-}
-```
-
 ### BLoC States
 
 #### FactionBloc States
@@ -333,26 +284,6 @@ class FactionLoaded extends FactionState {
 
 // Ошибка
 class FactionError extends FactionState {
-  final String message;
-}
-```
-
-#### SettingsBloc States
-
-```dart
-// Начальное состояние
-class SettingsInitial extends SettingsState;
-
-// Загрузка
-class SettingsLoading extends SettingsState;
-
-// Загружено
-class SettingsLoaded extends SettingsState {
-  final Settings settings;
-}
-
-// Ошибка
-class SettingsError extends SettingsState {
   final String message;
 }
 ```
@@ -429,7 +360,6 @@ class ServiceLocator {
   Future<void> init();
   Database get database;
   FactionRepository get factionRepository;
-  SettingsRepository get settingsRepository;
 }
 ```
 
@@ -438,8 +368,7 @@ class ServiceLocator {
 // Инициализация (в main.dart)
 await ServiceLocator().init();
 
-// Получение репозиториев
+// Получение репозитория
 final factionRepo = ServiceLocator().factionRepository;
-final settingsRepo = ServiceLocator().settingsRepository;
 ```
 

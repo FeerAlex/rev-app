@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
 import '../../../domain/usecases/calculate_time_to_goal.dart';
-import '../../../core/di/service_locator.dart';
 import '../../../core/utils/time_formatter.dart';
 
 class TimeToGoalWidget extends StatefulWidget {
@@ -71,12 +70,8 @@ class _TimeToGoalWidgetState extends State<TimeToGoalWidget> {
     }
 
     try {
-      final serviceLocator = ServiceLocator();
-      final calculateTimeToGoal = CalculateTimeToGoal(
-        serviceLocator.factionRepository,
-        serviceLocator.settingsRepository,
-      );
-      final duration = await calculateTimeToGoal(widget.faction!);
+      const calculateTimeToGoal = CalculateTimeToGoal();
+      final duration = calculateTimeToGoal(widget.faction!);
       setState(() {
         _timeToGoal = duration;
         _isLoading = false;

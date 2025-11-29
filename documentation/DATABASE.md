@@ -35,26 +35,7 @@
 
 **Сортировка:** По умолчанию фракции сортируются по полю `display_order` (ASC), затем по `id` (ASC)
 
-### Таблица: `settings`
-
-Хранит общие настройки приложения. Всегда содержит одну запись.
-
-| Поле | Тип | Описание |
-|------|-----|----------|
-| `id` | INTEGER PRIMARY KEY | Уникальный идентификатор (всегда 1) |
-| `item_price` | INTEGER NOT NULL DEFAULT 1788 | Цена одной итемки |
-| `item_count_respect` | INTEGER NOT NULL DEFAULT 3 | Количество итемок для украшения "Уважение" |
-| `item_count_honor` | INTEGER NOT NULL DEFAULT 4 | Количество итемок для украшения "Почтение" |
-| `item_count_adoration` | INTEGER NOT NULL DEFAULT 6 | Количество итемок для украшения "Преклонение" |
-| `decoration_price_respect` | INTEGER NOT NULL DEFAULT 7888 | Стоимость украшения "Уважение" |
-| `decoration_price_honor` | INTEGER NOT NULL DEFAULT 9888 | Стоимость украшения "Почтение" |
-| `decoration_price_adoration` | INTEGER NOT NULL DEFAULT 15888 | Стоимость украшения "Преклонение" |
-| `currency_per_order` | INTEGER NOT NULL DEFAULT 1000 | Валюта за выполнение заказа |
-| `certificate_price` | INTEGER NOT NULL DEFAULT 7888 | Стоимость сертификата |
-
-**Индексы:** нет
-
-**Ограничения:** нет
+**Примечание:** Настройки приложения (цены, валюты) хранятся как константы в коде (`lib/core/constants/app_settings.dart`), а не в базе данных.
 
 ## SQL запросы создания таблиц
 
@@ -81,23 +62,6 @@ CREATE TABLE factions (
 )
 ```
 
-### Создание таблицы `settings`
-
-```sql
-CREATE TABLE settings (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  item_price INTEGER NOT NULL DEFAULT 1788,
-  item_count_respect INTEGER NOT NULL DEFAULT 3,
-  item_count_honor INTEGER NOT NULL DEFAULT 4,
-  item_count_adoration INTEGER NOT NULL DEFAULT 6,
-  decoration_price_respect INTEGER NOT NULL DEFAULT 7888,
-  decoration_price_honor INTEGER NOT NULL DEFAULT 9888,
-  decoration_price_adoration INTEGER NOT NULL DEFAULT 15888,
-  currency_per_order INTEGER NOT NULL DEFAULT 1000,
-  certificate_price INTEGER NOT NULL DEFAULT 7888
-)
-```
-
 ## Расположение базы данных
 
 База данных хранится в стандартном месте для приложений Flutter:
@@ -115,7 +79,7 @@ CREATE TABLE settings (
 **Миграции:**
 - Версия 1 → 2: Добавлены колонки `has_order` в таблицу `factions` (по умолчанию 1)
 - Версия 2 → 3: 
-  - Миграция типов данных с REAL на INTEGER для всех полей валюты и стоимости в таблицах `factions` и `settings`
+  - Миграция типов данных с REAL на INTEGER для всех полей валюты в таблице `factions`
   - Изменение значения по умолчанию для `has_order` с 1 на 0
 - Версия 3 → 4: 
   - Добавлена колонка `order` (INTEGER) в таблицу `factions` для сортировки фракций

@@ -14,21 +14,17 @@
 
 #### Entities (Сущности)
 - `Faction` - представляет фракцию со всеми её параметрами
-- `Settings` - общие настройки приложения
 - `ReputationLevel` - enum уровней репутации
 
 #### Repositories (Интерфейсы репозиториев)
 - `FactionRepository` - интерфейс для работы с фракциями
-- `SettingsRepository` - интерфейс для работы с настройками
 
 #### Use Cases (Сценарии использования)
 - `GetAllFactions` - получение всех фракций
 - `AddFaction` - добавление новой фракции
 - `UpdateFaction` - обновление фракции
 - `DeleteFaction` - удаление фракции
-- `GetSettings` - получение настроек
-- `UpdateSettings` - обновление настроек
-- `CalculateTimeToGoal` - расчет времени до достижения цели
+- `CalculateTimeToGoal` - расчет времени до достижения цели (использует константы из AppSettings)
 - `ResetDailyFlags` - сброс ежедневных отметок
 - `ReorderFactions` - изменение порядка фракций
 
@@ -40,15 +36,12 @@
 
 #### Models (Модели данных)
 - `FactionModel` - модель для маппинга Faction entity в/из базы данных
-- `SettingsModel` - модель для маппинга Settings entity в/из базы данных
 
 #### Data Sources (Источники данных)
 - `FactionDao` - DAO для работы с таблицей factions в SQLite
-- `SettingsDao` - DAO для работы с таблицей settings в SQLite
 
 #### Repositories (Реализации репозиториев)
 - `FactionRepositoryImpl` - реализация FactionRepository
-- `SettingsRepositoryImpl` - реализация SettingsRepository
 
 ### 3. Presentation Layer (Слой представления)
 
@@ -58,10 +51,9 @@
 
 #### Pages (Страницы)
 - `MainPage` - главная страница с Drawer для навигации между разделами
-- `FactionsPage` - страница фракций с BottomNavigationBar (Список/Настройки)
+- `FactionsPage` - страница фракций со списком всех фракций
 - `FactionsListPage` - список всех фракций с возможностью удаления свайпом и изменения порядка (drag-and-drop)
 - `FactionDetailPage` - детальная информация и редактирование фракции (оптимизированная версия с компактными секциями)
-- `SettingsPage` - страница настроек
 - `MapPage` - заглушка для будущей карты ресурсов
 
 #### Widgets (Виджеты)
@@ -81,13 +73,15 @@
 - `FactionBloc` - управление состоянием фракций
   - **Оптимистичные обновления:** При обновлении фракции (`UpdateFactionEvent`) и изменении порядка (`ReorderFactionsEvent`) UI обновляется мгновенно, сохранение в БД происходит в фоне. При ошибке состояние восстанавливается из БД.
   - **Pull-to-refresh:** Поддержка обновления списка через свайп вниз (`RefreshIndicator`)
-- `SettingsBloc` - управление состоянием настроек
 
 ### 4. Core Layer (Ядро)
 
 **Расположение:** `lib/core/`
 
 Общие утилиты и инфраструктура.
+
+#### Constants
+- `AppSettings` - константы настроек приложения, организованные по функциональности (фракции, карта, брактеат)
 
 #### Database
 - Настройка SQLite базы данных
