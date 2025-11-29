@@ -25,7 +25,7 @@
 - `UpdateFaction` - обновление фракции
 - `DeleteFaction` - скрытие фракции (устанавливает `isVisible = false`)
 - `ShowFaction` - показ скрытой фракции (устанавливает `isVisible = true`)
-- `CalculateTimeToGoal` - расчет времени до достижения цели (использует константы из AppSettings)
+- `CalculateTimeToGoal` - расчет времени до достижения цели (использует константы из AppSettings и среднее арифметическое из FactionTemplate.orderCurrencyValues для валюты за заказы)
 - `ResetDailyFlags` - сброс ежедневных отметок
 - `ReorderFactions` - изменение порядка фракций
 

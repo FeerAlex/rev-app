@@ -35,9 +35,6 @@ class FactionsSettings {
   /// Стоимость покупки украшения "Преклонение"
   final int decorationPriceAdoration = 15888;
 
-  /// Валюта за выполнение заказа
-  final int currencyPerOrder = 100;
-
   /// Валюта за выполнение работы
   final int currencyPerWork = 100;
 

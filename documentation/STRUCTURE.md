@@ -81,7 +81,6 @@ lib/
 - `decorationPriceRespect = 7888`
 - `decorationPriceHonor = 9888`
 - `decorationPriceAdoration = 15888`
-- `currencyPerOrder = 100` - валюта за выполнение заказа
 - `currencyPerWork = 100` - валюта за выполнение работы
 - `certificatePrice = 7888`
 
@@ -93,8 +92,14 @@ lib/
 - `hasOrder` - есть ли заказы во фракции
 - `hasWork` - есть ли работа во фракции
 - `hasCertificate` - есть ли сертификат во фракции
+- `orderCurrencyValues` - массив значений валюты за заказы (nullable, только для фракций с заказами)
 
-**Использование:** `FactionsList.allFactions` - получить все фракции, `FactionsList.createFactionFromTemplate(template)` - создать фракцию из шаблона
+**Использование:** 
+- `FactionsList.allFactions` - получить все фракции
+- `FactionsList.getTemplateByName(String name)` - получить шаблон фракции по имени
+- `FactionsList.createFactionFromTemplate(template)` - создать фракцию из шаблона
+
+**Примечание:** Для фракций с заказами в `orderCurrencyValues` хранится массив значений валюты за заказы, которые могут варьироваться в разные дни. При расчете времени до цели используется среднее арифметическое этих значений.
 
 #### ServiceLocator
 Централизованный контейнер для управления зависимостями. Инициализирует базу данных (версия 9) и создает экземпляры репозиториев. База данных создается при первом запуске через `FactionDao.createTable()`.
@@ -235,6 +240,7 @@ lib/
 - Оптимистичное обновление - показывает предыдущее значение при пересчете
 - Сообщения при отсутствии данных
 - Автоматический пересчет при изменении полей, влияющих на расчет (currency, hasOrder, hasWork, hasCertificate, украшения и т.д.)
+- Использует среднее арифметическое из `FactionTemplate.orderCurrencyValues` для расчета валюты за заказы
 
 **FactionSelectionDialog**
 Диалог выбора фракции из списка скрытых фракций. Отображает:

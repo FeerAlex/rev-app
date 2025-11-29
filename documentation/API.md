@@ -141,7 +141,7 @@ class CalculateTimeToGoal {
 2. Добавляется стоимость сертификата (если не куплен и `hasCertificate = true`)
 3. Вычитается текущая валюта
 4. Рассчитывается доход в день:
-   - Валюта за заказ (только если `hasOrder = true`) - `AppSettings.factions.currencyPerOrder`
+   - Валюта за заказ (только если `hasOrder = true`) - среднее арифметическое из `FactionTemplate.orderCurrencyValues` для данной фракции
    - Валюта за работу (только если `hasWork = true`) - `AppSettings.factions.currencyPerWork`
 5. Вычисляется время: `(нужная валюта) / (валюта в день)`
 
@@ -224,7 +224,6 @@ class FactionsSettings {
   final int decorationPriceRespect = 7888;
   final int decorationPriceHonor = 9888;
   final int decorationPriceAdoration = 15888;
-  final int currencyPerOrder = 100;  // Валюта за выполнение заказа
   final int currencyPerWork = 100;  // Валюта за выполнение работы
   final int certificatePrice = 7888;
 }
@@ -233,8 +232,8 @@ class FactionsSettings {
 **Использование:**
 ```dart
 AppSettings.factions.decorationPriceRespect
-AppSettings.factions.currencyPerOrder
 AppSettings.factions.currencyPerWork
+AppSettings.factions.certificatePrice
 ```
 
 **Примечание:** Все стоимости хранятся как готовые суммы (не используется умножение). Структура расширяема для будущих функций (карта, брактеат).
@@ -249,12 +248,14 @@ class FactionTemplate {
   final bool hasOrder;
   final bool hasWork;
   final bool hasCertificate;
+  final List<int>? orderCurrencyValues; // Массив значений валюты за заказы (только для фракций с заказами)
   
   const FactionTemplate({
     required this.name,
     required this.hasOrder,
     required this.hasWork,
     required this.hasCertificate,
+    this.orderCurrencyValues,
   });
 }
 ```
@@ -264,11 +265,16 @@ class FactionTemplate {
 // Получить все фракции
 FactionsList.allFactions
 
+// Получить шаблон фракции по имени
+FactionsList.getTemplateByName('Жители Сулана')
+
 // Создать фракцию из шаблона
 FactionsList.createFactionFromTemplate(template)
 ```
 
-**Примечание:** Каждая фракция в статическом списке имеет предустановленные значения `hasOrder`, `hasWork` и `hasCertificate`, которые определяют, какие активности доступны для этой фракции.
+**Примечание:** 
+- Каждая фракция в статическом списке имеет предустановленные значения `hasOrder`, `hasWork` и `hasCertificate`, которые определяют, какие активности доступны для этой фракции
+- Для фракций с заказами (`hasOrder = true`) в поле `orderCurrencyValues` хранится массив значений валюты за заказы, которые могут варьироваться в разные дни. При расчете времени до цели используется среднее арифметическое этих значений
 
 ## Presentation Layer API
 
