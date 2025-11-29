@@ -135,7 +135,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
-            child: const Text('Удалить'),
+            child: const Text('Скрыть'),
           ),
         ],
       ),

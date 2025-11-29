@@ -138,12 +138,17 @@ class CalculateTimeToGoal {
 
 **Логика расчета:**
 1. Рассчитывается общая стоимость всех некупленных украшений и улучшений (используются константы из `AppSettings.factions`)
-2. Добавляется стоимость сертификата (если не куплен)
+2. Добавляется стоимость сертификата (если не куплен и `hasCertificate = true`)
 3. Вычитается текущая валюта
-4. Рассчитывается доход в день (заказы + работа)
+4. Рассчитывается доход в день:
+   - Валюта за заказ (только если `hasOrder = true`) - `AppSettings.factions.currencyPerOrder`
+   - Валюта за работу (только если `hasWork = true`) - `AppSettings.factions.currencyPerWork`
 5. Вычисляется время: `(нужная валюта) / (валюта в день)`
 
-**Примечание:** Все стоимости хранятся как константы в `AppSettings.factions`, умножение не используется - применяются готовые суммы.
+**Примечание:** 
+- Все стоимости хранятся как константы в `AppSettings.factions`, умножение не используется - применяются готовые суммы
+- Расчет учитывает только те активности, которые указаны во фракции (`hasOrder`, `hasWork`)
+- Если `hasOrder = false` и `hasWork = false`, возвращается `null` (расчет невозможен)
 
 #### ResetDailyFlags
 
@@ -219,7 +224,8 @@ class FactionsSettings {
   final int decorationPriceRespect = 7888;
   final int decorationPriceHonor = 9888;
   final int decorationPriceAdoration = 15888;
-  final int currencyPerOrder = 100;
+  final int currencyPerOrder = 100;  // Валюта за выполнение заказа
+  final int currencyPerWork = 100;  // Валюта за выполнение работы
   final int certificatePrice = 7888;
 }
 ```
@@ -228,9 +234,41 @@ class FactionsSettings {
 ```dart
 AppSettings.factions.decorationPriceRespect
 AppSettings.factions.currencyPerOrder
+AppSettings.factions.currencyPerWork
 ```
 
 **Примечание:** Все стоимости хранятся как готовые суммы (не используется умножение). Структура расширяема для будущих функций (карта, брактеат).
+
+### FactionTemplate
+
+Шаблон фракции для статического списка всех доступных фракций игры.
+
+```dart
+class FactionTemplate {
+  final String name;
+  final bool hasOrder;
+  final bool hasWork;
+  final bool hasCertificate;
+  
+  const FactionTemplate({
+    required this.name,
+    required this.hasOrder,
+    required this.hasWork,
+    required this.hasCertificate,
+  });
+}
+```
+
+**Использование:**
+```dart
+// Получить все фракции
+FactionsList.allFactions
+
+// Создать фракцию из шаблона
+FactionsList.createFactionFromTemplate(template)
+```
+
+**Примечание:** Каждая фракция в статическом списке имеет предустановленные значения `hasOrder`, `hasWork` и `hasCertificate`, которые определяют, какие активности доступны для этой фракции.
 
 ## Presentation Layer API
 
@@ -252,7 +290,7 @@ class UpdateFactionEvent extends FactionEvent {
   final Faction faction;
 }
 
-// Удаление фракции
+// Скрытие фракции
 class DeleteFactionEvent extends FactionEvent {
   final int id;
 }
@@ -367,4 +405,10 @@ await ServiceLocator().init();
 // Получение репозитория
 final factionRepo = ServiceLocator().factionRepository;
 ```
+
+**Описание:**
+- Инициализирует SQLite базу данных версии 9
+- Создает таблицу `factions` при первом запуске через `FactionDao.createTable()`
+- Создает экземпляры репозиториев для работы с данными
+- Миграции базы данных не используются (приложение на стадии разработки)
 

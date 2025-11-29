@@ -18,7 +18,9 @@
 | `has_order` | INTEGER NOT NULL DEFAULT 0 | Есть ли заказы во фракции (0/1) |
 | `order_completed` | INTEGER NOT NULL DEFAULT 0 | Выполнен ли заказ (0/1) |
 | `work_currency` | INTEGER | Валюта с работы (NULL если работы нет) |
-| `has_certificate` | INTEGER NOT NULL DEFAULT 0 | Есть ли сертификат (0/1) |
+| `has_work` | INTEGER NOT NULL DEFAULT 0 | Есть ли работа во фракции (0/1) |
+| `work_completed` | INTEGER NOT NULL DEFAULT 0 | Выполнена ли работа (0/1) |
+| `has_certificate` | INTEGER NOT NULL DEFAULT 0 | Есть ли сертификат во фракции (0/1) |
 | `certificate_purchased` | INTEGER NOT NULL DEFAULT 0 | Куплен ли сертификат (0/1) |
 | `decoration_respect_purchased` | INTEGER NOT NULL DEFAULT 0 | Куплено украшение "Уважение" (0/1) |
 | `decoration_respect_upgraded` | INTEGER NOT NULL DEFAULT 0 | Улучшено украшение "Уважение" (0/1) |
@@ -35,7 +37,9 @@
 
 **Сортировка:** По умолчанию фракции сортируются по полю `display_order` (ASC), затем по `id` (ASC)
 
-**Примечание:** Настройки приложения (цены, валюты) хранятся как константы в коде (`lib/core/constants/app_settings.dart`), а не в базе данных.
+**Примечание:** 
+- Настройки приложения (цены, валюты) хранятся как константы в коде (`lib/core/constants/app_settings.dart`), а не в базе данных
+- Поля `has_order`, `has_work` и `has_certificate` определяются статическим списком фракций (`FactionTemplate`) и настраиваются для каждой фракции при создании
 
 ## SQL запросы создания таблиц
 
@@ -49,6 +53,8 @@ CREATE TABLE factions (
   has_order INTEGER NOT NULL DEFAULT 0,
   order_completed INTEGER NOT NULL DEFAULT 0,
   work_currency INTEGER,
+  has_work INTEGER NOT NULL DEFAULT 0,
+  work_completed INTEGER NOT NULL DEFAULT 0,
   has_certificate INTEGER NOT NULL DEFAULT 0,
   certificate_purchased INTEGER NOT NULL DEFAULT 0,
   decoration_respect_purchased INTEGER NOT NULL DEFAULT 0,
@@ -70,36 +76,13 @@ CREATE TABLE factions (
 
 Путь определяется автоматически через `getDatabasesPath()` из пакета `sqflite`.
 
-## Миграции
+## Версия базы данных
 
-Приложение поддерживает миграции базы данных через `onUpgrade` в `ServiceLocator`. При изменении версии базы данных выполняется автоматическое обновление схемы.
+**Текущая версия БД:** 9
 
-**Текущая версия БД:** 8
+База данных создается при первом запуске приложения через метод `FactionDao.createTable()`. Все колонки создаются сразу при создании таблицы.
 
-**Миграции:**
-- Версия 1 → 2: Добавлены колонки `has_order` в таблицу `factions` (по умолчанию 1)
-- Версия 2 → 3: 
-  - Миграция типов данных с REAL на INTEGER для всех полей валюты в таблице `factions`
-  - Изменение значения по умолчанию для `has_order` с 1 на 0
-- Версия 3 → 4: 
-  - Добавлена колонка `order` (INTEGER) в таблицу `factions` для сортировки фракций
-  - Для существующих записей устанавливается порядок на основе `id`
-  - Примечание: `order` - зарезервированное слово в SQLite, поэтому используется обратное экранирование в SQL-запросах
-- Версия 4 → 5:
-  - Переименована колонка `order` в `display_order` для избежания конфликта с зарезервированным словом SQLite
-  - Таблица пересоздается с новым именем колонки, данные копируются из старой таблицы
-- Версия 5 → 6:
-  - Переименована колонка `board_currency` в `work_currency`
-  - Таблица пересоздается с новым именем колонки, данные копируются из старой таблицы
-- Версия 6 → 7:
-  - Удалена колонка `reputation_level` из таблицы `factions`
-  - Таблица пересоздается без колонки, данные копируются из старой таблицы
-- Версия 7 → 8:
-  - Добавлена колонка `is_visible` (INTEGER NOT NULL DEFAULT 1) для управления видимостью фракций
-  - При миграции все существующие фракции получают `is_visible = 1`
-- Версия 6 → 7:
-  - Удалена колонка `reputation_level` из таблицы `factions`
-  - Таблица пересоздается без колонки, данные копируются из старой таблицы
+**Примечание:** Миграции базы данных не используются, так как приложение находится на стадии разработки и пользователей со старыми версиями БД нет.
 
 ## Резервное копирование
 

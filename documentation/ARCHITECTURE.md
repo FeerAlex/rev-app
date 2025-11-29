@@ -59,15 +59,17 @@
 
 #### Widgets (Виджеты)
 - `FactionCard` - карточка фракции в списке с отображением времени до цели
-- `TimeToGoalWidget` - компактный виджет отображения времени до цели
+- `TimeToGoalWidget` - компактный виджет отображения времени до цели (автоматически пересчитывается при изменении полей)
 - `FactionNameDisplay` - отображение названия фракции
 - `FactionCurrencyDisplay` - отображение валюты фракции (с возможностью редактирования)
-- `FactionActivitiesList` - список активностей фракции
-- `ActivityBadge` - бейдж активности
+- `FactionActivitiesList` - список активностей фракции (бейджи для заказов и работ)
+- `ActivityBadge` - бейдж активности (переиспользуемый компонент)
 - `WorkCurrencyBadge` - бейдж валюты с работы (с возможностью редактирования)
 - `CurrencyInputDialog` - диалог для ввода/редактирования валюты
-- `FactionActivitiesSection` - секция активностей и сертификата
-- `FactionDecorationsSection` - секция украшений
+- `FactionActivitiesBlock` - блок ежедневных активностей с галочками "Заказы" и "Работы"
+- `FactionCertificateBlock` - отдельный блок для управления сертификатом с галочкой "Сертификат"
+- `FactionDecorationsSection` - секция украшений с компактными карточками
+- `FactionSelectionDialog` - диалог выбора фракции из списка скрытых
 
 #### BLoC (State Management)
 - `FactionBloc` - управление состоянием фракций
@@ -82,7 +84,7 @@
 
 #### Constants
 - `AppSettings` - константы настроек приложения, организованные по функциональности (фракции, карта, брактеат)
-- `FactionsList` - статический список всех 13 фракций игры с предустановленными настройками (hasOrder, hasWork)
+- `FactionsList` - статический список всех 13 фракций игры с предустановленными настройками через `FactionTemplate` (hasOrder, hasWork, hasCertificate)
 
 #### Database
 - Настройка SQLite базы данных
