@@ -1,4 +1,6 @@
 import '../../domain/entities/faction.dart';
+import 'order_reward.dart';
+import 'reputation_level.dart';
 
 /// Статический список всех доступных фракций в игре
 class FactionsList {
@@ -6,15 +8,15 @@ class FactionsList {
 
   /// Фракции с заказами и работой (9 шт)
   static const List<FactionTemplate> factionsWithOrderAndWork = [
-    FactionTemplate(name: 'Жители Сулана', hasOrder: true, hasWork: true, hasCertificate: true, orderCurrencyValues: [176, 176]),
-    FactionTemplate(name: 'Фалмари', hasOrder: true, hasWork: true, hasCertificate: true, orderCurrencyValues: [90, 105]),
-    FactionTemplate(name: 'Грибной народ', hasOrder: true, hasWork: true, hasCertificate: true, orderCurrencyValues: [85, 80]),
-    FactionTemplate(name: 'Озёрная деревня', hasOrder: true, hasWork: true, hasCertificate: true, orderCurrencyValues: [60, 60]),
-    FactionTemplate(name: 'Медведи', hasOrder: true, hasWork: true, hasCertificate: true, orderCurrencyValues: [100, 100]),
-    FactionTemplate(name: 'Крылатые', hasOrder: true, hasWork: true, hasCertificate: true, orderCurrencyValues: [105, 125]),
-    FactionTemplate(name: 'Монастырь Сноу-Шу', hasOrder: true, hasWork: true, hasCertificate: true, orderCurrencyValues: [114, 144]),
-    FactionTemplate(name: 'Северные волки', hasOrder: true, hasWork: true, hasCertificate: true, orderCurrencyValues: [120, 120]),
-    FactionTemplate(name: 'Императорская академия', hasOrder: true, hasWork: true, hasCertificate: true, orderCurrencyValues: [66, 66]),
+    FactionTemplate(name: 'Жители Сулана', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 176, exp: 1100), OrderReward(currency: 176, exp: 1100)]),
+    FactionTemplate(name: 'Фалмари', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 90, exp: 900), OrderReward(currency: 105, exp: 1050)]),
+    FactionTemplate(name: 'Грибной народ', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 85, exp: 850), OrderReward(currency: 80, exp: 800)]),
+    FactionTemplate(name: 'Озёрная деревня', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 60, exp: 600), OrderReward(currency: 60, exp: 600)]),
+    FactionTemplate(name: 'Медведи', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 100, exp: 1000), OrderReward(currency: 100, exp: 1000)]),
+    FactionTemplate(name: 'Крылатые', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 105, exp: 1050), OrderReward(currency: 125, exp: 1250)]),
+    FactionTemplate(name: 'Монастырь Сноу-Шу', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 114, exp: 900), OrderReward(currency: 144, exp: 900)]),
+    FactionTemplate(name: 'Северные волки', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 120, exp: 1200), OrderReward(currency: 120, exp: 1200)]),
+    FactionTemplate(name: 'Императорская академия', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 66, exp: 1100), OrderReward(currency: 66, exp: 1100)]),
   ];
 
   /// Фракции только с работой (4 шт)
@@ -60,6 +62,9 @@ class FactionsList {
       decorationAdorationUpgraded: false,
       isVisible: false, // По умолчанию скрыта
       displayOrder: 0,
+      currentReputationLevel: ReputationLevel.indifference,
+      currentLevelExp: 0,
+      targetReputationLevel: ReputationLevel.maximum,
     );
   }
 }
@@ -70,14 +75,14 @@ class FactionTemplate {
   final bool hasOrder;
   final bool hasWork;
   final bool hasCertificate;
-  final List<int>? orderCurrencyValues; // Массив значений валюты за заказы (только для фракций с заказами)
+  final List<OrderReward>? orderRewards; // Массив наград за заказы (валюта и опыт) (только для фракций с заказами)
 
   const FactionTemplate({
     required this.name,
     required this.hasOrder,
     required this.hasWork,
     required this.hasCertificate,
-    this.orderCurrencyValues,
+    this.orderRewards,
   });
 }
 

@@ -1,5 +1,6 @@
 import '../../domain/entities/faction.dart';
 import '../datasources/faction_dao.dart';
+import '../../core/constants/reputation_level.dart';
 
 class FactionModel {
   static Faction fromMap(Map<String, dynamic> map) {
@@ -29,6 +30,13 @@ class FactionModel {
           (map[FactionDao.columnDecorationAdorationUpgraded] as int) == 1,
       displayOrder: map[FactionDao.columnDisplayOrder] as int? ?? 0,
       isVisible: (map[FactionDao.columnIsVisible] as int? ?? 1) == 1,
+      currentReputationLevel: ReputationLevelExtension.fromValue(
+        map[FactionDao.columnCurrentReputationLevel] as int? ?? 0,
+      ),
+      currentLevelExp: map[FactionDao.columnCurrentLevelExp] as int? ?? 0,
+      targetReputationLevel: ReputationLevelExtension.fromValue(
+        map[FactionDao.columnTargetReputationLevel] as int? ?? 6,
+      ),
     );
   }
 
@@ -56,6 +64,9 @@ class FactionModel {
           faction.decorationAdorationUpgraded ? 1 : 0,
       FactionDao.columnDisplayOrder: faction.displayOrder,
       FactionDao.columnIsVisible: faction.isVisible ? 1 : 0,
+      FactionDao.columnCurrentReputationLevel: faction.currentReputationLevel.value,
+      FactionDao.columnCurrentLevelExp: faction.currentLevelExp,
+      FactionDao.columnTargetReputationLevel: faction.targetReputationLevel.value,
     };
 
     if (faction.id != null) {

@@ -7,6 +7,10 @@ import '../bloc/faction/faction_event.dart';
 import '../widgets/faction_activities_block.dart';
 import '../widgets/faction_certificate_block.dart';
 import '../widgets/faction_decorations_section.dart';
+import '../widgets/faction_reputation_block.dart';
+import '../../../core/constants/reputation_level.dart';
+import '../../../domain/usecases/calculate_time_to_reputation_goal.dart';
+import '../../../core/utils/time_formatter.dart';
 
 class FactionDetailPage extends StatefulWidget {
   final Faction? faction;
@@ -33,6 +37,9 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
   late bool _decorationHonorUpgraded;
   late bool _decorationAdorationPurchased;
   late bool _decorationAdorationUpgraded;
+  late ReputationLevel _currentReputationLevel;
+  late int _currentLevelExp;
+  late ReputationLevel _targetReputationLevel;
 
   @override
   void initState() {
@@ -52,6 +59,9 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
         faction?.decorationAdorationPurchased ?? false;
     _decorationAdorationUpgraded =
         faction?.decorationAdorationUpgraded ?? false;
+    _currentReputationLevel = faction?.currentReputationLevel ?? ReputationLevel.indifference;
+    _currentLevelExp = faction?.currentLevelExp ?? 0;
+    _targetReputationLevel = faction?.targetReputationLevel ?? ReputationLevel.maximum;
   }
 
   @override
@@ -84,6 +94,9 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
       decorationAdorationUpgraded: _decorationAdorationUpgraded,
       displayOrder: widget.faction!.displayOrder,
       isVisible: widget.faction!.isVisible,
+      currentReputationLevel: _currentReputationLevel,
+      currentLevelExp: _currentLevelExp,
+      targetReputationLevel: _targetReputationLevel,
     );
 
     context.read<FactionBloc>().add(UpdateFactionEvent(faction));
@@ -168,6 +181,68 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 24,
           children: [
+            FactionReputationBlock(
+              faction: widget.faction!,
+              currentReputationLevel: _currentReputationLevel,
+              currentLevelExp: _currentLevelExp,
+              targetReputationLevel: _targetReputationLevel,
+              onCurrentLevelChanged: (value) {
+                setState(() {
+                  _currentReputationLevel = value;
+                });
+              },
+              onLevelExpChanged: (value) {
+                setState(() {
+                  _currentLevelExp = value;
+                });
+              },
+              onTargetLevelChanged: (value) {
+                setState(() {
+                  _targetReputationLevel = value;
+                });
+              },
+            ),
+            Builder(
+              builder: (context) {
+                final calculateTime = CalculateTimeToReputationGoal();
+                final timeToGoal = calculateTime(
+                  widget.faction!.copyWith(
+                    currentReputationLevel: _currentReputationLevel,
+                    currentLevelExp: _currentLevelExp,
+                    targetReputationLevel: _targetReputationLevel,
+                  ),
+                );
+                if (timeToGoal == null) {
+                  return const SizedBox.shrink();
+                }
+                return Card(
+                  margin: EdgeInsets.zero,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Время до цели:',
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          timeToGoal == Duration.zero
+                              ? 'Цель достигнута'
+                              : TimeFormatter.formatDuration(timeToGoal),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: timeToGoal == Duration.zero
+                                ? Colors.green
+                                : Colors.amber[300],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
             FactionActivitiesBlock(
               hasOrder: _hasOrder,
               hasWork: _hasWork,

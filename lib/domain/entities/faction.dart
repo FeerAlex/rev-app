@@ -1,3 +1,5 @@
+import '../../core/constants/reputation_level.dart';
+
 class Faction {
   final int? id;
   final String name;
@@ -17,6 +19,9 @@ class Faction {
   final bool decorationAdorationUpgraded;
   final int displayOrder; // порядок отображения
   final bool isVisible; // видимость фракции в списке
+  final ReputationLevel currentReputationLevel; // текущий уровень отношения
+  final int currentLevelExp; // опыт на текущем уровне (от 0 до требуемого для уровня)
+  final ReputationLevel targetReputationLevel; // целевой уровень отношения
 
   const Faction({
     this.id,
@@ -37,6 +42,9 @@ class Faction {
     required this.decorationAdorationUpgraded,
     this.displayOrder = 0,
     this.isVisible = true,
+    this.currentReputationLevel = ReputationLevel.indifference,
+    this.currentLevelExp = 0,
+    this.targetReputationLevel = ReputationLevel.maximum,
   });
 
   Faction copyWith({
@@ -58,6 +66,9 @@ class Faction {
     bool? decorationAdorationUpgraded,
     int? displayOrder,
     bool? isVisible,
+    ReputationLevel? currentReputationLevel,
+    int? currentLevelExp,
+    ReputationLevel? targetReputationLevel,
   }) {
     return Faction(
       id: id ?? this.id,
@@ -84,6 +95,9 @@ class Faction {
           decorationAdorationUpgraded ?? this.decorationAdorationUpgraded,
       displayOrder: displayOrder ?? this.displayOrder,
       isVisible: isVisible ?? this.isVisible,
+      currentReputationLevel: currentReputationLevel ?? this.currentReputationLevel,
+      currentLevelExp: currentLevelExp ?? this.currentLevelExp,
+      targetReputationLevel: targetReputationLevel ?? this.targetReputationLevel,
     );
   }
 }

@@ -26,6 +26,9 @@ class FactionDao {
       'decoration_adoration_upgraded';
   static const String columnDisplayOrder = 'display_order';
   static const String columnIsVisible = 'is_visible';
+  static const String columnCurrentReputationLevel = 'current_reputation_level';
+  static const String columnCurrentLevelExp = 'current_level_exp';
+  static const String columnTargetReputationLevel = 'target_reputation_level';
 
   final Database _db;
 
@@ -51,7 +54,10 @@ class FactionDao {
         $columnDecorationAdorationPurchased INTEGER NOT NULL DEFAULT 0,
         $columnDecorationAdorationUpgraded INTEGER NOT NULL DEFAULT 0,
         $columnDisplayOrder INTEGER NOT NULL DEFAULT 0,
-        $columnIsVisible INTEGER NOT NULL DEFAULT 1
+        $columnIsVisible INTEGER NOT NULL DEFAULT 1,
+        $columnCurrentReputationLevel INTEGER NOT NULL DEFAULT 0,
+        $columnCurrentLevelExp INTEGER NOT NULL DEFAULT 0,
+        $columnTargetReputationLevel INTEGER NOT NULL DEFAULT 6
       )
     ''');
   }

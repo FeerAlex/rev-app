@@ -4,6 +4,7 @@ import 'faction_name_display.dart';
 import 'faction_currency_display.dart';
 import 'faction_activities_list.dart';
 import 'time_to_goal_widget.dart';
+import 'reputation_progress_bar.dart';
 
 class FactionCard extends StatelessWidget {
   final Faction faction;
@@ -12,6 +13,7 @@ class FactionCard extends StatelessWidget {
   final VoidCallback? onWorkToggle;
   final VoidCallback? onWorkCurrencyTap;
   final VoidCallback? onCurrencyTap;
+  final VoidCallback? onExpTap;
 
   const FactionCard({
     super.key,
@@ -21,12 +23,11 @@ class FactionCard extends StatelessWidget {
     this.onWorkToggle,
     this.onWorkCurrencyTap,
     this.onCurrencyTap,
+    this.onExpTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).colorScheme.primary;
-    
     return Card(
       margin: EdgeInsets.zero,
       child: InkWell(
@@ -36,19 +37,16 @@ class FactionCard extends StatelessWidget {
           clipBehavior: Clip.hardEdge,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border(
-              left: BorderSide(
-                color: primaryColor,
-                width: 4,
-              ),
-            ),
           ),
-          padding: const EdgeInsets.only(top: 8, left: 10, right: 10, bottom: 14),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
+              Padding(
+                padding: const EdgeInsets.only(top: 8, left: 10, right: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -61,7 +59,7 @@ class FactionCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,8 +82,13 @@ class FactionCard extends StatelessWidget {
                         TimeToGoalWidget(faction: faction),
                       ],
                     ),
+                    const SizedBox(height: 12),
                   ],
                 ),
+              ),
+              GestureDetector(
+                onTap: onExpTap,
+                child: ReputationProgressBar(faction: faction),
               ),
             ],
           ),

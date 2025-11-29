@@ -141,7 +141,7 @@ class CalculateTimeToGoal {
 2. Добавляется стоимость сертификата (если не куплен и `hasCertificate = true`)
 3. Вычитается текущая валюта
 4. Рассчитывается доход в день:
-   - Валюта за заказ (только если `hasOrder = true`) - среднее арифметическое из `FactionTemplate.orderCurrencyValues` для данной фракции
+   - Валюта за заказ (только если `hasOrder = true`) - среднее арифметическое валюты из `FactionTemplate.orderRewards` для данной фракции
    - Валюта за работу (только если `hasWork = true`) - `AppSettings.factions.currencyPerWork`
 5. Вычисляется время: `(нужная валюта) / (валюта в день)`
 
@@ -149,6 +149,36 @@ class CalculateTimeToGoal {
 - Все стоимости хранятся как константы в `AppSettings.factions`, умножение не используется - применяются готовые суммы
 - Расчет учитывает только те активности, которые указаны во фракции (`hasOrder`, `hasWork`)
 - Если `hasOrder = false` и `hasWork = false`, возвращается `null` (расчет невозможен)
+
+#### CalculateTimeToReputationGoal
+
+Расчет времени до достижения целевого уровня отношения.
+
+```dart
+class CalculateTimeToReputationGoal {
+  const CalculateTimeToReputationGoal();
+  Duration? call(Faction faction);
+}
+```
+
+**Параметры:**
+- `faction` - фракция для расчета
+
+**Возвращает:**
+- `Duration` - время до достижения целевого уровня
+- `null` - если расчет невозможен (нет дохода опыта в день)
+- `Duration.zero` - если цель уже достигнута
+
+**Логика расчета:**
+1. Вычисляется общий опыт на основе `currentReputationLevel` и `currentLevelExp` через `ReputationHelper.getTotalExp`
+2. Вычисляется требуемый опыт для достижения `targetReputationLevel` через `ReputationHelper.getTotalExpForTargetLevel`
+3. Рассчитывается опыт в день:
+   - Опыт за заказ (только если `hasOrder = true`) - среднее арифметическое опыта из `FactionTemplate.orderRewards` для данной фракции
+4. Вычисляется время: `(нужный опыт) / (опыт в день)`
+
+**Примечание:** 
+- Опыт дается только за заказы, не за работу
+- Расчет учитывает только фракции с заказами (`hasOrder = true`)
 
 #### ResetDailyFlags
 
@@ -200,6 +230,9 @@ class Faction {
   final bool decorationAdorationUpgraded;
   final int displayOrder; // Порядок отображения (по умолчанию 0)
   final bool isVisible; // Видимость фракции в списке (по умолчанию true)
+  final ReputationLevel currentReputationLevel; // Текущий уровень отношения (по умолчанию indifference)
+  final int currentLevelExp; // Опыт на текущем уровне (от 0 до требуемого для уровня, по умолчанию 0)
+  final ReputationLevel targetReputationLevel; // Целевой уровень отношения (по умолчанию maximum)
   
   Faction copyWith({...});
 }
@@ -248,14 +281,14 @@ class FactionTemplate {
   final bool hasOrder;
   final bool hasWork;
   final bool hasCertificate;
-  final List<int>? orderCurrencyValues; // Массив значений валюты за заказы (только для фракций с заказами)
+  final List<OrderReward>? orderRewards; // Массив наград за заказы (валюта и опыт) (только для фракций с заказами)
   
   const FactionTemplate({
     required this.name,
     required this.hasOrder,
     required this.hasWork,
     required this.hasCertificate,
-    this.orderCurrencyValues,
+    this.orderRewards,
   });
 }
 ```
@@ -274,7 +307,7 @@ FactionsList.createFactionFromTemplate(template)
 
 **Примечание:** 
 - Каждая фракция в статическом списке имеет предустановленные значения `hasOrder`, `hasWork` и `hasCertificate`, которые определяют, какие активности доступны для этой фракции
-- Для фракций с заказами (`hasOrder = true`) в поле `orderCurrencyValues` хранится массив значений валюты за заказы, которые могут варьироваться в разные дни. При расчете времени до цели используется среднее арифметическое этих значений
+- Для фракций с заказами (`hasOrder = true`) в поле `orderRewards` хранится массив наград за заказы (валюта и опыт), которые могут варьироваться в разные дни. При расчете времени до цели используется среднее арифметическое валюты и опыта отдельно
 
 ## Presentation Layer API
 
@@ -333,6 +366,73 @@ class FactionError extends FactionState {
 ```
 
 ## Utils API
+
+### ReputationLevel
+
+Enum для уровней отношения к фракции.
+
+```dart
+enum ReputationLevel {
+  indifference, // Равнодушие
+  friendliness, // Дружелюбие
+  respect, // Уважение
+  honor, // Почтение
+  adoration, // Преклонение
+  deification, // Обожествление
+  maximum, // Максимальный
+}
+```
+
+**Методы:**
+- `displayName` - получить название уровня на русском языке
+- `value` - получить числовое значение уровня (для хранения в БД)
+- `fromValue(int value)` - создать ReputationLevel из числового значения
+
+### OrderReward
+
+Класс для хранения награды за выполнение заказа (валюта и опыт).
+
+```dart
+class OrderReward {
+  final int currency;
+  final int exp;
+  
+  const OrderReward({
+    required this.currency,
+    required this.exp,
+  });
+  
+  static int averageCurrency(List<OrderReward> rewards);
+  static int averageExp(List<OrderReward> rewards);
+}
+```
+
+**Методы:**
+- `averageCurrency` - вычислить среднее арифметическое валюты из списка наград
+- `averageExp` - вычислить среднее арифметическое опыта из списка наград
+
+### ReputationHelper
+
+Утилита для работы с уровнями отношения и опытом.
+
+```dart
+class ReputationHelper {
+  static ReputationLevel getCurrentReputationLevel(int totalExp, String factionName);
+  static int getExpInCurrentLevel(int totalExp, ReputationLevel currentLevel, String factionName);
+  static int getRequiredExpForCurrentLevel(ReputationLevel currentLevel, String factionName);
+  static int getTotalExpForTargetLevel(ReputationLevel targetLevel, String factionName);
+  static int getTotalExp(ReputationLevel currentLevel, int currentLevelExp, String factionName);
+  static int getNeededExp(ReputationLevel currentLevel, int currentLevelExp, ReputationLevel targetLevel, String factionName);
+}
+```
+
+**Методы:**
+- `getCurrentReputationLevel` - вычислить текущий уровень на основе общего опыта (для обратной совместимости)
+- `getExpInCurrentLevel` - получить опыт в текущем уровне (от 0 до требуемого для уровня)
+- `getRequiredExpForCurrentLevel` - получить требуемый опыт для текущего уровня
+- `getTotalExpForTargetLevel` - получить общий опыт, необходимый для достижения целевого уровня
+- `getTotalExp` - вычислить общий опыт на основе текущего уровня и опыта на уровне
+- `getNeededExp` - вычислить, сколько опыта нужно для достижения целевого уровня
 
 ### TimeFormatter
 

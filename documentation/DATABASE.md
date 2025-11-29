@@ -30,6 +30,9 @@
 | `decoration_adoration_upgraded` | INTEGER NOT NULL DEFAULT 0 | Улучшено украшение "Преклонение" (0/1) |
 | `display_order` | INTEGER NOT NULL DEFAULT 0 | Порядок отображения фракций |
 | `is_visible` | INTEGER NOT NULL DEFAULT 1 | Видимость фракции в списке (0/1) |
+| `current_reputation_level` | INTEGER NOT NULL DEFAULT 0 | Текущий уровень отношения (0-6, соответствует ReputationLevel) |
+| `current_level_exp` | INTEGER NOT NULL DEFAULT 0 | Опыт на текущем уровне (от 0 до требуемого для уровня) |
+| `target_reputation_level` | INTEGER NOT NULL DEFAULT 6 | Целевой уровень отношения (0-6, соответствует ReputationLevel, по умолчанию 6 = Maximum) |
 
 **Индексы:** нет
 
@@ -64,7 +67,10 @@ CREATE TABLE factions (
   decoration_adoration_purchased INTEGER NOT NULL DEFAULT 0,
   decoration_adoration_upgraded INTEGER NOT NULL DEFAULT 0,
   display_order INTEGER NOT NULL DEFAULT 0,
-  is_visible INTEGER NOT NULL DEFAULT 1
+  is_visible INTEGER NOT NULL DEFAULT 1,
+  current_reputation_level INTEGER NOT NULL DEFAULT 0,
+  current_level_exp INTEGER NOT NULL DEFAULT 0,
+  target_reputation_level INTEGER NOT NULL DEFAULT 6
 )
 ```
 
@@ -78,7 +84,7 @@ CREATE TABLE factions (
 
 ## Версия базы данных
 
-**Текущая версия БД:** 9
+**Текущая версия БД:** 11
 
 База данных создается при первом запуске приложения через метод `FactionDao.createTable()`. Все колонки создаются сразу при создании таблицы.
 

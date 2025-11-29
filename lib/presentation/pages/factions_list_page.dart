@@ -180,6 +180,14 @@ class FactionsListPage extends StatelessWidget {
                           bloc.add(UpdateFactionEvent(updatedFaction));
                         }
                       },
+                      onExpTap: () {
+                        // Открываем страницу деталей для редактирования репутации
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => FactionDetailPage(faction: faction),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 );

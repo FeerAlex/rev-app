@@ -25,7 +25,8 @@
 - `UpdateFaction` - обновление фракции
 - `DeleteFaction` - скрытие фракции (устанавливает `isVisible = false`)
 - `ShowFaction` - показ скрытой фракции (устанавливает `isVisible = true`)
-- `CalculateTimeToGoal` - расчет времени до достижения цели (использует константы из AppSettings и среднее арифметическое из FactionTemplate.orderCurrencyValues для валюты за заказы)
+- `CalculateTimeToGoal` - расчет времени до достижения цели по валюте (использует константы из AppSettings и среднее арифметическое валюты из FactionTemplate.orderRewards для заказов)
+- `CalculateTimeToReputationGoal` - расчет времени до достижения целевого уровня отношения (использует среднее арифметическое опыта из FactionTemplate.orderRewards для заказов)
 - `ResetDailyFlags` - сброс ежедневных отметок
 - `ReorderFactions` - изменение порядка фракций
 
@@ -84,7 +85,10 @@
 
 #### Constants
 - `AppSettings` - константы настроек приложения, организованные по функциональности (фракции, карта, брактеат)
-- `FactionsList` - статический список всех 13 фракций игры с предустановленными настройками через `FactionTemplate` (hasOrder, hasWork, hasCertificate)
+- `FactionsList` - статический список всех 13 фракций игры с предустановленными настройками через `FactionTemplate` (hasOrder, hasWork, hasCertificate, orderRewards)
+- `ReputationLevel` - enum уровней отношения (indifference, friendliness, respect, honor, adoration, deification, maximum)
+- `OrderReward` - класс для хранения награды за заказ (валюта и опыт)
+- `ReputationExp` - константы опыта, требуемого для достижения уровней отношения
 
 #### Database
 - Настройка SQLite базы данных
@@ -95,6 +99,7 @@
 #### Utils
 - `TimeFormatter` - форматирование времени в компактный формат (д/ч/м)
 - `DailyResetHelper` - помощник для ежедневного сброса отметок
+- `ReputationHelper` - утилита для работы с уровнями отношения и опытом (вычисление общего опыта, нужного опыта и т.д.)
 
 #### Theme
 - `AppTheme` - темная тема приложения в стиле игры Revelation Online

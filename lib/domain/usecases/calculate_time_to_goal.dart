@@ -2,6 +2,7 @@ import 'dart:math';
 import '../entities/faction.dart';
 import '../../core/constants/app_settings.dart';
 import '../../core/constants/factions_list.dart';
+import '../../core/constants/order_reward.dart';
 
 class CalculateTimeToGoal {
   const CalculateTimeToGoal();
@@ -55,10 +56,9 @@ class CalculateTimeToGoal {
     // Если hasOrder = false, валюту с заказов не учитываем
     if (faction.hasOrder) {
       final template = FactionsList.getTemplateByName(faction.name);
-      if (template != null && template.orderCurrencyValues != null && template.orderCurrencyValues!.isNotEmpty) {
-        // Вычисляем среднее арифметическое из массива значений валюты за заказы
-        final averageOrderCurrency = template.orderCurrencyValues!.reduce((a, b) => a + b) / template.orderCurrencyValues!.length;
-        currencyPerDay += averageOrderCurrency.round();
+      if (template != null && template.orderRewards != null && template.orderRewards!.isNotEmpty) {
+        // Вычисляем среднее арифметическое валюты из массива наград за заказы
+        currencyPerDay += OrderReward.averageCurrency(template.orderRewards!);
       } else {
         // Fallback значение, если шаблон не найден или массив пустой
         currencyPerDay += 100;
