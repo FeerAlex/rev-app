@@ -8,6 +8,8 @@ import 'domain/usecases/get_all_factions.dart';
 import 'domain/usecases/reset_daily_flags.dart';
 import 'domain/usecases/update_faction.dart';
 import 'domain/usecases/reorder_factions.dart';
+import 'domain/usecases/initialize_factions.dart';
+import 'domain/usecases/show_faction.dart';
 import 'presentation/bloc/faction/faction_bloc.dart';
 import 'presentation/bloc/faction/faction_event.dart';
 import 'presentation/pages/main_page.dart';
@@ -22,6 +24,11 @@ void main() async {
   
   // Инициализация ServiceLocator
   await ServiceLocator().init();
+  
+  // Инициализация фракций (создание всех 13 фракций, если их еще нет)
+  final serviceLocator = ServiceLocator();
+  final initializeFactions = InitializeFactions(serviceLocator.factionRepository);
+  await initializeFactions();
   
   // Проверка и сброс ежедневных отметок
   await DailyResetHelper.checkAndReset();
@@ -44,6 +51,8 @@ class MyApp extends StatelessWidget {
         DeleteFaction(serviceLocator.factionRepository),
         ResetDailyFlags(serviceLocator.factionRepository),
         ReorderFactions(serviceLocator.factionRepository),
+        ShowFaction(serviceLocator.factionRepository),
+        serviceLocator.factionRepository,
       )..add(const LoadFactions()),
       child: MaterialApp(
         title: 'Rev App',

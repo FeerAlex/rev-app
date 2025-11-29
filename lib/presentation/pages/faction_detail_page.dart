@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/faction.dart';
 import '../bloc/faction/faction_bloc.dart';
 import '../bloc/faction/faction_event.dart';
-import '../widgets/faction_basic_info_section.dart';
 import '../widgets/faction_activities_section.dart';
 import '../widgets/faction_decorations_section.dart';
 
@@ -20,7 +19,6 @@ class FactionDetailPage extends StatefulWidget {
 }
 
 class _FactionDetailPageState extends State<FactionDetailPage> {
-  late TextEditingController _nameController;
   late bool _hasOrder;
   late bool _orderCompleted;
   late bool _hasCertificate;
@@ -36,7 +34,6 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
   void initState() {
     super.initState();
     final faction = widget.faction;
-    _nameController = TextEditingController(text: faction?.name ?? '');
     _hasOrder = faction?.hasOrder ?? false;
     _orderCompleted = faction?.orderCompleted ?? false;
     _hasCertificate = faction?.hasCertificate ?? false;
@@ -53,26 +50,22 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     super.dispose();
   }
 
   void _saveFaction() {
-    final name = _nameController.text.trim();
-    if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Введите название фракции')),
-      );
+    if (widget.faction == null) {
+      // Не должно быть возможности создать новую фракцию
       return;
     }
 
     final faction = Faction(
-      id: widget.faction?.id,
-      name: name,
-      currency: widget.faction?.currency ?? 0,
+      id: widget.faction!.id,
+      name: widget.faction!.name,
+      currency: widget.faction!.currency,
       hasOrder: _hasOrder,
       orderCompleted: _orderCompleted,
-      workCurrency: widget.faction?.workCurrency,
+      workCurrency: widget.faction!.workCurrency,
       hasCertificate: _hasCertificate,
       certificatePurchased: _certificatePurchased,
       decorationRespectPurchased: _decorationRespectPurchased,
@@ -81,15 +74,11 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
       decorationHonorUpgraded: _decorationHonorUpgraded,
       decorationAdorationPurchased: _decorationAdorationPurchased,
       decorationAdorationUpgraded: _decorationAdorationUpgraded,
-      displayOrder: widget.faction?.displayOrder ?? 0,
+      displayOrder: widget.faction!.displayOrder,
+      isVisible: widget.faction!.isVisible,
     );
 
-    if (widget.faction == null) {
-      context.read<FactionBloc>().add(AddFactionEvent(faction));
-    } else {
-      context.read<FactionBloc>().add(UpdateFactionEvent(faction));
-    }
-
+    context.read<FactionBloc>().add(UpdateFactionEvent(faction));
     Navigator.of(context).pop();
   }
 
@@ -99,7 +88,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Удалить фракцию?'),
+        title: const Text('Скрыть фракцию?'),
         content: const Text('Это действие нельзя отменить.'),
         actions: [
           TextButton(
@@ -126,17 +115,22 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isNew = widget.faction == null;
+    if (widget.faction == null) {
+      // Не должно быть возможности открыть страницу без фракции
+      return Scaffold(
+        appBar: AppBar(title: const Text('Ошибка')),
+        body: const Center(child: Text('Фракция не выбрана')),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isNew ? 'Новая фракция' : widget.faction!.name),
+        title: Text(widget.faction!.name),
         actions: [
-          if (!isNew)
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: _deleteFaction,
-            ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: _deleteFaction,
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -145,9 +139,6 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 24,
           children: [
-            FactionBasicInfoSection(
-              nameController: _nameController,
-            ),
             FactionActivitiesSection(
               hasOrder: _hasOrder,
               hasCertificate: _hasCertificate,

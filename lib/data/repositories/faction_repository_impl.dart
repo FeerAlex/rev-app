@@ -15,6 +15,18 @@ class FactionRepositoryImpl implements FactionRepository {
   }
 
   @override
+  Future<List<Faction>> getAllFactionsIncludingHidden() async {
+    final maps = await _dao.getAllFactionsIncludingHidden();
+    return maps.map((map) => FactionModel.fromMap(map)).toList();
+  }
+
+  @override
+  Future<List<Faction>> getHiddenFactions() async {
+    final maps = await _dao.getHiddenFactions();
+    return maps.map((map) => FactionModel.fromMap(map)).toList();
+  }
+
+  @override
   Future<Faction?> getFactionById(int id) async {
     final map = await _dao.getFactionById(id);
     return map != null ? FactionModel.fromMap(map) : null;
@@ -23,7 +35,7 @@ class FactionRepositoryImpl implements FactionRepository {
   @override
   Future<int> addFaction(Faction faction) async {
     // Получаем максимальный order для установки новой фракции в конец списка
-    final allFactions = await getAllFactions();
+    final allFactions = await getAllFactionsIncludingHidden();
     final maxOrder = allFactions.isEmpty 
         ? 0 
         : allFactions.map((f) => f.displayOrder).reduce((a, b) => a > b ? a : b);
@@ -39,7 +51,11 @@ class FactionRepositoryImpl implements FactionRepository {
 
   @override
   Future<void> deleteFaction(int id) async {
-    await _dao.deleteFaction(id);
+    // Вместо удаления скрываем фракцию
+    final faction = await getFactionById(id);
+    if (faction != null) {
+      await updateFaction(faction.copyWith(isVisible: false));
+    }
   }
 
   @override

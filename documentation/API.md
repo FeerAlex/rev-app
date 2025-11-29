@@ -22,11 +22,13 @@ abstract class FactionRepository {
 
 **Методы:**
 
-- `getAllFactions()` - возвращает список всех фракций, отсортированный по полю `displayOrder`
+- `getAllFactions()` - возвращает список видимых фракций (`isVisible = true`), отсортированный по полю `displayOrder`
+- `getAllFactionsIncludingHidden()` - возвращает все фракции, включая скрытые
+- `getHiddenFactions()` - возвращает только скрытые фракции (`isVisible = false`)
 - `getFactionById(int id)` - возвращает фракцию по ID или null
 - `addFaction(Faction faction)` - добавляет новую фракцию, возвращает ID
 - `updateFaction(Faction faction)` - обновляет существующую фракцию
-- `deleteFaction(int id)` - удаляет фракцию по ID
+- `deleteFaction(int id)` - скрывает фракцию (устанавливает `isVisible = false`)
 - `resetDailyFlags()` - сбрасывает отметки заказов для всех фракций
 - `reorderFactions(List<int> factionIds)` - изменяет порядок фракций согласно переданному списку ID
 
@@ -75,7 +77,7 @@ class UpdateFaction {
 
 #### DeleteFaction
 
-Удаление фракции.
+Скрытие фракции (устанавливает `isVisible = false`).
 
 ```dart
 class DeleteFaction {
@@ -84,7 +86,36 @@ class DeleteFaction {
 ```
 
 **Параметры:**
-- `id` - ID фракции для удаления
+- `id` - ID фракции для скрытия
+
+**Описание:**
+Фракция не удаляется из базы данных, а только скрывается из списка. Её можно снова показать через `ShowFaction`.
+
+#### ShowFaction
+
+Показ скрытой фракции (устанавливает `isVisible = true`).
+
+```dart
+class ShowFaction {
+  Future<void> call(Faction faction);
+}
+```
+
+**Параметры:**
+- `faction` - фракция для показа
+
+#### InitializeFactions
+
+Инициализация всех фракций из статического списка.
+
+```dart
+class InitializeFactions {
+  Future<void> call();
+}
+```
+
+**Описание:**
+Создает все 13 фракций из статического списка в базе данных, если их еще нет. Все фракции создаются с `isVisible = false`. Вызывается при первом запуске приложения.
 
 #### CalculateTimeToGoal
 
@@ -163,6 +194,7 @@ class Faction {
   final bool decorationAdorationPurchased;
   final bool decorationAdorationUpgraded;
   final int displayOrder; // Порядок отображения (по умолчанию 0)
+  final bool isVisible; // Видимость фракции в списке (по умолчанию true)
   
   Faction copyWith({...});
 }

@@ -18,7 +18,7 @@ class ServiceLocator {
     
     _database = await openDatabase(
       path,
-      version: 7,
+      version: 8,
       onCreate: (db, version) async {
         await FactionDao.createTable(db);
       },
@@ -233,7 +233,8 @@ class ServiceLocator {
               ${FactionDao.columnDecorationHonorUpgraded} INTEGER NOT NULL DEFAULT 0,
               ${FactionDao.columnDecorationAdorationPurchased} INTEGER NOT NULL DEFAULT 0,
               ${FactionDao.columnDecorationAdorationUpgraded} INTEGER NOT NULL DEFAULT 0,
-              ${FactionDao.columnDisplayOrder} INTEGER NOT NULL DEFAULT 0
+              ${FactionDao.columnDisplayOrder} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnIsVisible} INTEGER NOT NULL DEFAULT 1
             )
           ''');
           
@@ -254,7 +255,8 @@ class ServiceLocator {
               ${FactionDao.columnDecorationHonorUpgraded},
               ${FactionDao.columnDecorationAdorationPurchased},
               ${FactionDao.columnDecorationAdorationUpgraded},
-              ${FactionDao.columnDisplayOrder}
+              ${FactionDao.columnDisplayOrder},
+              ${FactionDao.columnIsVisible}
             )
             SELECT 
               ${FactionDao.columnId},
@@ -271,7 +273,8 @@ class ServiceLocator {
               ${FactionDao.columnDecorationHonorUpgraded},
               ${FactionDao.columnDecorationAdorationPurchased},
               ${FactionDao.columnDecorationAdorationUpgraded},
-              ${FactionDao.columnDisplayOrder}
+              ${FactionDao.columnDisplayOrder},
+              1
             FROM ${FactionDao.tableName}
           ''');
           
@@ -301,7 +304,8 @@ class ServiceLocator {
               ${FactionDao.columnDecorationHonorUpgraded} INTEGER NOT NULL DEFAULT 0,
               ${FactionDao.columnDecorationAdorationPurchased} INTEGER NOT NULL DEFAULT 0,
               ${FactionDao.columnDecorationAdorationUpgraded} INTEGER NOT NULL DEFAULT 0,
-              ${FactionDao.columnDisplayOrder} INTEGER NOT NULL DEFAULT 0
+              ${FactionDao.columnDisplayOrder} INTEGER NOT NULL DEFAULT 0,
+              ${FactionDao.columnIsVisible} INTEGER NOT NULL DEFAULT 1
             )
           ''');
           
@@ -322,7 +326,8 @@ class ServiceLocator {
               ${FactionDao.columnDecorationHonorUpgraded},
               ${FactionDao.columnDecorationAdorationPurchased},
               ${FactionDao.columnDecorationAdorationUpgraded},
-              ${FactionDao.columnDisplayOrder}
+              ${FactionDao.columnDisplayOrder},
+              ${FactionDao.columnIsVisible}
             )
             SELECT 
               ${FactionDao.columnId},
@@ -339,7 +344,8 @@ class ServiceLocator {
               ${FactionDao.columnDecorationHonorUpgraded},
               ${FactionDao.columnDecorationAdorationPurchased},
               ${FactionDao.columnDecorationAdorationUpgraded},
-              ${FactionDao.columnDisplayOrder}
+              ${FactionDao.columnDisplayOrder},
+              1
             FROM ${FactionDao.tableName}
           ''');
           
@@ -348,6 +354,14 @@ class ServiceLocator {
           
           // Переименовываем новую таблицу
           await db.execute('ALTER TABLE ${FactionDao.tableName}_new RENAME TO ${FactionDao.tableName}');
+        }
+        
+        if (oldVersion < 8) {
+          // Добавление колонки is_visible
+          await db.execute('''
+            ALTER TABLE ${FactionDao.tableName} 
+            ADD COLUMN ${FactionDao.columnIsVisible} INTEGER NOT NULL DEFAULT 1
+          ''');
         }
       },
     );

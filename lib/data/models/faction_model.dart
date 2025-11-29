@@ -26,6 +26,7 @@ class FactionModel {
       decorationAdorationUpgraded:
           (map[FactionDao.columnDecorationAdorationUpgraded] as int) == 1,
       displayOrder: map[FactionDao.columnDisplayOrder] as int? ?? 0,
+      isVisible: (map[FactionDao.columnIsVisible] as int? ?? 1) == 1,
     );
   }
 
@@ -50,6 +51,7 @@ class FactionModel {
       FactionDao.columnDecorationAdorationUpgraded:
           faction.decorationAdorationUpgraded ? 1 : 0,
       FactionDao.columnDisplayOrder: faction.displayOrder,
+      FactionDao.columnIsVisible: faction.isVisible ? 1 : 0,
     };
 
     if (faction.id != null) {

@@ -52,3 +52,12 @@ class ReorderFactionsEvent extends FactionEvent {
   List<Object?> get props => [factionIds];
 }
 
+class ShowFactionEvent extends FactionEvent {
+  final Faction faction;
+
+  const ShowFactionEvent(this.faction);
+
+  @override
+  List<Object?> get props => [faction];
+}
+

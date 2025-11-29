@@ -23,6 +23,7 @@ class FactionDao {
   static const String columnDecorationAdorationUpgraded =
       'decoration_adoration_upgraded';
   static const String columnDisplayOrder = 'display_order';
+  static const String columnIsVisible = 'is_visible';
 
   final Database _db;
 
@@ -45,13 +46,37 @@ class FactionDao {
         $columnDecorationHonorUpgraded INTEGER NOT NULL DEFAULT 0,
         $columnDecorationAdorationPurchased INTEGER NOT NULL DEFAULT 0,
         $columnDecorationAdorationUpgraded INTEGER NOT NULL DEFAULT 0,
-        $columnDisplayOrder INTEGER NOT NULL DEFAULT 0
+        $columnDisplayOrder INTEGER NOT NULL DEFAULT 0,
+        $columnIsVisible INTEGER NOT NULL DEFAULT 1
       )
     ''');
   }
 
   Future<List<Map<String, dynamic>>> getAllFactions() async {
-    return await _db.query(tableName, orderBy: '$columnDisplayOrder ASC, $columnId ASC');
+    return await _db.query(
+      tableName,
+      where: '$columnIsVisible = ?',
+      whereArgs: [1],
+      orderBy: '$columnDisplayOrder ASC, $columnId ASC',
+    );
+  }
+
+  /// Получить все фракции, включая скрытые
+  Future<List<Map<String, dynamic>>> getAllFactionsIncludingHidden() async {
+    return await _db.query(
+      tableName,
+      orderBy: '$columnDisplayOrder ASC, $columnId ASC',
+    );
+  }
+
+  /// Получить только скрытые фракции
+  Future<List<Map<String, dynamic>>> getHiddenFactions() async {
+    return await _db.query(
+      tableName,
+      where: '$columnIsVisible = ?',
+      whereArgs: [0],
+      orderBy: '$columnName ASC',
+    );
   }
 
   Future<Map<String, dynamic>?> getFactionById(int id) async {

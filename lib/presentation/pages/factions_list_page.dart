@@ -93,7 +93,7 @@ class FactionsListPage extends StatelessWidget {
                             contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
                             titlePadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
                             actionsPadding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                            title: const Text('Удалить?'),
+                            title: const Text('Скрыть?'),
                             content: Text(faction.name),
                             actions: [
                               TextButton(
@@ -105,7 +105,7 @@ class FactionsListPage extends StatelessWidget {
                               ),
                               TextButton(
                                 onPressed: () => Navigator.of(context).pop(true),
-                                child: const Text('Удалить'),
+                                child: const Text('Скрыть'),
                               ),
                             ],
                           );

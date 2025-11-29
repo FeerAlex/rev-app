@@ -27,6 +27,7 @@
 | `decoration_adoration_purchased` | INTEGER NOT NULL DEFAULT 0 | Куплено украшение "Преклонение" (0/1) |
 | `decoration_adoration_upgraded` | INTEGER NOT NULL DEFAULT 0 | Улучшено украшение "Преклонение" (0/1) |
 | `display_order` | INTEGER NOT NULL DEFAULT 0 | Порядок отображения фракций |
+| `is_visible` | INTEGER NOT NULL DEFAULT 1 | Видимость фракции в списке (0/1) |
 
 **Индексы:** нет
 
@@ -56,7 +57,8 @@ CREATE TABLE factions (
   decoration_honor_upgraded INTEGER NOT NULL DEFAULT 0,
   decoration_adoration_purchased INTEGER NOT NULL DEFAULT 0,
   decoration_adoration_upgraded INTEGER NOT NULL DEFAULT 0,
-  display_order INTEGER NOT NULL DEFAULT 0
+  display_order INTEGER NOT NULL DEFAULT 0,
+  is_visible INTEGER NOT NULL DEFAULT 1
 )
 ```
 
@@ -72,7 +74,7 @@ CREATE TABLE factions (
 
 Приложение поддерживает миграции базы данных через `onUpgrade` в `ServiceLocator`. При изменении версии базы данных выполняется автоматическое обновление схемы.
 
-**Текущая версия БД:** 7
+**Текущая версия БД:** 8
 
 **Миграции:**
 - Версия 1 → 2: Добавлены колонки `has_order` в таблицу `factions` (по умолчанию 1)
@@ -89,6 +91,12 @@ CREATE TABLE factions (
 - Версия 5 → 6:
   - Переименована колонка `board_currency` в `work_currency`
   - Таблица пересоздается с новым именем колонки, данные копируются из старой таблицы
+- Версия 6 → 7:
+  - Удалена колонка `reputation_level` из таблицы `factions`
+  - Таблица пересоздается без колонки, данные копируются из старой таблицы
+- Версия 7 → 8:
+  - Добавлена колонка `is_visible` (INTEGER NOT NULL DEFAULT 1) для управления видимостью фракций
+  - При миграции все существующие фракции получают `is_visible = 1`
 - Версия 6 → 7:
   - Удалена колонка `reputation_level` из таблицы `factions`
   - Таблица пересоздается без колонки, данные копируются из старой таблицы

@@ -14,6 +14,7 @@ class Faction {
   final bool decorationAdorationPurchased;
   final bool decorationAdorationUpgraded;
   final int displayOrder; // порядок отображения
+  final bool isVisible; // видимость фракции в списке
 
   const Faction({
     this.id,
@@ -31,6 +32,7 @@ class Faction {
     required this.decorationAdorationPurchased,
     required this.decorationAdorationUpgraded,
     this.displayOrder = 0,
+    this.isVisible = true,
   });
 
   Faction copyWith({
@@ -49,6 +51,7 @@ class Faction {
     bool? decorationAdorationPurchased,
     bool? decorationAdorationUpgraded,
     int? displayOrder,
+    bool? isVisible,
   }) {
     return Faction(
       id: id ?? this.id,
@@ -72,6 +75,7 @@ class Faction {
       decorationAdorationUpgraded:
           decorationAdorationUpgraded ?? this.decorationAdorationUpgraded,
       displayOrder: displayOrder ?? this.displayOrder,
+      isVisible: isVisible ?? this.isVisible,
     );
   }
 }

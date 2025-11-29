@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'factions_list_page.dart';
-import 'faction_detail_page.dart';
+import '../widgets/faction_selection_dialog.dart';
 
 class FactionsPage extends StatelessWidget {
   final GlobalKey<ScaffoldState>? scaffoldKey;
@@ -22,10 +22,9 @@ class FactionsPage extends StatelessWidget {
       body: const FactionsListPage(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const FactionDetailPage(),
-            ),
+          showDialog(
+            context: context,
+            builder: (context) => const FactionSelectionDialog(),
           );
         },
         child: const Icon(Icons.add),
