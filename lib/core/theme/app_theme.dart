@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/reputation_level.dart';
 
 class AppTheme {
   // Основные цвета из игры
@@ -10,38 +9,6 @@ class AppTheme {
   static const Color textSecondary = Color(0xFFB0B0B0);
   static const Color accentOrange = Color(0xFFFF6B35);
   static const Color accentBlue = Color(0xFF4A90E2);
-
-  // Цвета для уровней репутации (из скриншотов игры)
-  static Color getReputationColor(ReputationLevel level) {
-    switch (level) {
-      case ReputationLevel.indifference:
-        return const Color(0xFFA1887F); // Бледно-коричневый
-      case ReputationLevel.friendliness:
-        return const Color(0xFF388E3C); // Темно-зеленый
-      case ReputationLevel.respect:
-        return const Color(0xFF4CAF50); // Зеленый
-      case ReputationLevel.honor:
-        return const Color(0xFF26A69A); // Бирюзовый/светло-зеленый
-      case ReputationLevel.adoration:
-        return const Color(0xFF2196F3); // Синий
-      case ReputationLevel.deification:
-        return const Color(0xFF9C27B0); // Фиолетовый/пурпурный
-    }
-  }
-
-  // Градиенты для уровней репутации
-  static LinearGradient getReputationGradient(ReputationLevel level) {
-    final color = getReputationColor(level);
-    return LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [
-        color,
-        color.withValues(alpha: 0.7),
-        color.withValues(alpha: 0.5),
-      ],
-    );
-  }
 
   static ThemeData get darkTheme {
     return ThemeData(

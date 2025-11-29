@@ -151,7 +151,6 @@ class Faction {
   final int? id;
   final String name;
   final int currency;
-  final ReputationLevel reputationLevel;
   final bool hasOrder;
   final bool orderCompleted;
   final int? workCurrency;
@@ -200,37 +199,6 @@ AppSettings.factions.currencyPerOrder
 ```
 
 **Примечание:** Все стоимости хранятся как готовые суммы (не используется умножение). Структура расширяема для будущих функций (карта, брактеат).
-
-### ReputationLevel
-
-```dart
-enum ReputationLevel {
-  indifference,  // Равнодушие
-  friendliness,  // Дружелюбие
-  respect,       // Уважение
-  honor,         // Почтение
-  adoration,     // Преклонение
-  deification,   // Обожествление
-}
-
-extension ReputationLevelExtension on ReputationLevel {
-  String get displayName;  // Отображаемое имя на русском
-  int get value;          // Числовое значение (0-5)
-  static ReputationLevel fromValue(int value);
-}
-
-extension ReputationLevelColorExtension on ReputationLevel {
-  Color get color;  // Цвет для визуального отображения уровня
-}
-```
-
-**Цвета уровней:**
-- `indifference`: `#A1887F` (бледно-коричневый)
-- `friendliness`: `#388E3C` (темно-зеленый)
-- `respect`: `#4CAF50` (зеленый)
-- `honor`: `#26A69A` (бирюзовый)
-- `adoration`: `#2196F3` (синий)
-- `deification`: `#9C27B0` (фиолетовый)
 
 ## Presentation Layer API
 
@@ -320,8 +288,6 @@ class AppTheme {
   static const Color accentOrange;
   static const Color accentBlue;
   
-  static Color getReputationColor(ReputationLevel level);
-  static LinearGradient getReputationGradient(ReputationLevel level);
   static ThemeData get darkTheme;
 }
 ```
@@ -336,8 +302,6 @@ class AppTheme {
 - `accentBlue`: `#4A90E2`
 
 **Методы:**
-- `getReputationColor()` - возвращает цвет для уровня репутации
-- `getReputationGradient()` - возвращает градиент для уровня репутации
 - `darkTheme` - геттер для получения полной темы Material
 
 ### DailyResetHelper

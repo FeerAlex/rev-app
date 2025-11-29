@@ -5,7 +5,6 @@ class FactionDao {
   static const String columnId = 'id';
   static const String columnName = 'name';
   static const String columnCurrency = 'currency';
-  static const String columnReputationLevel = 'reputation_level';
   static const String columnHasOrder = 'has_order';
   static const String columnOrderCompleted = 'order_completed';
   static const String columnWorkCurrency = 'work_currency';
@@ -35,7 +34,6 @@ class FactionDao {
         $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
         $columnName TEXT NOT NULL,
         $columnCurrency INTEGER NOT NULL DEFAULT 0,
-        $columnReputationLevel INTEGER NOT NULL DEFAULT 0,
         $columnHasOrder INTEGER NOT NULL DEFAULT 0,
         $columnOrderCompleted INTEGER NOT NULL DEFAULT 0,
         $columnWorkCurrency INTEGER,

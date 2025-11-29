@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
-import '../../../domain/entities/reputation_level.dart';
 import 'faction_name_display.dart';
 import 'faction_currency_display.dart';
 import 'faction_activities_list.dart';
@@ -24,7 +23,7 @@ class FactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final reputationColor = faction.reputationLevel.color;
+    final primaryColor = Theme.of(context).colorScheme.primary;
     
     return Card(
       margin: EdgeInsets.zero,
@@ -37,7 +36,7 @@ class FactionCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border(
               left: BorderSide(
-                color: reputationColor,
+                color: primaryColor,
                 width: 4,
               ),
             ),

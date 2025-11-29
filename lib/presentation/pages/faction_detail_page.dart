@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/faction.dart';
-import '../../../domain/entities/reputation_level.dart';
 import '../bloc/faction/faction_bloc.dart';
 import '../bloc/faction/faction_event.dart';
 import '../widgets/faction_basic_info_section.dart';
@@ -22,7 +21,6 @@ class FactionDetailPage extends StatefulWidget {
 
 class _FactionDetailPageState extends State<FactionDetailPage> {
   late TextEditingController _nameController;
-  late ReputationLevel _reputationLevel;
   late bool _hasOrder;
   late bool _orderCompleted;
   late bool _hasCertificate;
@@ -39,7 +37,6 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
     super.initState();
     final faction = widget.faction;
     _nameController = TextEditingController(text: faction?.name ?? '');
-    _reputationLevel = faction?.reputationLevel ?? ReputationLevel.indifference;
     _hasOrder = faction?.hasOrder ?? false;
     _orderCompleted = faction?.orderCompleted ?? false;
     _hasCertificate = faction?.hasCertificate ?? false;
@@ -73,7 +70,6 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
       id: widget.faction?.id,
       name: name,
       currency: widget.faction?.currency ?? 0,
-      reputationLevel: _reputationLevel,
       hasOrder: _hasOrder,
       orderCompleted: _orderCompleted,
       workCurrency: widget.faction?.workCurrency,
@@ -151,12 +147,6 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
           children: [
             FactionBasicInfoSection(
               nameController: _nameController,
-              reputationLevel: _reputationLevel,
-              onReputationLevelChanged: (value) {
-                setState(() {
-                  _reputationLevel = value;
-                });
-              },
             ),
             FactionActivitiesSection(
               hasOrder: _hasOrder,

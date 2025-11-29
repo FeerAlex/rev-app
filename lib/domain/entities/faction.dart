@@ -1,10 +1,7 @@
-import 'reputation_level.dart';
-
 class Faction {
   final int? id;
   final String name;
   final int currency;
-  final ReputationLevel reputationLevel;
   final bool hasOrder; // есть ли заказы во фракции
   final bool orderCompleted;
   final int? workCurrency; // null если работы нет
@@ -22,7 +19,6 @@ class Faction {
     this.id,
     required this.name,
     required this.currency,
-    required this.reputationLevel,
     required this.hasOrder,
     required this.orderCompleted,
     this.workCurrency,
@@ -41,7 +37,6 @@ class Faction {
     int? id,
     String? name,
     int? currency,
-    ReputationLevel? reputationLevel,
     bool? hasOrder,
     bool? orderCompleted,
     int? workCurrency,
@@ -59,7 +54,6 @@ class Faction {
       id: id ?? this.id,
       name: name ?? this.name,
       currency: currency ?? this.currency,
-      reputationLevel: reputationLevel ?? this.reputationLevel,
       hasOrder: hasOrder ?? this.hasOrder,
       orderCompleted: orderCompleted ?? this.orderCompleted,
       workCurrency: workCurrency ?? this.workCurrency,

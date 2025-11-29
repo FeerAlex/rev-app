@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../domain/entities/reputation_level.dart';
 
 class FactionDecorationsSection extends StatelessWidget {
   final bool decorationRespectPurchased;
@@ -48,7 +47,7 @@ class FactionDecorationsSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _buildDecorationTile(
-          ReputationLevel.respect.color,
+          const Color(0xFF4CAF50), // Зеленый для Уважение
           decorationRespectPurchased,
           decorationRespectUpgraded,
           onRespectPurchasedChanged,
@@ -56,7 +55,7 @@ class FactionDecorationsSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         _buildDecorationTile(
-          ReputationLevel.honor.color,
+          const Color(0xFF26A69A), // Бирюзовый для Почтение
           decorationHonorPurchased,
           decorationHonorUpgraded,
           onHonorPurchasedChanged,
@@ -64,7 +63,7 @@ class FactionDecorationsSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         _buildDecorationTile(
-          ReputationLevel.adoration.color,
+          const Color(0xFF2196F3), // Синий для Преклонение
           decorationAdorationPurchased,
           decorationAdorationUpgraded,
           onAdorationPurchasedChanged,

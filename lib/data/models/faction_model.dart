@@ -1,5 +1,4 @@
 import '../../domain/entities/faction.dart';
-import '../../domain/entities/reputation_level.dart';
 import '../datasources/faction_dao.dart';
 
 class FactionModel {
@@ -8,9 +7,6 @@ class FactionModel {
       id: map[FactionDao.columnId] as int?,
       name: map[FactionDao.columnName] as String,
       currency: map[FactionDao.columnCurrency] as int,
-      reputationLevel: ReputationLevelExtension.fromValue(
-        map[FactionDao.columnReputationLevel] as int,
-      ),
       hasOrder: (map[FactionDao.columnHasOrder] as int? ?? 0) == 1,
       orderCompleted: (map[FactionDao.columnOrderCompleted] as int) == 1,
       workCurrency: map[FactionDao.columnWorkCurrency] as int?,
@@ -37,7 +33,6 @@ class FactionModel {
     final map = <String, dynamic>{
       FactionDao.columnName: faction.name,
       FactionDao.columnCurrency: faction.currency,
-      FactionDao.columnReputationLevel: faction.reputationLevel.value,
       FactionDao.columnHasOrder: faction.hasOrder ? 1 : 0,
       FactionDao.columnOrderCompleted: faction.orderCompleted ? 1 : 0,
       FactionDao.columnHasCertificate: faction.hasCertificate ? 1 : 0,
