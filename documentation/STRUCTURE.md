@@ -60,11 +60,12 @@ lib/
         ├── faction_basic_info_section.dart
         ├── faction_card.dart
         ├── faction_certificate_block.dart
-        ├── faction_currency_display.dart
+        ├── currency_progress_bar.dart
         ├── faction_decorations_section.dart
         ├── faction_name_display.dart
         ├── faction_selection_dialog.dart
-        └── time_to_goal_widget.dart
+        ├── time_to_currency_goal_widget.dart
+        └── time_to_reputation_goal_widget.dart
 ```
 
 ## Описание основных компонентов
@@ -209,17 +210,20 @@ lib/
 #### Widgets
 
 **FactionCard**
-Основная карточка фракции в списке. Объединяет компоненты:
-- Название фракции (`FactionNameDisplay`) и валюта (`FactionCurrencyDisplay`) - кликабельно для редактирования
-- Список активностей (`FactionActivitiesList`) - Заказ и Работа (слева) и время до цели по валюте (`TimeToGoalWidget`) (справа)
-- Progress bar опыта (`ReputationProgressBar`) внизу карточки, прижимается к краям
-- Время до цели по репутации (`TimeToReputationGoalWidget`) справа от progress bar
+Основная карточка фракции в списке. Структура из 3 строк:
+- Строка 1: Название фракции (`FactionNameDisplay`) и список активностей (`FactionActivitiesList`)
+- Строка 2: Progress bar валюты (`CurrencyProgressBar`) и время до цели по валюте (`TimeToCurrencyGoalWidget`)
+- Строка 3: Progress bar опыта (`ReputationProgressBar`) и время до цели по репутации (`TimeToReputationGoalWidget`)
 
 **FactionNameDisplay**
 Виджет отображения названия фракции с заданным стилем (жирный, 18px, белый).
 
-**FactionCurrencyDisplay**
-Виджет отображения валюты фракции с иконкой монеты и числовым значением. Поддерживает редактирование через `onTap` callback, который открывает `CurrencyInputDialog`.
+**CurrencyProgressBar**
+Виджет для отображения прогресса валюты с progress bar:
+- Отображает текущую валюту/нужную валюту в формате "текущая/нужная" (например, "5000/15000") внутри полоски
+- Progress bar с оранжевым/акцентным цветом
+- Кликабельный - при клике открывает `CurrencyInputDialog` для редактирования валюты
+- Использует ту же логику расчета нужной валюты, что и `CalculateTimeToCurrencyGoal`
 
 **FactionActivitiesList**
 Виджет отображения списка активностей в виде бейджей:
@@ -236,8 +240,8 @@ lib/
 - Контуром при невыполнении
 - Компактным размером
 
-**TimeToGoalWidget**
-Компактный виджет расчета и отображения времени до достижения цели по валюте. Отображается в карточке фракции справа вверху. Имеет:
+**TimeToCurrencyGoalWidget**
+Компактный виджет расчета и отображения времени до достижения цели по валюте. Отображается в карточке фракции во второй строке справа от progress bar валюты. Имеет:
 - Компактный формат отображения
 - Индикатор загрузки (только при первой загрузке)
 - Оптимистичное обновление - показывает предыдущее значение при пересчете

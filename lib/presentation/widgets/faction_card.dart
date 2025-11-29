@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
 import 'faction_name_display.dart';
-import 'faction_currency_display.dart';
 import 'faction_activities_list.dart';
-import 'time_to_goal_widget.dart';
+import 'time_to_currency_goal_widget.dart';
 import 'time_to_reputation_goal_widget.dart';
+import 'currency_progress_bar.dart';
 import 'reputation_progress_bar.dart';
 
 class FactionCard extends StatelessWidget {
@@ -13,7 +13,6 @@ class FactionCard extends StatelessWidget {
   final VoidCallback? onOrderToggle;
   final VoidCallback? onWorkToggle;
   final VoidCallback? onWorkCurrencyTap;
-  final VoidCallback? onCurrencyTap;
   final VoidCallback? onExpTap;
 
   const FactionCard({
@@ -23,7 +22,6 @@ class FactionCard extends StatelessWidget {
     this.onOrderToggle,
     this.onWorkToggle,
     this.onWorkCurrencyTap,
-    this.onCurrencyTap,
     this.onExpTap,
   });
 
@@ -39,71 +37,63 @@ class FactionCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 8, left: 10, right: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Строка 1: Название + Активности
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  spacing: 12,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      spacing: 8,
-                      children: [
-                        FactionNameDisplay(name: faction.name),
-                        FactionCurrencyDisplay(
-                          currency: faction.currency,
-                          onTap: onCurrencyTap,
-                        ),
-                      ],
+                    Expanded(
+                      child: FactionNameDisplay(name: faction.name),
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      spacing: 12,
-                      children: [
-                        FactionActivitiesList(
-                          faction: faction,
-                          onOrderToggle: onOrderToggle != null
-                              ? () {
-                                  onOrderToggle?.call();
-                                }
-                              : null,
-                          onWorkToggle: onWorkToggle != null
-                              ? () {
-                                  onWorkToggle?.call();
-                                }
-                              : null,
-                          onWorkCurrencyTap: onWorkCurrencyTap,
-                        ),
-                        TimeToGoalWidget(faction: faction),
-                      ],
+                    FactionActivitiesList(
+                      faction: faction,
+                      onOrderToggle: onOrderToggle != null
+                          ? () {
+                              onOrderToggle?.call();
+                            }
+                          : null,
+                      onWorkToggle: onWorkToggle != null
+                          ? () {
+                              onWorkToggle?.call();
+                            }
+                          : null,
+                      onWorkCurrencyTap: onWorkCurrencyTap,
                     ),
-                    const SizedBox(height: 12),
                   ],
                 ),
-              ),
-              Stack(
-                children: [
-                  GestureDetector(
-                    onTap: onExpTap,
-                    child: ReputationProgressBar(faction: faction),
-                  ),
-                  Positioned(
-                    right: 10,
-                    top: 0,
-                    bottom: 0,
-                    child: Center(
-                      child: TimeToReputationGoalWidget(faction: faction),
+                const SizedBox(height: 12),
+                // Строка 2: Progress bar валюты + Время до цели по валюте
+                Row(
+                  children: [
+                    Expanded(
+                      child: CurrencyProgressBar(faction: faction),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    const SizedBox(width: 8),
+                    TimeToCurrencyGoalWidget(faction: faction),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                // Строка 3: Progress bar опыта + Время до цели по репутации
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: onExpTap,
+                        child: ReputationProgressBar(faction: faction),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    TimeToReputationGoalWidget(faction: faction),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

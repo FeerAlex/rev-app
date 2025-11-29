@@ -26,10 +26,7 @@ class ReputationProgressBar extends StatelessWidget {
         : 1.0;
 
     return ClipRRect(
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(12),
-            bottomRight: Radius.circular(12),
-          ),
+          borderRadius: BorderRadius.circular(6),
           child: Stack(
             children: [
               LinearProgressIndicator(

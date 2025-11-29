@@ -3,19 +3,19 @@ import '../../../domain/entities/faction.dart';
 import '../../../domain/usecases/calculate_time_to_currency_goal.dart';
 import '../../../core/utils/time_formatter.dart';
 
-class TimeToGoalWidget extends StatefulWidget {
+class TimeToCurrencyGoalWidget extends StatefulWidget {
   final Faction? faction;
 
-  const TimeToGoalWidget({
+  const TimeToCurrencyGoalWidget({
     super.key,
     this.faction,
   });
 
   @override
-  State<TimeToGoalWidget> createState() => _TimeToGoalWidgetState();
+  State<TimeToCurrencyGoalWidget> createState() => _TimeToCurrencyGoalWidgetState();
 }
 
-class _TimeToGoalWidgetState extends State<TimeToGoalWidget> {
+class _TimeToCurrencyGoalWidgetState extends State<TimeToCurrencyGoalWidget> {
   Duration? _timeToGoal;
   bool _isLoading = false;
 
@@ -26,7 +26,7 @@ class _TimeToGoalWidgetState extends State<TimeToGoalWidget> {
   }
 
   @override
-  void didUpdateWidget(TimeToGoalWidget oldWidget) {
+  void didUpdateWidget(TimeToCurrencyGoalWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Пересчитываем только если изменилась фракция (id или важные поля, влияющие на расчет)
     final oldFaction = oldWidget.faction;
@@ -143,3 +143,4 @@ class _TimeToGoalWidgetState extends State<TimeToGoalWidget> {
     );
   }
 }
+
