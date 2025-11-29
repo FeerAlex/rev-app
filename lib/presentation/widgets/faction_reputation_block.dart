@@ -56,7 +56,9 @@ class FactionReputationBlock extends StatelessWidget {
                     ),
                     DropdownButton<ReputationLevel>(
                       value: currentReputationLevel,
-                      items: ReputationLevel.values.map((level) {
+                      items: ReputationLevel.values
+                          .where((level) => level != ReputationLevel.maximum)
+                          .map((level) {
                         return DropdownMenuItem(
                           value: level,
                           child: Text(level.displayName),

@@ -117,13 +117,13 @@ class InitializeFactions {
 **Описание:**
 Создает все 13 фракций из статического списка в базе данных, если их еще нет. Все фракции создаются с `isVisible = false`. Вызывается при первом запуске приложения.
 
-#### CalculateTimeToGoal
+#### CalculateTimeToCurrencyGoal
 
-Расчет времени до достижения цели (покупка сертификата).
+Расчет времени до достижения цели по валюте (покупка сертификата и украшений).
 
 ```dart
-class CalculateTimeToGoal {
-  const CalculateTimeToGoal();
+class CalculateTimeToCurrencyGoal {
+  const CalculateTimeToCurrencyGoal();
   Duration? call(Faction faction);
 }
 ```
@@ -142,7 +142,7 @@ class CalculateTimeToGoal {
 3. Вычитается текущая валюта
 4. Рассчитывается доход в день:
    - Валюта за заказ (только если `hasOrder = true`) - среднее арифметическое валюты из `FactionTemplate.orderRewards` для данной фракции
-   - Валюта за работу (только если `hasWork = true`) - `AppSettings.factions.currencyPerWork`
+   - Валюта за работу (только если `hasWork = true` и `workCurrency != null`) - значение из `faction.workCurrency`
 5. Вычисляется время: `(нужная валюта) / (валюта в день)`
 
 **Примечание:** 
@@ -265,11 +265,12 @@ class FactionsSettings {
 **Использование:**
 ```dart
 AppSettings.factions.decorationPriceRespect
-AppSettings.factions.currencyPerWork
 AppSettings.factions.certificatePrice
 ```
 
-**Примечание:** Все стоимости хранятся как готовые суммы (не используется умножение). Структура расширяема для будущих функций (карта, брактеат).
+**Примечание:** 
+- Все стоимости хранятся как готовые суммы (не используется умножение). Структура расширяема для будущих функций (карта, брактеат).
+- `currencyPerWork` больше не используется для расчета времени до цели - используется значение из `faction.workCurrency`
 
 ### FactionTemplate
 
@@ -513,7 +514,7 @@ final factionRepo = ServiceLocator().factionRepository;
 ```
 
 **Описание:**
-- Инициализирует SQLite базу данных версии 9
+- Инициализирует SQLite базу данных версии 11
 - Создает таблицу `factions` при первом запуске через `FactionDao.createTable()`
 - Создает экземпляры репозиториев для работы с данными
 - Миграции базы данных не используются (приложение на стадии разработки)

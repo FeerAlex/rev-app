@@ -4,6 +4,7 @@ import 'faction_name_display.dart';
 import 'faction_currency_display.dart';
 import 'faction_activities_list.dart';
 import 'time_to_goal_widget.dart';
+import 'time_to_reputation_goal_widget.dart';
 import 'reputation_progress_bar.dart';
 
 class FactionCard extends StatelessWidget {
@@ -86,9 +87,21 @@ class FactionCard extends StatelessWidget {
                   ],
                 ),
               ),
-              GestureDetector(
-                onTap: onExpTap,
-                child: ReputationProgressBar(faction: faction),
+              Stack(
+                children: [
+                  GestureDetector(
+                    onTap: onExpTap,
+                    child: ReputationProgressBar(faction: faction),
+                  ),
+                  Positioned(
+                    right: 10,
+                    top: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: TimeToReputationGoalWidget(faction: faction),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

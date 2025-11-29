@@ -9,8 +9,6 @@ import '../widgets/faction_certificate_block.dart';
 import '../widgets/faction_decorations_section.dart';
 import '../widgets/faction_reputation_block.dart';
 import '../../../core/constants/reputation_level.dart';
-import '../../../domain/usecases/calculate_time_to_reputation_goal.dart';
-import '../../../core/utils/time_formatter.dart';
 
 class FactionDetailPage extends StatefulWidget {
   final Faction? faction;
@@ -200,47 +198,6 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
                 setState(() {
                   _targetReputationLevel = value;
                 });
-              },
-            ),
-            Builder(
-              builder: (context) {
-                final calculateTime = CalculateTimeToReputationGoal();
-                final timeToGoal = calculateTime(
-                  widget.faction!.copyWith(
-                    currentReputationLevel: _currentReputationLevel,
-                    currentLevelExp: _currentLevelExp,
-                    targetReputationLevel: _targetReputationLevel,
-                  ),
-                );
-                if (timeToGoal == null) {
-                  return const SizedBox.shrink();
-                }
-                return Card(
-                  margin: EdgeInsets.zero,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Время до цели:',
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          timeToGoal == Duration.zero
-                              ? 'Цель достигнута'
-                              : TimeFormatter.formatDuration(timeToGoal),
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: timeToGoal == Duration.zero
-                                ? Colors.green
-                                : Colors.amber[300],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
               },
             ),
             FactionActivitiesBlock(

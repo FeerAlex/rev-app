@@ -67,19 +67,19 @@ class ReputationProgressBar extends StatelessWidget {
   Color _getColorForLevel(ReputationLevel level) {
     switch (level) {
       case ReputationLevel.indifference:
-        return Colors.grey;
+        return const Color(0xFF8B6F47); // средний коричневый
       case ReputationLevel.friendliness:
-        return Colors.green;
+        return const Color(0xFF4A5D23); // темно-зеленый/коричневато-зеленый
       case ReputationLevel.respect:
-        return Colors.blue;
+        return const Color(0xFF4CAF50); // яркий зеленый
       case ReputationLevel.honor:
-        return Colors.cyan;
+        return const Color(0xFF00BCD4); // бирюзовый/циан
       case ReputationLevel.adoration:
-        return Colors.purple;
+        return const Color(0xFF2196F3); // средний синий
       case ReputationLevel.deification:
-        return Colors.orange;
+        return const Color(0xFF5E35B1); // темно-фиолетовый/индиго
       case ReputationLevel.maximum:
-        return Colors.amber;
+        return const Color(0xFF7B1FA2); // темно-фиолетовый для максимального
     }
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
-import '../../../domain/usecases/calculate_time_to_goal.dart';
+import '../../../domain/usecases/calculate_time_to_currency_goal.dart';
 import '../../../core/utils/time_formatter.dart';
 
 class TimeToGoalWidget extends StatefulWidget {
@@ -71,7 +71,7 @@ class _TimeToGoalWidgetState extends State<TimeToGoalWidget> {
     }
 
     try {
-      const calculateTimeToGoal = CalculateTimeToGoal();
+      const calculateTimeToGoal = CalculateTimeToCurrencyGoal();
       final duration = calculateTimeToGoal(widget.faction!);
       setState(() {
         _timeToGoal = duration;

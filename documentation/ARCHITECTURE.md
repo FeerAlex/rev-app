@@ -25,7 +25,7 @@
 - `UpdateFaction` - обновление фракции
 - `DeleteFaction` - скрытие фракции (устанавливает `isVisible = false`)
 - `ShowFaction` - показ скрытой фракции (устанавливает `isVisible = true`)
-- `CalculateTimeToGoal` - расчет времени до достижения цели по валюте (использует константы из AppSettings и среднее арифметическое валюты из FactionTemplate.orderRewards для заказов)
+- `CalculateTimeToCurrencyGoal` - расчет времени до достижения цели по валюте (использует константы из AppSettings и среднее арифметическое валюты из FactionTemplate.orderRewards для заказов)
 - `CalculateTimeToReputationGoal` - расчет времени до достижения целевого уровня отношения (использует среднее арифметическое опыта из FactionTemplate.orderRewards для заказов)
 - `ResetDailyFlags` - сброс ежедневных отметок
 - `ReorderFactions` - изменение порядка фракций
@@ -60,7 +60,8 @@
 
 #### Widgets (Виджеты)
 - `FactionCard` - карточка фракции в списке с отображением времени до цели
-- `TimeToGoalWidget` - компактный виджет отображения времени до цели (автоматически пересчитывается при изменении полей)
+- `TimeToGoalWidget` - компактный виджет отображения времени до цели по валюте (автоматически пересчитывается при изменении полей)
+- `TimeToReputationGoalWidget` - компактный виджет отображения времени до цели по репутации (отображается рядом с progress bar опыта)
 - `FactionNameDisplay` - отображение названия фракции
 - `FactionCurrencyDisplay` - отображение валюты фракции (с возможностью редактирования)
 - `FactionActivitiesList` - список активностей фракции (бейджи для заказов и работ)

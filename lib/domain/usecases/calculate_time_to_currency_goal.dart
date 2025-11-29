@@ -4,8 +4,8 @@ import '../../core/constants/app_settings.dart';
 import '../../core/constants/factions_list.dart';
 import '../../core/constants/order_reward.dart';
 
-class CalculateTimeToGoal {
-  const CalculateTimeToGoal();
+class CalculateTimeToCurrencyGoal {
+  const CalculateTimeToCurrencyGoal();
 
   Duration? call(Faction faction) {
 
