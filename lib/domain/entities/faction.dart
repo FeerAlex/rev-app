@@ -5,6 +5,7 @@ class Faction {
   final String name;
   final int currency;
   final bool orderCompleted;
+  final bool ordersEnabled; // учитывать ли заказы в расчете
   final int? workCurrency; // null если работы нет
   final bool hasWork; // учитывать ли работу в калькуляторе
   final bool workCompleted; // выполнена ли работа
@@ -27,6 +28,7 @@ class Faction {
     required this.name,
     required this.currency,
     required this.orderCompleted,
+    this.ordersEnabled = true,
     this.workCurrency,
     required this.hasWork,
     required this.workCompleted,
@@ -50,6 +52,7 @@ class Faction {
     String? name,
     int? currency,
     bool? orderCompleted,
+    bool? ordersEnabled,
     int? workCurrency,
     bool? hasWork,
     bool? workCompleted,
@@ -72,6 +75,7 @@ class Faction {
       name: name ?? this.name,
       currency: currency ?? this.currency,
       orderCompleted: orderCompleted ?? this.orderCompleted,
+      ordersEnabled: ordersEnabled ?? this.ordersEnabled,
       workCurrency: workCurrency ?? this.workCurrency,
       hasWork: hasWork ?? this.hasWork,
       workCompleted: workCompleted ?? this.workCompleted,

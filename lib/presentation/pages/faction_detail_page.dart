@@ -24,6 +24,7 @@ class FactionDetailPage extends StatefulWidget {
 
 class _FactionDetailPageState extends State<FactionDetailPage> {
   late bool _orderCompleted;
+  late bool _ordersEnabled;
   late bool _hasWork;
   late bool _workCompleted;
   late bool _hasCertificate;
@@ -43,6 +44,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
     super.initState();
     final faction = widget.faction;
     _orderCompleted = faction?.orderCompleted ?? false;
+    _ordersEnabled = faction?.ordersEnabled ?? false;
     _hasWork = faction?.hasWork ?? false;
     _workCompleted = faction?.workCompleted ?? false;
     _hasCertificate = faction?.hasCertificate ?? false;
@@ -76,6 +78,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
       name: widget.faction!.name,
       currency: widget.faction!.currency,
       orderCompleted: _orderCompleted,
+      ordersEnabled: _ordersEnabled,
       workCurrency: widget.faction!.workCurrency,
       hasWork: _hasWork,
       workCompleted: _workCompleted,
@@ -195,17 +198,17 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
               },
             ),
             FactionActivitiesBlock(
-              hasOrder: _canFactionHaveOrders(),
+              hasOrder: _ordersEnabled,
               hasWork: _hasWork,
               showOrderCheckbox: _canFactionHaveOrders(),
               showWorkCheckbox: _canFactionHaveWork(),
               onHasOrderChanged: (value) {
-                // hasOrder определяется из template, нельзя изменить
-                if (!value) {
-                  setState(() {
+                setState(() {
+                  _ordersEnabled = value;
+                  if (!value) {
                     _orderCompleted = false;
-                  });
-                }
+                  }
+                });
               },
               onHasWorkChanged: (value) {
                 setState(() {

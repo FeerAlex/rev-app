@@ -43,7 +43,8 @@ class _TimeToReputationGoalWidgetState extends State<TimeToReputationGoalWidget>
     if (oldFaction.id != newFaction.id ||
         oldFaction.currentReputationLevel != newFaction.currentReputationLevel ||
         oldFaction.currentLevelExp != newFaction.currentLevelExp ||
-        oldFaction.targetReputationLevel != newFaction.targetReputationLevel) {
+        oldFaction.targetReputationLevel != newFaction.targetReputationLevel ||
+        oldFaction.ordersEnabled != newFaction.ordersEnabled) {
       _calculateTime();
     }
   }
@@ -93,7 +94,7 @@ class _TimeToReputationGoalWidgetState extends State<TimeToReputationGoalWidget>
       return Text(
         'Нет данных',
         style: TextStyle(
-          fontSize: 12,
+          fontSize: 10,
           color: Colors.grey[400],
         ),
       );

@@ -43,6 +43,7 @@ class _TimeToCurrencyGoalWidgetState extends State<TimeToCurrencyGoalWidget> {
     if (oldFaction.id != newFaction.id ||
         oldFaction.currency != newFaction.currency ||
         oldFaction.orderCompleted != newFaction.orderCompleted ||
+        oldFaction.ordersEnabled != newFaction.ordersEnabled ||
         oldFaction.certificatePurchased != newFaction.certificatePurchased ||
         oldFaction.hasWork != newFaction.hasWork ||
         oldFaction.hasCertificate != newFaction.hasCertificate ||
@@ -102,7 +103,7 @@ class _TimeToCurrencyGoalWidgetState extends State<TimeToCurrencyGoalWidget> {
       return Text(
         'Нет данных',
         style: TextStyle(
-          fontSize: 12,
+          fontSize: 10,
           color: Colors.grey[400],
         ),
       );

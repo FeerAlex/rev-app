@@ -50,9 +50,9 @@ class CalculateTimeToCurrencyGoal {
     // Рассчитываем валюту в день
     int currencyPerDay = 0;
     
-    // Потенциальный доход от заказа (только если фракция имеет заказы согласно статическому списку)
+    // Потенциальный доход от заказа (только если заказы включены и фракция имеет заказы согласно статическому списку)
     final template = FactionsList.getTemplateByName(faction.name);
-    if (template != null && template.orderReward != null) {
+    if (faction.ordersEnabled && template != null && template.orderReward != null) {
       // Вычисляем среднее арифметическое валюты из награды за заказы
       currencyPerDay += OrderReward.averageCurrency(template.orderReward!);
     }

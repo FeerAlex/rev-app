@@ -25,9 +25,9 @@ class CalculateTimeToReputationGoal {
     // Рассчитываем опыт в день
     int expPerDay = 0;
 
-    // Потенциальный доход от заказа (только если фракция имеет заказы)
+    // Потенциальный доход от заказа (только если заказы включены и фракция имеет заказы)
     final template = FactionsList.getTemplateByName(faction.name);
-    if (template != null && template.orderReward != null) {
+    if (faction.ordersEnabled && template != null && template.orderReward != null) {
       // Вычисляем среднее арифметическое опыта из награды за заказы
       expPerDay += OrderReward.averageExp(template.orderReward!);
     }

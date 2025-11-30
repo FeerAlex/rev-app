@@ -48,6 +48,7 @@ class FactionsList {
       name: template.name,
       currency: 0,
       orderCompleted: false,
+      ordersEnabled: template.orderReward != null, // по умолчанию учитывать, если заказы есть
       workCurrency: template.hasWork ? null : null, // nullable, пользователь введет значение
       hasWork: template.hasWork,
       workCompleted: false,

@@ -21,9 +21,8 @@ class FactionActivitiesList extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> badges = [];
     final template = FactionsList.getTemplateByName(faction.name);
-    final hasOrder = template?.orderReward != null;
 
-    if (hasOrder) {
+    if (faction.ordersEnabled && template?.orderReward != null) {
       badges.add(
         Padding(
           padding: const EdgeInsets.only(right: 8),
