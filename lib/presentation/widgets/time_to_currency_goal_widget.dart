@@ -100,18 +100,12 @@ class _TimeToCurrencyGoalWidgetState extends State<TimeToCurrencyGoalWidget> {
     }
 
     if (_timeToGoal == null) {
-      return Row(
-        children: [
-          Icon(Icons.access_time, size: 14, color: Colors.grey[400]),
-          const SizedBox(width: 4),
-          Text(
-            'Нет данных',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[400],
-            ),
-          ),
-        ],
+      return Text(
+        'Нет данных',
+        style: TextStyle(
+          fontSize: 12,
+          color: Colors.grey[400],
+        ),
       );
     }
 
@@ -119,26 +113,22 @@ class _TimeToCurrencyGoalWidgetState extends State<TimeToCurrencyGoalWidget> {
 
     return FittedBox(
       fit: BoxFit.scaleDown,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isCompleted ? Icons.check_circle : Icons.access_time,
-            size: 14,
-            color: isCompleted ? Colors.green : const Color(0xFFFF6B35),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            isCompleted
-                ? 'Цель достигнута'
-                : TimeFormatter.formatDuration(_timeToGoal!),
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: isCompleted ? Colors.green : Colors.white,
+      child: Text(
+        isCompleted
+            ? 'Цель достигнута'
+            : TimeFormatter.formatDuration(_timeToGoal!),
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w500,
+          color: isCompleted ? Colors.green : Colors.white,
+          shadows: const [
+            Shadow(
+              offset: Offset(0, 0),
+              blurRadius: 2,
+              color: Colors.black,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/faction.dart';
 import '../../core/constants/app_settings.dart';
 import 'currency_input_dialog.dart';
+import 'time_to_currency_goal_widget.dart';
 import '../bloc/faction/faction_bloc.dart';
 import '../bloc/faction/faction_event.dart';
 
@@ -85,7 +86,7 @@ class CurrencyProgressBar extends StatelessWidget {
           children: [
             LinearProgressIndicator(
               value: progress,
-              minHeight: 14,
+              minHeight: 30,
               backgroundColor: Colors.grey[800],
               valueColor: const AlwaysStoppedAnimation<Color>(
                 Color(0xFFFF6B35), // оранжевый/акцентный
@@ -93,20 +94,27 @@ class CurrencyProgressBar extends StatelessWidget {
             ),
             Positioned.fill(
               child: Center(
-                child: Text(
-                  '$currentCurrency/$totalCurrency',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                    shadows: [
-                      Shadow(
-                        offset: Offset(0, 0),
-                        blurRadius: 2,
-                        color: Colors.black,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '$currentCurrency/$totalCurrency',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(
+                            offset: Offset(0, 0),
+                            blurRadius: 2,
+                            color: Colors.black,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    TimeToCurrencyGoalWidget(faction: faction),
+                  ],
                 ),
               ),
             ),

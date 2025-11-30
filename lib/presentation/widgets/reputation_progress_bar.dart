@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
 import '../../core/utils/reputation_helper.dart';
 import '../../core/constants/reputation_level.dart';
+import 'time_to_reputation_goal_widget.dart';
 
 /// Виджет для отображения прогресса уровня отношения с progress bar
 class ReputationProgressBar extends StatelessWidget {
@@ -31,7 +32,7 @@ class ReputationProgressBar extends StatelessWidget {
             children: [
               LinearProgressIndicator(
                 value: progress,
-                minHeight: 14,
+                minHeight: 30,
                 backgroundColor: Colors.grey[800],
                 valueColor: AlwaysStoppedAnimation<Color>(
                   _getColorForLevel(currentLevel),
@@ -39,20 +40,27 @@ class ReputationProgressBar extends StatelessWidget {
               ),
               Positioned.fill(
                 child: Center(
-                  child: Text(
-                    '$expInCurrentLevel/$requiredExpForCurrentLevel',
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                      shadows: [
-                        Shadow(
-                          offset: Offset(0, 0),
-                          blurRadius: 2,
-                          color: Colors.black,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '$expInCurrentLevel/$requiredExpForCurrentLevel',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0, 0),
+                              blurRadius: 2,
+                              color: Colors.black,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      TimeToReputationGoalWidget(faction: faction),
+                    ],
                   ),
                 ),
               ),

@@ -109,9 +109,16 @@ class _TimeToReputationGoalWidgetState extends State<TimeToReputationGoalWidget>
             ? 'Цель достигнута'
             : TimeFormatter.formatDuration(_timeToGoal!),
         style: TextStyle(
-          fontSize: 12,
+          fontSize: 10,
           fontWeight: FontWeight.w500,
           color: isCompleted ? Colors.amber : Colors.white,
+          shadows: const [
+            Shadow(
+              offset: Offset(0, 0),
+              blurRadius: 2,
+              color: Colors.black,
+            ),
+          ],
         ),
       ),
     );
