@@ -43,8 +43,7 @@ class _TimeToReputationGoalWidgetState extends State<TimeToReputationGoalWidget>
     if (oldFaction.id != newFaction.id ||
         oldFaction.currentReputationLevel != newFaction.currentReputationLevel ||
         oldFaction.currentLevelExp != newFaction.currentLevelExp ||
-        oldFaction.targetReputationLevel != newFaction.targetReputationLevel ||
-        oldFaction.hasOrder != newFaction.hasOrder) {
+        oldFaction.targetReputationLevel != newFaction.targetReputationLevel) {
       _calculateTime();
     }
   }

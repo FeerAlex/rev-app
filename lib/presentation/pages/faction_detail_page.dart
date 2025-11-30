@@ -23,7 +23,6 @@ class FactionDetailPage extends StatefulWidget {
 }
 
 class _FactionDetailPageState extends State<FactionDetailPage> {
-  late bool _hasOrder;
   late bool _orderCompleted;
   late bool _hasWork;
   late bool _workCompleted;
@@ -43,7 +42,6 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
   void initState() {
     super.initState();
     final faction = widget.faction;
-    _hasOrder = faction?.hasOrder ?? false;
     _orderCompleted = faction?.orderCompleted ?? false;
     _hasWork = faction?.hasWork ?? false;
     _workCompleted = faction?.workCompleted ?? false;
@@ -77,7 +75,6 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
       id: widget.faction!.id,
       name: widget.faction!.name,
       currency: widget.faction!.currency,
-      hasOrder: _hasOrder,
       orderCompleted: _orderCompleted,
       workCurrency: widget.faction!.workCurrency,
       hasWork: _hasWork,
@@ -103,23 +100,20 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
 
   bool _canFactionHaveOrders() {
     if (widget.faction == null) return false;
-    final template = FactionsList.allFactions
-        .firstWhere((t) => t.name == widget.faction!.name, orElse: () => FactionTemplate(name: '', hasOrder: false, hasWork: false, hasCertificate: false));
-    return template.hasOrder;
+    final template = FactionsList.getTemplateByName(widget.faction!.name);
+    return template?.orderReward != null;
   }
 
   bool _canFactionHaveWork() {
     if (widget.faction == null) return false;
-    final template = FactionsList.allFactions
-        .firstWhere((t) => t.name == widget.faction!.name, orElse: () => FactionTemplate(name: '', hasOrder: false, hasWork: false, hasCertificate: false));
-    return template.hasWork;
+    final template = FactionsList.getTemplateByName(widget.faction!.name);
+    return template?.hasWork ?? false;
   }
 
   bool _canFactionHaveCertificate() {
     if (widget.faction == null) return false;
-    final template = FactionsList.allFactions
-        .firstWhere((t) => t.name == widget.faction!.name, orElse: () => FactionTemplate(name: '', hasOrder: false, hasWork: false, hasCertificate: false));
-    return template.hasCertificate;
+    final template = FactionsList.getTemplateByName(widget.faction!.name);
+    return template?.hasCertificate ?? false;
   }
 
   void _deleteFaction() {
@@ -201,17 +195,17 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
               },
             ),
             FactionActivitiesBlock(
-              hasOrder: _hasOrder,
+              hasOrder: _canFactionHaveOrders(),
               hasWork: _hasWork,
               showOrderCheckbox: _canFactionHaveOrders(),
               showWorkCheckbox: _canFactionHaveWork(),
               onHasOrderChanged: (value) {
-                setState(() {
-                  _hasOrder = value;
-                  if (!_hasOrder) {
+                // hasOrder определяется из template, нельзя изменить
+                if (!value) {
+                  setState(() {
                     _orderCompleted = false;
-                  }
-                });
+                  });
+                }
               },
               onHasWorkChanged: (value) {
                 setState(() {

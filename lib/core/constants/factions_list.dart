@@ -8,23 +8,23 @@ class FactionsList {
 
   /// Фракции с заказами и работой (9 шт)
   static const List<FactionTemplate> factionsWithOrderAndWork = [
-    FactionTemplate(name: 'Жители Сулана', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 176, exp: 1100), OrderReward(currency: 176, exp: 1100)]),
-    FactionTemplate(name: 'Фалмари', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 90, exp: 900), OrderReward(currency: 105, exp: 1050)]),
-    FactionTemplate(name: 'Грибной народ', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 85, exp: 850), OrderReward(currency: 80, exp: 800)]),
-    FactionTemplate(name: 'Озёрная деревня', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 60, exp: 600), OrderReward(currency: 60, exp: 600)]),
-    FactionTemplate(name: 'Медведи', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 100, exp: 1000), OrderReward(currency: 100, exp: 1000)]),
-    FactionTemplate(name: 'Крылатые', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 105, exp: 1050), OrderReward(currency: 125, exp: 1250)]),
-    FactionTemplate(name: 'Монастырь Сноу-Шу', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 114, exp: 900), OrderReward(currency: 144, exp: 900)]),
-    FactionTemplate(name: 'Северные волки', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 120, exp: 1200), OrderReward(currency: 120, exp: 1200)]),
-    FactionTemplate(name: 'Императорская академия', hasOrder: true, hasWork: true, hasCertificate: true, orderRewards: [OrderReward(currency: 66, exp: 1100), OrderReward(currency: 66, exp: 1100)]),
+    FactionTemplate(name: 'Жители Сулана', hasWork: true, hasCertificate: true, orderReward: OrderReward(currency: [176, 176], exp: [1100, 1100])),
+    FactionTemplate(name: 'Фалмари', hasWork: true, hasCertificate: true, orderReward: OrderReward(currency: [90, 105], exp: [900, 1050])),
+    FactionTemplate(name: 'Грибной народ', hasWork: true, hasCertificate: true, orderReward: OrderReward(currency: [85, 80], exp: [850, 800])),
+    FactionTemplate(name: 'Озёрная деревня', hasWork: true, hasCertificate: true, orderReward: OrderReward(currency: [60, 60], exp: [600, 600])),
+    FactionTemplate(name: 'Медведи', hasWork: true, hasCertificate: true, orderReward: OrderReward(currency: [100, 100], exp: [1000, 1000])),
+    FactionTemplate(name: 'Крылатые', hasWork: true, hasCertificate: true, orderReward: OrderReward(currency: [105, 125], exp: [1050, 1250])),
+    FactionTemplate(name: 'Монастырь Сноу-Шу', hasWork: true, hasCertificate: true, orderReward: OrderReward(currency: [114, 144], exp: [900, 900])),
+    FactionTemplate(name: 'Северные волки', hasWork: true, hasCertificate: true, orderReward: OrderReward(currency: [120, 120], exp: [1200, 1200])),
+    FactionTemplate(name: 'Императорская академия', hasWork: true, hasCertificate: true, orderReward: OrderReward(currency: [66, 66], exp: [1100, 1100])),
   ];
 
   /// Фракции только с работой (4 шт)
   static const List<FactionTemplate> factionsWithWorkOnly = [
-    FactionTemplate(name: 'Кнотты', hasOrder: false, hasWork: true, hasCertificate: true),
-    FactionTemplate(name: 'Калахар', hasOrder: false, hasWork: true, hasCertificate: true),
-    FactionTemplate(name: 'Астерион', hasOrder: false, hasWork: true, hasCertificate: true),
-    FactionTemplate(name: 'Лисы', hasOrder: false, hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Кнотты', hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Калахар', hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Астерион', hasWork: true, hasCertificate: true),
+    FactionTemplate(name: 'Лисы', hasWork: true, hasCertificate: true),
   ];
 
   /// Все фракции
@@ -47,7 +47,6 @@ class FactionsList {
     return Faction(
       name: template.name,
       currency: 0,
-      hasOrder: template.hasOrder,
       orderCompleted: false,
       workCurrency: template.hasWork ? null : null, // nullable, пользователь введет значение
       hasWork: template.hasWork,
@@ -72,17 +71,15 @@ class FactionsList {
 /// Шаблон фракции для статического списка
 class FactionTemplate {
   final String name;
-  final bool hasOrder;
   final bool hasWork;
   final bool hasCertificate;
-  final List<OrderReward>? orderRewards; // Массив наград за заказы (валюта и опыт) (только для фракций с заказами)
+  final OrderReward? orderReward; // Награда за заказы (валюта и опыт) (nullable, только для фракций с заказами)
 
   const FactionTemplate({
     required this.name,
-    required this.hasOrder,
     required this.hasWork,
     required this.hasCertificate,
-    this.orderRewards,
+    this.orderReward,
   });
 }
 

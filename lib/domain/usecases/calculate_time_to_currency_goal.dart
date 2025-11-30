@@ -48,27 +48,13 @@ class CalculateTimeToCurrencyGoal {
     }
 
     // Рассчитываем валюту в день
-    // Учитываем потенциальный доход от заказов (если они есть во фракции согласно статическому списку)
-    // и валюту с работы (если указана)
     int currencyPerDay = 0;
     
     // Потенциальный доход от заказа (только если фракция имеет заказы согласно статическому списку)
-    // Если hasOrder = false, валюту с заказов не учитываем
-    if (faction.hasOrder) {
-      final template = FactionsList.getTemplateByName(faction.name);
-      if (template != null && template.orderRewards != null && template.orderRewards!.isNotEmpty) {
-        // Вычисляем среднее арифметическое валюты из массива наград за заказы
-        currencyPerDay += OrderReward.averageCurrency(template.orderRewards!);
-      } else {
-        // Fallback значение, если шаблон не найден или массив пустой
-        currencyPerDay += 100;
-      }
-    }
-    
-    // Потенциальный доход от работы (только если hasWork = true)
-    // Если hasWork = false, валюту с работы не учитываем
-    if (faction.hasWork) {
-      currencyPerDay += AppSettings.factions.currencyPerWork;
+    final template = FactionsList.getTemplateByName(faction.name);
+    if (template != null && template.orderReward != null) {
+      // Вычисляем среднее арифметическое валюты из награды за заказы
+      currencyPerDay += OrderReward.averageCurrency(template.orderReward!);
     }
 
     // Если нет дохода в день, вернуть null

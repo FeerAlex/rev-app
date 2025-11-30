@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
+import '../../../core/constants/factions_list.dart';
 import 'activity_badge.dart';
 
 class FactionActivitiesList extends StatelessWidget {
@@ -19,8 +20,10 @@ class FactionActivitiesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> badges = [];
+    final template = FactionsList.getTemplateByName(faction.name);
+    final hasOrder = template?.orderReward != null;
 
-    if (faction.hasOrder) {
+    if (hasOrder) {
       badges.add(
         Padding(
           padding: const EdgeInsets.only(right: 8),

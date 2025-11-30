@@ -8,7 +8,6 @@ class FactionModel {
       id: map[FactionDao.columnId] as int?,
       name: map[FactionDao.columnName] as String,
       currency: map[FactionDao.columnCurrency] as int,
-      hasOrder: (map[FactionDao.columnHasOrder] as int? ?? 0) == 1,
       orderCompleted: (map[FactionDao.columnOrderCompleted] as int) == 1,
       workCurrency: map[FactionDao.columnWorkCurrency] as int?,
       hasWork: (map[FactionDao.columnHasWork] as int? ?? 0) == 1,
@@ -44,7 +43,6 @@ class FactionModel {
     final map = <String, dynamic>{
       FactionDao.columnName: faction.name,
       FactionDao.columnCurrency: faction.currency,
-      FactionDao.columnHasOrder: faction.hasOrder ? 1 : 0,
       FactionDao.columnOrderCompleted: faction.orderCompleted ? 1 : 0,
       FactionDao.columnHasWork: faction.hasWork ? 1 : 0,
       FactionDao.columnWorkCompleted: faction.workCompleted ? 1 : 0,
