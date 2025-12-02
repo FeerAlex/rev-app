@@ -45,24 +45,35 @@ class FactionsList {
   /// Создает Faction entity из шаблона
   static Faction createFactionFromTemplate(FactionTemplate template) {
     return Faction(
+      // Основная информация
       name: template.name,
       currency: 0,
+
+      // Ежедневные активности (заказы и работы)
       orderCompleted: false,
       ordersEnabled: template.orderReward != null, // по умолчанию учитывать, если заказы есть
-      workReward: null, // пользователь введет значение через UI
       workCompleted: false,
+      workReward: null, // пользователь введет значение через UI
+
+      // Сертификат
       hasCertificate: template.hasCertificate,
       certificatePurchased: false,
-      decorationRespectPurchased: false,
-      decorationRespectUpgraded: false,
-      decorationHonorPurchased: false,
-      decorationHonorUpgraded: false,
+
+      // Украшения (декорации фракции: Уважение, Почтение, Преклонение)
       decorationAdorationPurchased: false,
       decorationAdorationUpgraded: false,
-      isVisible: false, // По умолчанию скрыта
+      decorationHonorPurchased: false,
+      decorationHonorUpgraded: false,
+      decorationRespectPurchased: false,
+      decorationRespectUpgraded: false,
+
+      // Настройки отображения
       displayOrder: 0,
-      currentReputationLevel: ReputationLevel.indifference,
+      isVisible: false, // По умолчанию скрыта
+
+      // Репутация (текущий и целевой уровень отношения)
       currentLevelExp: 0,
+      currentReputationLevel: ReputationLevel.indifference,
       targetReputationLevel: ReputationLevel.maximum,
     );
   }
