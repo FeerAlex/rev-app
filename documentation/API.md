@@ -141,14 +141,14 @@ class CalculateTimeToCurrencyGoal {
 2. Добавляется стоимость сертификата (если не куплен и `hasCertificate = true`)
 3. Вычитается текущая валюта
 4. Рассчитывается доход в день:
-   - Валюта за заказ (только если `hasOrder = true`) - среднее арифметическое валюты из `FactionTemplate.orderRewards` для данной фракции
-   - Валюта за работу (только если `hasWork = true` и `workCurrency != null`) - значение из `faction.workCurrency`
+   - Валюта за заказ (только если `ordersEnabled = true` и фракция имеет заказы согласно статическому списку) - среднее арифметическое валюты из `FactionTemplate.orderReward` для данной фракции
+   - Валюта за работу (только если `workReward != null` и `workReward.currency > 0`) - значение из `faction.workReward.currency`
 5. Вычисляется время: `(нужная валюта) / (валюта в день)`
 
 **Примечание:** 
 - Все стоимости хранятся как константы в `AppSettings.factions`, умножение не используется - применяются готовые суммы
-- Расчет учитывает только те активности, которые указаны во фракции (`hasOrder`, `hasWork`)
-- Если `hasOrder = false` и `hasWork = false`, возвращается `null` (расчет невозможен)
+- Расчет учитывает только те активности, которые настроены (заказы включены и фракция имеет заказы, или работа настроена с валютой > 0)
+- Если заказы отключены или не настроены, и работа не настроена (оба поля равны 0), возвращается `null` (расчет невозможен)
 
 #### CalculateTimeToReputationGoal
 
@@ -170,15 +170,16 @@ class CalculateTimeToReputationGoal {
 - `Duration.zero` - если цель уже достигнута
 
 **Логика расчета:**
-1. Вычисляется общий опыт на основе `currentReputationLevel` и `currentLevelExp` через `ReputationHelper.getTotalExp`
-2. Вычисляется требуемый опыт для достижения `targetReputationLevel` через `ReputationHelper.getTotalExpForTargetLevel`
+1. Вычисляется общий опыт на основе `currentReputationLevel` и `currentLevelExp` через `ReputationHelper.getNeededExp`
+2. Вычисляется требуемый опыт для достижения `targetReputationLevel`
 3. Рассчитывается опыт в день:
-   - Опыт за заказ (только если `hasOrder = true`) - среднее арифметическое опыта из `FactionTemplate.orderRewards` для данной фракции
+   - Опыт за заказ (только если `ordersEnabled = true` и фракция имеет заказы согласно статическому списку) - среднее арифметическое опыта из `FactionTemplate.orderReward` для данной фракции
+   - Опыт за работу (только если `workReward != null` и `workReward.exp > 0`) - значение из `faction.workReward.exp`
 4. Вычисляется время: `(нужный опыт) / (опыт в день)`
 
 **Примечание:** 
-- Опыт дается только за заказы, не за работу
-- Расчет учитывает только фракции с заказами (`hasOrder = true`)
+- Расчет учитывает опыт как за заказы, так и за работу (если настроены)
+- Расчет учитывает только те источники опыта, которые настроены (заказы включены и фракция имеет заказы, или работа настроена с опытом > 0)
 
 #### ResetDailyFlags
 
@@ -217,9 +218,10 @@ class Faction {
   final int? id;
   final String name;
   final int currency;
-  final bool hasOrder;
   final bool orderCompleted;
-  final int? workCurrency;
+  final bool ordersEnabled; // учитывать ли заказы в расчете
+  final WorkReward? workReward; // награда за работу (валюта и опыт)
+  final bool workCompleted; // выполнена ли работа
   final bool hasCertificate;
   final bool certificatePurchased;
   final bool decorationRespectPurchased;
@@ -270,7 +272,7 @@ AppSettings.factions.certificatePrice
 
 **Примечание:** 
 - Все стоимости хранятся как готовые суммы (не используется умножение). Структура расширяема для будущих функций (карта, брактеат).
-- `currencyPerWork` больше не используется для расчета времени до цели - используется значение из `faction.workCurrency`
+- `currencyPerWork` больше не используется для расчета времени до цели - используется значение из `faction.workReward.currency`
 
 ### FactionTemplate
 
@@ -279,17 +281,15 @@ AppSettings.factions.certificatePrice
 ```dart
 class FactionTemplate {
   final String name;
-  final bool hasOrder;
   final bool hasWork;
   final bool hasCertificate;
-  final List<OrderReward>? orderRewards; // Массив наград за заказы (валюта и опыт) (только для фракций с заказами)
+  final OrderReward? orderReward; // Награда за заказы (валюта и опыт) (nullable, только для фракций с заказами)
   
   const FactionTemplate({
     required this.name,
-    required this.hasOrder,
     required this.hasWork,
     required this.hasCertificate,
-    this.orderRewards,
+    this.orderReward,
   });
 }
 ```
@@ -307,8 +307,54 @@ FactionsList.createFactionFromTemplate(template)
 ```
 
 **Примечание:** 
-- Каждая фракция в статическом списке имеет предустановленные значения `hasOrder`, `hasWork` и `hasCertificate`, которые определяют, какие активности доступны для этой фракции
-- Для фракций с заказами (`hasOrder = true`) в поле `orderRewards` хранится массив наград за заказы (валюта и опыт), которые могут варьироваться в разные дни. При расчете времени до цели используется среднее арифметическое валюты и опыта отдельно
+- Каждая фракция в статическом списке имеет предустановленные значения `hasWork` и `hasCertificate`, которые определяют, какие активности доступны для этой фракции
+- Для фракций с заказами в поле `orderReward` хранится награда за заказы (валюта и опыт как массивы), которые могут варьироваться в разные дни. При расчете времени до цели используется среднее арифметическое валюты и опыта отдельно
+- Наличие заказов определяется наличием `orderReward` (если `orderReward != null`, значит фракция имеет заказы)
+
+### WorkReward
+
+Награда за выполнение работы (валюта и опыт).
+
+```dart
+class WorkReward {
+  final int currency;
+  final int exp;
+  
+  const WorkReward({
+    required this.currency,
+    required this.exp,
+  });
+}
+```
+
+**Использование:**
+- `WorkReward` всегда создается при вводе значений в поля работы (даже если оба поля равны 0)
+- Если оба поля равны 0, работа не учитывается в расчетах
+- Можно указать только валюту, только опыт, или оба значения
+- В расчетах учитывается только если соответствующее поле > 0
+
+### OrderReward
+
+Награда за выполнение заказа (валюта и опыт как массивы).
+
+```dart
+class OrderReward {
+  final List<int> currency;
+  final List<int> exp;
+  
+  const OrderReward({
+    required this.currency,
+    required this.exp,
+  });
+  
+  static int averageCurrency(OrderReward reward);
+  static int averageExp(OrderReward reward);
+}
+```
+
+**Использование:**
+- Хранит массивы значений валюты и опыта, которые могут варьироваться в разные дни
+- При расчете времени до цели используется среднее арифметическое через методы `averageCurrency` и `averageExp`
 
 ## Presentation Layer API
 

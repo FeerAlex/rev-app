@@ -15,10 +15,11 @@
 | `id` | INTEGER PRIMARY KEY | Уникальный идентификатор фракции |
 | `name` | TEXT NOT NULL | Название фракции |
 | `currency` | INTEGER NOT NULL DEFAULT 0 | Текущее количество валюты |
-| `has_order` | INTEGER NOT NULL DEFAULT 0 | Есть ли заказы во фракции (0/1) |
+| `has_order` | INTEGER NOT NULL DEFAULT 0 | Учитывать ли заказы в расчете (0/1, используется для `ordersEnabled`) |
 | `order_completed` | INTEGER NOT NULL DEFAULT 0 | Выполнен ли заказ (0/1) |
-| `work_currency` | INTEGER | Валюта с работы (NULL если работы нет) |
-| `has_work` | INTEGER NOT NULL DEFAULT 0 | Есть ли работа во фракции (0/1) |
+| `work_currency` | INTEGER | Валюта с работы (может быть NULL или 0) |
+| `work_exp` | INTEGER | Опыт с работы (может быть NULL или 0) |
+| `has_work` | INTEGER NOT NULL DEFAULT 0 | Есть ли работа во фракции (0/1, определяется статическим списком) |
 | `work_completed` | INTEGER NOT NULL DEFAULT 0 | Выполнена ли работа (0/1) |
 | `has_certificate` | INTEGER NOT NULL DEFAULT 0 | Есть ли сертификат во фракции (0/1) |
 | `certificate_purchased` | INTEGER NOT NULL DEFAULT 0 | Куплен ли сертификат (0/1) |
@@ -42,7 +43,9 @@
 
 **Примечание:** 
 - Настройки приложения (цены, валюты) хранятся как константы в коде (`lib/core/constants/app_settings.dart`), а не в базе данных
-- Поля `has_order`, `has_work` и `has_certificate` определяются статическим списком фракций (`FactionTemplate`) и настраиваются для каждой фракции при создании
+- Поле `has_order` используется для хранения `ordersEnabled` (учитывать ли заказы в расчете), а не для определения наличия заказов во фракции. Наличие заказов определяется статическим списком фракций (`FactionTemplate.orderReward != null`)
+- Поля `has_work` и `has_certificate` определяются статическим списком фракций (`FactionTemplate`) и настраиваются для каждой фракции при создании
+- Поля `work_currency` и `work_exp` хранят значения валюты и опыта за работу. Если оба поля равны 0 или NULL, работа не учитывается в расчетах. `WorkReward` всегда создается при вводе значений (даже если оба поля равны 0)
 
 ## SQL запросы создания таблиц
 
@@ -56,6 +59,7 @@ CREATE TABLE factions (
   has_order INTEGER NOT NULL DEFAULT 0,
   order_completed INTEGER NOT NULL DEFAULT 0,
   work_currency INTEGER,
+  work_exp INTEGER,
   has_work INTEGER NOT NULL DEFAULT 0,
   work_completed INTEGER NOT NULL DEFAULT 0,
   has_certificate INTEGER NOT NULL DEFAULT 0,
