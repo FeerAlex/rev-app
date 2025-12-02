@@ -1,6 +1,7 @@
 import '../../domain/entities/faction.dart';
 import '../datasources/faction_dao.dart';
 import '../../core/constants/reputation_level.dart';
+import '../../core/constants/work_reward.dart';
 
 class FactionModel {
   static Faction fromMap(Map<String, dynamic> map) {
@@ -10,8 +11,20 @@ class FactionModel {
       currency: map[FactionDao.columnCurrency] as int,
       orderCompleted: (map[FactionDao.columnOrderCompleted] as int) == 1,
       ordersEnabled: (map[FactionDao.columnHasOrder] as int? ?? 1) == 1,
-      workCurrency: map[FactionDao.columnWorkCurrency] as int?,
-      hasWork: (map[FactionDao.columnHasWork] as int? ?? 0) == 1,
+      workReward: () {
+        final currency = map[FactionDao.columnWorkCurrency] as int?;
+        final exp = map[FactionDao.columnWorkExp] as int?;
+        // Создаем WorkReward если хотя бы одно поле не null (включая 0)
+        final hasCurrency = currency != null;
+        final hasExp = exp != null;
+        if (hasCurrency || hasExp) {
+          return WorkReward(
+            currency: hasCurrency ? currency : null,
+            exp: hasExp ? exp : null,
+          );
+        }
+        return null;
+      }(),
       workCompleted: (map[FactionDao.columnWorkCompleted] as int? ?? 0) == 1,
       hasCertificate: (map[FactionDao.columnHasCertificate] as int) == 1,
       certificatePurchased:
@@ -46,7 +59,6 @@ class FactionModel {
       FactionDao.columnCurrency: faction.currency,
       FactionDao.columnOrderCompleted: faction.orderCompleted ? 1 : 0,
       FactionDao.columnHasOrder: faction.ordersEnabled ? 1 : 0,
-      FactionDao.columnHasWork: faction.hasWork ? 1 : 0,
       FactionDao.columnWorkCompleted: faction.workCompleted ? 1 : 0,
       FactionDao.columnHasCertificate: faction.hasCertificate ? 1 : 0,
       FactionDao.columnCertificatePurchased: faction.certificatePurchased ? 1 : 0,
@@ -72,8 +84,14 @@ class FactionModel {
     if (faction.id != null) {
       map[FactionDao.columnId] = faction.id;
     }
-    if (faction.workCurrency != null) {
-      map[FactionDao.columnWorkCurrency] = faction.workCurrency;
+    if (faction.workReward != null) {
+      // Сохраняем только заполненные поля
+      if (faction.workReward!.currency != null) {
+        map[FactionDao.columnWorkCurrency] = faction.workReward!.currency;
+      }
+      if (faction.workReward!.exp != null) {
+        map[FactionDao.columnWorkExp] = faction.workReward!.exp;
+      }
     }
 
     return map;

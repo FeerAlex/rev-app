@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import '../../../core/constants/work_reward.dart';
 
-class WorkCurrencyBadge extends StatelessWidget {
-  final int? workCurrency;
+class WorkRewardBadge extends StatelessWidget {
+  final WorkReward? workReward;
   final VoidCallback? onTap;
 
-  const WorkCurrencyBadge({
+  const WorkRewardBadge({
     super.key,
-    this.workCurrency,
+    this.workReward,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final hasValue = workCurrency != null && workCurrency! > 0;
-    final text = hasValue ? workCurrency.toString() : 'Работа';
+    final hasValue = workReward != null;
+    final text = hasValue 
+        ? '${workReward!.currency}/${workReward!.exp}'
+        : 'Работа';
     final color = Colors.amber;
 
     Widget badge = Container(

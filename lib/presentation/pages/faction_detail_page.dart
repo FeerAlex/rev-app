@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/faction.dart';
 import '../../../core/constants/factions_list.dart';
+import '../../../core/constants/work_reward.dart';
 import '../bloc/faction/faction_bloc.dart';
 import '../bloc/faction/faction_event.dart';
 import '../widgets/faction_activities_block.dart';
@@ -25,7 +26,7 @@ class FactionDetailPage extends StatefulWidget {
 class _FactionDetailPageState extends State<FactionDetailPage> {
   late bool _orderCompleted;
   late bool _ordersEnabled;
-  late bool _hasWork;
+  late WorkReward? _workReward;
   late bool _workCompleted;
   late bool _hasCertificate;
   late bool _certificatePurchased;
@@ -45,7 +46,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
     final faction = widget.faction;
     _orderCompleted = faction?.orderCompleted ?? false;
     _ordersEnabled = faction?.ordersEnabled ?? false;
-    _hasWork = faction?.hasWork ?? false;
+    _workReward = faction?.workReward;
     _workCompleted = faction?.workCompleted ?? false;
     _hasCertificate = faction?.hasCertificate ?? false;
     _certificatePurchased = faction?.certificatePurchased ?? false;
@@ -79,8 +80,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
       currency: widget.faction!.currency,
       orderCompleted: _orderCompleted,
       ordersEnabled: _ordersEnabled,
-      workCurrency: widget.faction!.workCurrency,
-      hasWork: _hasWork,
+      workReward: _workReward,
       workCompleted: _workCompleted,
       hasCertificate: _hasCertificate,
       certificatePurchased: _certificatePurchased,
@@ -199,9 +199,9 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
             ),
             FactionActivitiesBlock(
               hasOrder: _ordersEnabled,
-              hasWork: _hasWork,
+              workReward: _workReward,
               showOrderCheckbox: _canFactionHaveOrders(),
-              showWorkCheckbox: _canFactionHaveWork(),
+              showWorkInput: _canFactionHaveWork(),
               onHasOrderChanged: (value) {
                 setState(() {
                   _ordersEnabled = value;
@@ -210,10 +210,10 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
                   }
                 });
               },
-              onHasWorkChanged: (value) {
+              onWorkRewardChanged: (value) {
                 setState(() {
-                  _hasWork = value;
-                  if (!_hasWork) {
+                  _workReward = value;
+                  if (_workReward == null) {
                     _workCompleted = false;
                   }
                 });

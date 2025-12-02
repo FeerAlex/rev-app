@@ -57,6 +57,11 @@ class CalculateTimeToCurrencyGoal {
       currencyPerDay += OrderReward.averageCurrency(template.orderReward!);
     }
 
+    // Потенциальный доход от работы
+    if (faction.workReward != null && faction.workReward!.currency != null && faction.workReward!.currency! > 0) {
+      currencyPerDay += faction.workReward!.currency!;
+    }
+
     // Если нет дохода в день, вернуть null
     if (currencyPerDay <= 0) {
       return null;
@@ -68,4 +73,3 @@ class CalculateTimeToCurrencyGoal {
     return Duration(minutes: max(0, totalMinutes));
   }
 }
-

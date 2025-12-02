@@ -32,6 +32,11 @@ class CalculateTimeToReputationGoal {
       expPerDay += OrderReward.averageExp(template.orderReward!);
     }
 
+    // Потенциальный доход от работы
+    if (faction.workReward != null && faction.workReward!.exp != null && faction.workReward!.exp! > 0) {
+      expPerDay += faction.workReward!.exp!;
+    }
+
     // Если нет дохода опыта в день, вернуть null
     if (expPerDay <= 0) {
       return null;

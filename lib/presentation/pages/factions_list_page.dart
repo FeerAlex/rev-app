@@ -4,7 +4,6 @@ import '../bloc/faction/faction_bloc.dart';
 import '../bloc/faction/faction_event.dart';
 import '../bloc/faction/faction_state.dart';
 import '../widgets/faction_card.dart';
-import '../widgets/currency_input_dialog.dart';
 import 'faction_detail_page.dart';
 
 class FactionsListPage extends StatelessWidget {
@@ -141,25 +140,6 @@ class FactionsListPage extends StatelessWidget {
                         context.read<FactionBloc>().add(
                               UpdateFactionEvent(updatedFaction),
                             );
-                      },
-                      onWorkCurrencyTap: () async {
-                        final bloc = context.read<FactionBloc>();
-                        final result = await showDialog<int?>(
-                          context: context,
-                          builder: (context) => CurrencyInputDialog(
-                            initialValue: faction.workCurrency,
-                            title: 'Валюта с работы',
-                            labelText: 'Введите валюту с работы',
-                            hintText: 'Оставьте пустым, если работы нет',
-                            allowEmpty: true,
-                          ),
-                        );
-                        if (result != null) {
-                          final updatedFaction = faction.copyWith(
-                            workCurrency: result,
-                          );
-                          bloc.add(UpdateFactionEvent(updatedFaction));
-                        }
                       },
                       onExpTap: () {
                         // Открываем страницу деталей для редактирования репутации

@@ -10,7 +10,6 @@ class FactionCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onOrderToggle;
   final VoidCallback? onWorkToggle;
-  final VoidCallback? onWorkCurrencyTap;
   final VoidCallback? onExpTap;
 
   const FactionCard({
@@ -19,7 +18,6 @@ class FactionCard extends StatelessWidget {
     required this.onTap,
     this.onOrderToggle,
     this.onWorkToggle,
-    this.onWorkCurrencyTap,
     this.onExpTap,
   });
 
@@ -61,7 +59,6 @@ class FactionCard extends StatelessWidget {
                               onWorkToggle?.call();
                             }
                           : null,
-                      onWorkCurrencyTap: onWorkCurrencyTap,
                     ),
                   ],
                 ),

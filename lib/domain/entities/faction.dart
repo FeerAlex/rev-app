@@ -1,4 +1,5 @@
 import '../../core/constants/reputation_level.dart';
+import '../../core/constants/work_reward.dart';
 
 class Faction {
   final int? id;
@@ -6,8 +7,7 @@ class Faction {
   final int currency;
   final bool orderCompleted;
   final bool ordersEnabled; // учитывать ли заказы в расчете
-  final int? workCurrency; // null если работы нет
-  final bool hasWork; // учитывать ли работу в калькуляторе
+  final WorkReward? workReward; // награда за работу (валюта и опыт)
   final bool workCompleted; // выполнена ли работа
   final bool hasCertificate;
   final bool certificatePurchased;
@@ -29,8 +29,7 @@ class Faction {
     required this.currency,
     required this.orderCompleted,
     this.ordersEnabled = true,
-    this.workCurrency,
-    required this.hasWork,
+    this.workReward,
     required this.workCompleted,
     required this.hasCertificate,
     required this.certificatePurchased,
@@ -53,8 +52,7 @@ class Faction {
     int? currency,
     bool? orderCompleted,
     bool? ordersEnabled,
-    int? workCurrency,
-    bool? hasWork,
+    WorkReward? workReward,
     bool? workCompleted,
     bool? hasCertificate,
     bool? certificatePurchased,
@@ -76,8 +74,7 @@ class Faction {
       currency: currency ?? this.currency,
       orderCompleted: orderCompleted ?? this.orderCompleted,
       ordersEnabled: ordersEnabled ?? this.ordersEnabled,
-      workCurrency: workCurrency ?? this.workCurrency,
-      hasWork: hasWork ?? this.hasWork,
+      workReward: workReward ?? this.workReward,
       workCompleted: workCompleted ?? this.workCompleted,
       hasCertificate: hasCertificate ?? this.hasCertificate,
       certificatePurchased: certificatePurchased ?? this.certificatePurchased,

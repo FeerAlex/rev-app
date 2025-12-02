@@ -45,9 +45,8 @@ class _TimeToCurrencyGoalWidgetState extends State<TimeToCurrencyGoalWidget> {
         oldFaction.orderCompleted != newFaction.orderCompleted ||
         oldFaction.ordersEnabled != newFaction.ordersEnabled ||
         oldFaction.certificatePurchased != newFaction.certificatePurchased ||
-        oldFaction.hasWork != newFaction.hasWork ||
         oldFaction.hasCertificate != newFaction.hasCertificate ||
-        oldFaction.workCurrency != newFaction.workCurrency ||
+        oldFaction.workReward != newFaction.workReward ||
         oldFaction.decorationRespectPurchased != newFaction.decorationRespectPurchased ||
         oldFaction.decorationRespectUpgraded != newFaction.decorationRespectUpgraded ||
         oldFaction.decorationHonorPurchased != newFaction.decorationHonorPurchased ||
@@ -101,11 +100,11 @@ class _TimeToCurrencyGoalWidgetState extends State<TimeToCurrencyGoalWidget> {
 
     if (_timeToGoal == null) {
       return Text(
-        'Нет данных',
-        style: TextStyle(
+            'Нет данных',
+            style: TextStyle(
           fontSize: 10,
-          color: Colors.grey[400],
-        ),
+              color: Colors.grey[400],
+            ),
       );
     }
 
@@ -114,13 +113,13 @@ class _TimeToCurrencyGoalWidgetState extends State<TimeToCurrencyGoalWidget> {
     return FittedBox(
       fit: BoxFit.scaleDown,
       child: Text(
-        isCompleted
-            ? 'Цель достигнута'
-            : TimeFormatter.formatDuration(_timeToGoal!),
-        style: TextStyle(
+            isCompleted
+                ? 'Цель достигнута'
+                : TimeFormatter.formatDuration(_timeToGoal!),
+            style: TextStyle(
           fontSize: 10,
-          fontWeight: FontWeight.w500,
-          color: isCompleted ? Colors.green : Colors.white,
+              fontWeight: FontWeight.w500,
+              color: isCompleted ? Colors.green : Colors.white,
           shadows: const [
             Shadow(
               offset: Offset(0, 0),
@@ -128,7 +127,7 @@ class _TimeToCurrencyGoalWidgetState extends State<TimeToCurrencyGoalWidget> {
               color: Colors.black,
             ),
           ],
-        ),
+          ),
       ),
     );
   }

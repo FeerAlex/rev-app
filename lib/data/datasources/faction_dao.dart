@@ -8,6 +8,7 @@ class FactionDao {
   static const String columnHasOrder = 'has_order';
   static const String columnOrderCompleted = 'order_completed';
   static const String columnWorkCurrency = 'work_currency';
+  static const String columnWorkExp = 'work_exp';
   static const String columnHasWork = 'has_work';
   static const String columnWorkCompleted = 'work_completed';
   static const String columnHasCertificate = 'has_certificate';
@@ -43,6 +44,7 @@ class FactionDao {
         $columnHasOrder INTEGER NOT NULL DEFAULT 0,
         $columnOrderCompleted INTEGER NOT NULL DEFAULT 0,
         $columnWorkCurrency INTEGER,
+        $columnWorkExp INTEGER,
         $columnHasWork INTEGER NOT NULL DEFAULT 0,
         $columnWorkCompleted INTEGER NOT NULL DEFAULT 0,
         $columnHasCertificate INTEGER NOT NULL DEFAULT 0,
