@@ -213,7 +213,8 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
               onWorkRewardChanged: (value) {
                 setState(() {
                   _workReward = value;
-                  if (_workReward == null) {
+                  // Если оба поля 0, сбрасываем completed
+                  if (_workReward != null && _workReward!.currency == 0 && _workReward!.exp == 0) {
                     _workCompleted = false;
                   }
                 });

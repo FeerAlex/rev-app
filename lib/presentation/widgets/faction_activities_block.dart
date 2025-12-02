@@ -32,10 +32,14 @@ class _FactionActivitiesBlockState extends State<FactionActivitiesBlock> {
   void initState() {
     super.initState();
     _currencyController = TextEditingController(
-      text: widget.workReward?.currency?.toString() ?? '',
+      text: widget.workReward?.currency != null && widget.workReward!.currency > 0
+          ? widget.workReward!.currency.toString()
+          : '',
     );
     _expController = TextEditingController(
-      text: widget.workReward?.exp?.toString() ?? '',
+      text: widget.workReward?.exp != null && widget.workReward!.exp > 0
+          ? widget.workReward!.exp.toString()
+          : '',
     );
   }
 
@@ -43,8 +47,12 @@ class _FactionActivitiesBlockState extends State<FactionActivitiesBlock> {
   void didUpdateWidget(FactionActivitiesBlock oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.workReward != widget.workReward) {
-      _currencyController.text = widget.workReward?.currency?.toString() ?? '';
-      _expController.text = widget.workReward?.exp?.toString() ?? '';
+      _currencyController.text = widget.workReward?.currency != null && widget.workReward!.currency > 0
+          ? widget.workReward!.currency.toString()
+          : '';
+      _expController.text = widget.workReward?.exp != null && widget.workReward!.exp > 0
+          ? widget.workReward!.exp.toString()
+          : '';
     }
   }
 
@@ -61,18 +69,14 @@ class _FactionActivitiesBlockState extends State<FactionActivitiesBlock> {
     final currencyText = _currencyController.text.trim();
     final expText = _expController.text.trim();
     
-    final currency = currencyText.isEmpty ? null : int.tryParse(currencyText);
-    final exp = expText.isEmpty ? null : int.tryParse(expText);
+    final currency = currencyText.isEmpty ? 0 : (int.tryParse(currencyText) ?? 0);
+    final exp = expText.isEmpty ? 0 : (int.tryParse(expText) ?? 0);
     
-    // Если оба поля пустые, возвращаем null, иначе создаем WorkReward
-    if (currency == null && exp == null) {
-      widget.onWorkRewardChanged!(null);
-    } else {
-      widget.onWorkRewardChanged!(WorkReward(
-        currency: currency ?? 0,
-        exp: exp ?? 0,
-      ));
-    }
+    // Всегда создаем WorkReward (даже если оба поля 0)
+    widget.onWorkRewardChanged!(WorkReward(
+      currency: currency,
+      exp: exp,
+    ));
   }
 
   void _showHelpDialog() {

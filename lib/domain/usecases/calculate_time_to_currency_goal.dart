@@ -58,8 +58,8 @@ class CalculateTimeToCurrencyGoal {
     }
 
     // Потенциальный доход от работы
-    if (faction.workReward != null && faction.workReward!.currency != null && faction.workReward!.currency! > 0) {
-      currencyPerDay += faction.workReward!.currency!;
+    if (faction.workReward != null && faction.workReward!.currency > 0) {
+      currencyPerDay += faction.workReward!.currency;
     }
 
     // Если нет дохода в день, вернуть null

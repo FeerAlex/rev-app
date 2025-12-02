@@ -38,31 +38,23 @@ class FactionActivitiesList extends StatelessWidget {
 
     if (faction.workReward != null) {
       final reward = faction.workReward!;
-      final hasCurrency = reward.currency != null && reward.currency! > 0;
-      final hasExp = reward.exp != null && reward.exp! > 0;
+      final hasCurrency = reward.currency > 0;
+      final hasExp = reward.exp > 0;
       
-      String text;
-      if (hasCurrency && hasExp) {
-        text = '${reward.currency}/${reward.exp}';
-      } else if (hasCurrency) {
-        text = reward.currency.toString();
-      } else if (hasExp) {
-        text = reward.exp.toString();
-      } else {
-        text = 'Работа';
-      }
-      
-      badges.add(
-        Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: ActivityBadge(
-            text: text,
-            color: Colors.amber,
-            isCompleted: faction.workCompleted,
-            onTap: onWorkToggle,
+      // Показываем чипс только если хотя бы одно поле > 0
+      if (hasCurrency || hasExp) {
+        badges.add(
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ActivityBadge(
+              text: 'Работа',
+              color: Colors.amber,
+              isCompleted: faction.workCompleted,
+              onTap: onWorkToggle,
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
 
     if (badges.isEmpty) {

@@ -14,16 +14,11 @@ class FactionModel {
       workReward: () {
         final currency = map[FactionDao.columnWorkCurrency] as int?;
         final exp = map[FactionDao.columnWorkExp] as int?;
-        // Создаем WorkReward если хотя бы одно поле не null (включая 0)
-        final hasCurrency = currency != null;
-        final hasExp = exp != null;
-        if (hasCurrency || hasExp) {
-          return WorkReward(
-            currency: hasCurrency ? currency : null,
-            exp: hasExp ? exp : null,
-          );
-        }
-        return null;
+        // Всегда создаем WorkReward (даже если оба поля null или 0)
+        return WorkReward(
+          currency: currency ?? 0,
+          exp: exp ?? 0,
+        );
       }(),
       workCompleted: (map[FactionDao.columnWorkCompleted] as int? ?? 0) == 1,
       hasCertificate: (map[FactionDao.columnHasCertificate] as int) == 1,
@@ -84,15 +79,9 @@ class FactionModel {
     if (faction.id != null) {
       map[FactionDao.columnId] = faction.id;
     }
-    if (faction.workReward != null) {
-      // Сохраняем только заполненные поля
-      if (faction.workReward!.currency != null) {
-        map[FactionDao.columnWorkCurrency] = faction.workReward!.currency;
-      }
-      if (faction.workReward!.exp != null) {
-        map[FactionDao.columnWorkExp] = faction.workReward!.exp;
-      }
-    }
+    // Всегда сохраняем оба поля (даже если 0)
+    map[FactionDao.columnWorkCurrency] = faction.workReward?.currency ?? 0;
+    map[FactionDao.columnWorkExp] = faction.workReward?.exp ?? 0;
 
     return map;
   }

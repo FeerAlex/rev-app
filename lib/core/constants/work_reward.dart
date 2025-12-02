@@ -1,11 +1,11 @@
 /// Награда за выполнение работы (валюта и опыт)
 class WorkReward {
-  final int? currency;
-  final int? exp;
+  final int currency;
+  final int exp;
 
   const WorkReward({
-    this.currency,
-    this.exp,
+    required this.currency,
+    required this.exp,
   });
 
   @override
@@ -17,6 +17,6 @@ class WorkReward {
           exp == other.exp;
 
   @override
-  int get hashCode => (currency?.hashCode ?? 0) ^ (exp?.hashCode ?? 0);
+  int get hashCode => currency.hashCode ^ exp.hashCode;
 }
 
