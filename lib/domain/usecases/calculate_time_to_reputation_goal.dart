@@ -9,11 +9,16 @@ class CalculateTimeToReputationGoal {
   const CalculateTimeToReputationGoal();
 
   Duration? call(Faction faction) {
+    // Если цель не установлена, возвращаем null
+    if (faction.targetReputationLevel == null) {
+      return null;
+    }
+
     // Вычисляем, сколько опыта нужно для достижения целевого уровня
     final neededExp = ReputationHelper.getNeededExp(
       faction.currentReputationLevel,
       faction.currentLevelExp,
-      faction.targetReputationLevel,
+      faction.targetReputationLevel!,
       faction.name,
     );
 

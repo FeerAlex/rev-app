@@ -53,6 +53,15 @@ class _TimeToReputationGoalWidgetState extends State<TimeToReputationGoalWidget>
   Future<void> _calculateTime() async {
     if (widget.faction == null) return;
 
+    // Если цель не установлена, сразу возвращаем null
+    if (widget.faction!.targetReputationLevel == null) {
+      setState(() {
+        _timeToGoal = null;
+        _isLoading = false;
+      });
+      return;
+    }
+
     // Не показываем индикатор, если уже есть вычисленное значение (оптимистичное обновление)
     final hadPreviousValue = _timeToGoal != null;
     

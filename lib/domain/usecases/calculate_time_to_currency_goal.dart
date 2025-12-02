@@ -36,8 +36,8 @@ class CalculateTimeToCurrencyGoal {
       totalCost += AppSettings.factions.decorationUpgradeCostAdoration;
     }
 
-    // Сертификат
-    if (!faction.certificatePurchased && faction.hasCertificate) {
+    // Сертификат (только если нужен как цель)
+    if (!faction.certificatePurchased && faction.wantsCertificate) {
       totalCost += AppSettings.factions.certificatePrice;
     }
 

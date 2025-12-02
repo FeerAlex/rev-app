@@ -21,7 +21,8 @@ class Faction {
   final bool isVisible; // видимость фракции в списке
   final ReputationLevel currentReputationLevel; // текущий уровень отношения
   final int currentLevelExp; // опыт на текущем уровне (от 0 до требуемого для уровня)
-  final ReputationLevel targetReputationLevel; // целевой уровень отношения
+  final ReputationLevel? targetReputationLevel; // целевой уровень отношения (null = цель не нужна)
+  final bool wantsCertificate; // нужен ли сертификат как цель
 
   const Faction({
     this.id,
@@ -43,7 +44,8 @@ class Faction {
     this.isVisible = true,
     this.currentReputationLevel = ReputationLevel.indifference,
     this.currentLevelExp = 0,
-    this.targetReputationLevel = ReputationLevel.maximum,
+    this.targetReputationLevel,
+    this.wantsCertificate = false,
   });
 
   Faction copyWith({
@@ -67,6 +69,7 @@ class Faction {
     ReputationLevel? currentReputationLevel,
     int? currentLevelExp,
     ReputationLevel? targetReputationLevel,
+    bool? wantsCertificate,
   }) {
     return Faction(
       id: id ?? this.id,
@@ -95,6 +98,7 @@ class Faction {
       currentReputationLevel: currentReputationLevel ?? this.currentReputationLevel,
       currentLevelExp: currentLevelExp ?? this.currentLevelExp,
       targetReputationLevel: targetReputationLevel ?? this.targetReputationLevel,
+      wantsCertificate: wantsCertificate ?? this.wantsCertificate,
     );
   }
 }

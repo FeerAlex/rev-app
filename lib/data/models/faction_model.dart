@@ -42,9 +42,11 @@ class FactionModel {
         map[FactionDao.columnCurrentReputationLevel] as int? ?? 0,
       ),
       currentLevelExp: map[FactionDao.columnCurrentLevelExp] as int? ?? 0,
-      targetReputationLevel: ReputationLevelExtension.fromValue(
-        map[FactionDao.columnTargetReputationLevel] as int? ?? 6,
-      ),
+      targetReputationLevel: () {
+        final value = map[FactionDao.columnTargetReputationLevel] as int?;
+        return value != null ? ReputationLevelExtension.fromValue(value) : null;
+      }(),
+      wantsCertificate: (map[FactionDao.columnWantsCertificate] as int? ?? 0) == 1,
     );
   }
 
@@ -73,7 +75,8 @@ class FactionModel {
       FactionDao.columnIsVisible: faction.isVisible ? 1 : 0,
       FactionDao.columnCurrentReputationLevel: faction.currentReputationLevel.value,
       FactionDao.columnCurrentLevelExp: faction.currentLevelExp,
-      FactionDao.columnTargetReputationLevel: faction.targetReputationLevel.value,
+      FactionDao.columnTargetReputationLevel: faction.targetReputationLevel?.value,
+      FactionDao.columnWantsCertificate: faction.wantsCertificate ? 1 : 0,
     };
 
     if (faction.id != null) {

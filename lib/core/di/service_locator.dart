@@ -18,7 +18,7 @@ class ServiceLocator {
     
     _database = await openDatabase(
       path,
-      version: 11,
+      version: 12,
       onCreate: (db, version) async {
         await FactionDao.createTable(db);
       },
@@ -73,6 +73,19 @@ class ServiceLocator {
               ADD COLUMN ${FactionDao.columnTargetReputationLevel} INTEGER NOT NULL DEFAULT 6
             ''');
           }
+        }
+        
+        // Миграция на версию 12: добавляем wants_certificate и делаем target_reputation_level nullable
+        if (oldVersion < 12) {
+          if (!existingColumns.contains(FactionDao.columnWantsCertificate)) {
+            await db.execute('''
+              ALTER TABLE ${FactionDao.tableName} 
+              ADD COLUMN ${FactionDao.columnWantsCertificate} INTEGER NOT NULL DEFAULT 0
+            ''');
+          }
+          // Для target_reputation_level: в SQLite нельзя изменить NOT NULL на nullable напрямую
+          // Но мы можем просто обрабатывать null при чтении, а при записи использовать значение по умолчанию
+          // Существующие значения останутся как есть (NOT NULL), новые записи могут быть NULL
         }
       },
     );

@@ -74,7 +74,8 @@ class FactionsList {
       // Репутация (текущий и целевой уровень отношения)
       currentLevelExp: 0,
       currentReputationLevel: ReputationLevel.indifference,
-      targetReputationLevel: ReputationLevel.maximum,
+      targetReputationLevel: null, // По умолчанию цель не установлена
+      wantsCertificate: false, // По умолчанию сертификат не нужен как цель
     );
   }
 }
