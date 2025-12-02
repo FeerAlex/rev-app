@@ -75,6 +75,27 @@ class _FactionActivitiesBlockState extends State<FactionActivitiesBlock> {
     }
   }
 
+  void _showHelpDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('О ежедневных активностях'),
+        content: const Text(
+          'Блок "Ежедневные активности" позволяет настроить, какие источники дохода учитываются при расчете времени до цели.\n\n'
+          '• Заказы - включите галочку, если хотите учитывать заказы в расчете. Заказы дают валюту и опыт ежедневно.\n\n'
+          '• Работа - укажите валюту и опыт, которые вы получаете за работу каждый день. Эти значения используются в калькуляторе времени до цели по валюте и репутации. Можно указать только валюту, только опыт, или оба значения.\n\n'
+          'Если галочка "Заказы" выключена или поля работы пустые, соответствующие источники дохода не учитываются в расчетах.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Понятно'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return _buildContent();
@@ -87,11 +108,20 @@ class _FactionActivitiesBlockState extends State<FactionActivitiesBlock> {
       children: [
         Row(
           spacing: 8,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(Icons.check_circle_outline, color: Colors.blue[300], size: 20),
             const Text(
               'Ежедневные активности',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            GestureDetector(
+              onTap: _showHelpDialog,
+              child: Icon(
+                Icons.help_outline,
+                size: 18,
+                color: Colors.grey[400],
+              ),
             ),
           ],
         ),
