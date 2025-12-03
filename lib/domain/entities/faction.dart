@@ -29,7 +29,7 @@ class Faction {
     required this.name,
     required this.currency,
     required this.orderCompleted,
-    this.ordersEnabled = true,
+    this.ordersEnabled = false,
     this.workReward,
     required this.workCompleted,
     required this.hasCertificate,

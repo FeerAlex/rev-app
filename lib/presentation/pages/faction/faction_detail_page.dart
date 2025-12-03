@@ -120,6 +120,15 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
     return template?.hasWork ?? false;
   }
 
+  /// Проверяет, что все украшения куплены и улучшены
+  bool _areAllDecorationsPurchasedAndUpgraded() {
+    return _decorationRespectPurchased &&
+        _decorationRespectUpgraded &&
+        _decorationHonorPurchased &&
+        _decorationHonorUpgraded &&
+        _decorationAdorationPurchased &&
+        _decorationAdorationUpgraded;
+  }
 
   void _deleteFaction() {
     if (widget.faction?.id == null) return;
@@ -266,15 +275,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
                       });
                     },
                   ),
-                  FactionCertificateBlock(
-                    faction: widget.faction!,
-                    certificatePurchased: _certificatePurchased,
-                    onCertificatePurchasedChanged: (value) {
-                      setState(() {
-                        _certificatePurchased = value;
-                      });
-                    },
-                  ),
+                  
                   FactionDecorationsSection(
                     decorationRespectPurchased: _decorationRespectPurchased,
                     decorationRespectUpgraded: _decorationRespectUpgraded,
@@ -285,31 +286,100 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
                     onRespectPurchasedChanged: (value) {
                       setState(() {
                         _decorationRespectPurchased = value;
+                        // Если сняли "Куплено", автоматически снимаем "Улучшено"
+                        if (!value) {
+                          _decorationRespectUpgraded = false;
+                        }
+                        // Если сняли галочку с украшения и сертификат куплен, снимаем галочку с сертификата
+                        if (!value && _certificatePurchased) {
+                          _certificatePurchased = false;
+                        }
                       });
                     },
                     onRespectUpgradedChanged: (value) {
                       setState(() {
                         _decorationRespectUpgraded = value;
+                        // Если сняли "Улучшено" и сертификат куплен, снимаем галочку с сертификата
+                        if (!value && _certificatePurchased) {
+                          _certificatePurchased = false;
+                        }
                       });
                     },
                     onHonorPurchasedChanged: (value) {
                       setState(() {
                         _decorationHonorPurchased = value;
+                        // Если сняли "Куплено", автоматически снимаем "Улучшено"
+                        if (!value) {
+                          _decorationHonorUpgraded = false;
+                        }
+                        // Если сняли галочку с украшения и сертификат куплен, снимаем галочку с сертификата
+                        if (!value && _certificatePurchased) {
+                          _certificatePurchased = false;
+                        }
                       });
                     },
                     onHonorUpgradedChanged: (value) {
                       setState(() {
                         _decorationHonorUpgraded = value;
+                        // Если сняли "Улучшено" и сертификат куплен, снимаем галочку с сертификата
+                        if (!value && _certificatePurchased) {
+                          _certificatePurchased = false;
+                        }
                       });
                     },
                     onAdorationPurchasedChanged: (value) {
                       setState(() {
                         _decorationAdorationPurchased = value;
+                        // Если сняли "Куплено", автоматически снимаем "Улучшено"
+                        if (!value) {
+                          _decorationAdorationUpgraded = false;
+                        }
+                        // Если сняли галочку с украшения и сертификат куплен, снимаем галочку с сертификата
+                        if (!value && _certificatePurchased) {
+                          _certificatePurchased = false;
+                        }
                       });
                     },
                     onAdorationUpgradedChanged: (value) {
                       setState(() {
                         _decorationAdorationUpgraded = value;
+                        // Если сняли "Улучшено" и сертификат куплен, снимаем галочку с сертификата
+                        if (!value && _certificatePurchased) {
+                          _certificatePurchased = false;
+                        }
+                      });
+                    },
+                  ),
+                  FactionCertificateBlock(
+                    faction: widget.faction!,
+                    certificatePurchased: _certificatePurchased,
+                    onCertificatePurchasedChanged: (value) {
+                      if (value == true) {
+                        // Проверяем, что все украшения куплены и улучшены
+                        if (!_areAllDecorationsPurchasedAndUpgraded()) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Невозможно купить сертификат'),
+                              content: const Text(
+                                'Для покупки сертификата необходимо купить и улучшить все украшения фракции:\n\n'
+                                '• Уважение\n'
+                                '• Почтение\n'
+                                '• Преклонение',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Понятно'),
+                                ),
+                              ],
+                            ),
+                          );
+                          return;
+                        }
+                      }
+                      setState(() {
+                        _certificatePurchased = value;
                       });
                     },
                   ),

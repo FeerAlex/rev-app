@@ -4,6 +4,7 @@ import '../../../core/constants/app_settings.dart';
 import '../../../core/constants/factions_list.dart';
 import '../../../core/constants/order_reward.dart';
 import '../time_to_goal/time_to_currency_goal_widget.dart';
+import '../common/help_dialog.dart';
 
 /// Виджет для отображения прогресса валюты с progress bar
 class CurrencyProgressBar extends StatelessWidget {
@@ -75,6 +76,39 @@ class CurrencyProgressBar extends StatelessWidget {
     return currencyPerDay > 0;
   }
 
+  void _showNoDataHelpDialog(BuildContext context, Faction faction) {
+    final reasons = <String>[];
+    
+    if (!faction.wantsCertificate) {
+      reasons.add('• Включите галочку "Нужен сертификат" в блоке "Цели"');
+    }
+    
+    final template = FactionsList.getTemplateByName(faction.name);
+    final hasOrderReward = template != null && template.orderReward != null;
+    final hasWorkCurrency = faction.workReward != null && faction.workReward!.currency > 0;
+    
+    // Показываем про заказы/работу ТОЛЬКО если не настроено ни то, ни другое
+    if (!faction.ordersEnabled && !hasWorkCurrency) {
+      if (hasOrderReward) {
+        reasons.add('• Включите галочку "Заказы" или укажите валюту за работу в блоке "Ежедневные активности"');
+      } else {
+        reasons.add('• Укажите валюту за работу в блоке "Ежедневные активности"');
+      }
+    }
+    
+    final content = reasons.isEmpty
+        ? 'Для расчета времени до цели по валюте необходимо:\n\n'
+            '• Установить цель (включить галочку "Нужен сертификат" в блоке "Цели")\n'
+            '• Настроить источники дохода (включить заказы или указать валюту за работу)'
+        : 'Для расчета времени до цели по валюте необходимо:\n\n${reasons.join('\n')}';
+    
+    HelpDialog.show(
+      context,
+      'Нет данных для расчета',
+      content,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasData = _hasDataForCalculation(faction);
@@ -94,10 +128,13 @@ class CurrencyProgressBar extends StatelessWidget {
             borderRadius: BorderRadius.circular(6),
           ),
           child: Center(
-            child: Icon(
-              Icons.block,
-              size: 20,
-              color: Colors.grey[600],
+            child: GestureDetector(
+              onTap: () => _showNoDataHelpDialog(context, faction),
+              child: Icon(
+                Icons.block,
+                size: 20,
+                color: Colors.grey[600],
+              ),
             ),
           ),
         ),

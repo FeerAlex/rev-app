@@ -5,6 +5,7 @@ import '../../../core/constants/reputation_level.dart';
 import '../../../core/constants/factions_list.dart';
 import '../../../core/constants/order_reward.dart';
 import '../time_to_goal/time_to_reputation_goal_widget.dart';
+import '../common/help_dialog.dart';
 
 /// Виджет для отображения прогресса уровня отношения с progress bar
 class ReputationProgressBar extends StatelessWidget {
@@ -40,6 +41,39 @@ class ReputationProgressBar extends StatelessWidget {
     return expPerDay > 0;
   }
 
+  void _showNoDataHelpDialog(BuildContext context, Faction faction) {
+    final reasons = <String>[];
+    
+    if (faction.targetReputationLevel == null) {
+      reasons.add('• Установите целевой уровень репутации в блоке "Цели"');
+    }
+    
+    final template = FactionsList.getTemplateByName(faction.name);
+    final hasOrderReward = template != null && template.orderReward != null;
+    final hasWorkExp = faction.workReward != null && faction.workReward!.exp > 0;
+    
+    // Показываем про заказы/работу ТОЛЬКО если не настроено ни то, ни другое
+    if (!faction.ordersEnabled && !hasWorkExp) {
+      if (hasOrderReward) {
+        reasons.add('• Включите галочку "Заказы" или укажите опыт за работу в блоке "Ежедневные активности"');
+      } else {
+        reasons.add('• Укажите опыт за работу в блоке "Ежедневные активности"');
+      }
+    }
+    
+    final content = reasons.isEmpty
+        ? 'Для расчета времени до цели по репутации необходимо:\n\n'
+            '• Установить целевой уровень репутации в блоке "Цели"\n'
+            '• Настроить источники опыта (включить заказы или указать опыт за работу)'
+        : 'Для расчета времени до цели по репутации необходимо:\n\n${reasons.join('\n')}';
+    
+    HelpDialog.show(
+      context,
+      'Нет данных для расчета',
+      content,
+    );
+  }
+
   /// Проверяет, достигнута ли цель
   bool _isGoalCompleted(Faction faction) {
     if (faction.targetReputationLevel == null) {
@@ -72,10 +106,13 @@ class ReputationProgressBar extends StatelessWidget {
             borderRadius: BorderRadius.circular(6),
           ),
           child: Center(
-            child: Icon(
-              Icons.block,
-              size: 20,
-              color: Colors.grey[600],
+            child: GestureDetector(
+              onTap: () => _showNoDataHelpDialog(context, faction),
+              child: Icon(
+                Icons.block,
+                size: 20,
+                color: Colors.grey[600],
+              ),
             ),
           ),
         ),

@@ -51,7 +51,7 @@ class FactionsList {
 
       // Ежедневные активности (заказы и работы)
       orderCompleted: false,
-      ordersEnabled: template.orderReward != null, // по умолчанию учитывать, если заказы есть
+      ordersEnabled: false, // по умолчанию выключено
       workCompleted: false,
       workReward: null, // пользователь введет значение через UI
 

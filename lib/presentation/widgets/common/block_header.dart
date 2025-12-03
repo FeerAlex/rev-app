@@ -38,7 +38,7 @@ class BlockHeader extends StatelessWidget {
           child: Icon(
             Icons.help_outline,
             size: 20,
-            color: Colors.grey[400],
+            color: Colors.lightBlueAccent,
           ),
         ),
       ],
