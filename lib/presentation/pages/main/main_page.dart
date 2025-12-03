@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'factions_page.dart';
-import 'map_page.dart';
+import '../faction/factions_page.dart';
+import '../map/map_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});

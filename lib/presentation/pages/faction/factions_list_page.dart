@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/faction/faction_bloc.dart';
-import '../bloc/faction/faction_event.dart';
-import '../bloc/faction/faction_state.dart';
-import '../widgets/faction_card.dart';
+import '../../bloc/faction/faction_bloc.dart';
+import '../../bloc/faction/faction_event.dart';
+import '../../bloc/faction/faction_state.dart';
+import '../../widgets/faction/faction_card.dart';
 import 'faction_detail_page.dart';
 
 class FactionsListPage extends StatelessWidget {

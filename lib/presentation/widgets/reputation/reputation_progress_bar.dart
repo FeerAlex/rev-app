@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
-import '../../core/utils/reputation_helper.dart';
-import '../../core/constants/reputation_level.dart';
-import 'time_to_reputation_goal_widget.dart';
+import '../../../core/utils/reputation_helper.dart';
+import '../../../core/constants/reputation_level.dart';
+import '../time_to_goal/time_to_reputation_goal_widget.dart';
 
 /// Виджет для отображения прогресса уровня отношения с progress bar
 class ReputationProgressBar extends StatelessWidget {

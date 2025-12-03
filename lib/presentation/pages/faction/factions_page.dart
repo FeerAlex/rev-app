@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'factions_list_page.dart';
-import '../widgets/faction_selection_dialog.dart';
+import '../../widgets/faction/faction_selection_dialog.dart';
 
 class FactionsPage extends StatelessWidget {
   final GlobalKey<ScaffoldState>? scaffoldKey;

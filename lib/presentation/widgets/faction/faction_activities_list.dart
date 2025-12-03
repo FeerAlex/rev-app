@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
 import '../../../core/constants/factions_list.dart';
-import 'activity_badge.dart';
+import '../activity/activity_badge.dart';
 
 class FactionActivitiesList extends StatelessWidget {
   final Faction faction;

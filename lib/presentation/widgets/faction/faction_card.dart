@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
 import 'faction_name_display.dart';
 import 'faction_activities_list.dart';
-import 'currency_progress_bar.dart';
-import 'reputation_progress_bar.dart';
+import '../currency/currency_progress_bar.dart';
+import '../reputation/reputation_progress_bar.dart';
 
 class FactionCard extends StatelessWidget {
   final Faction faction;

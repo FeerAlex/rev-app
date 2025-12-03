@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'currency_input_dialog.dart';
+import '../currency/currency_input_dialog.dart';
 
 class FactionCurrencyBlock extends StatelessWidget {
   final int currency;

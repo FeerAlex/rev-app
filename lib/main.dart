@@ -12,7 +12,7 @@ import 'domain/usecases/initialize_factions.dart';
 import 'domain/usecases/show_faction.dart';
 import 'presentation/bloc/faction/faction_bloc.dart';
 import 'presentation/bloc/faction/faction_event.dart';
-import 'presentation/pages/main_page.dart';
+import 'presentation/pages/main/main_page.dart';
 import 'core/utils/daily_reset_helper.dart';
 import 'core/theme/app_theme.dart';
 

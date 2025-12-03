@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/faction.dart';
-import '../../core/constants/app_settings.dart';
+import '../../../core/constants/app_settings.dart';
 import 'currency_input_dialog.dart';
-import 'time_to_currency_goal_widget.dart';
-import '../bloc/faction/faction_bloc.dart';
-import '../bloc/faction/faction_event.dart';
+import '../time_to_goal/time_to_currency_goal_widget.dart';
+import '../../bloc/faction/faction_bloc.dart';
+import '../../bloc/faction/faction_event.dart';
 
 /// Виджет для отображения прогресса валюты с progress bar
 class CurrencyProgressBar extends StatelessWidget {

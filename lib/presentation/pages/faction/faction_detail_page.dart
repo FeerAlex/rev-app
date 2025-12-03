@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/faction.dart';
 import '../../../core/constants/factions_list.dart';
 import '../../../core/constants/work_reward.dart';
-import '../bloc/faction/faction_bloc.dart';
-import '../bloc/faction/faction_event.dart';
-import '../widgets/faction_activities_block.dart';
-import '../widgets/faction_currency_block.dart';
-import '../widgets/faction_reputation_block.dart';
-import '../widgets/faction_certificate_block.dart';
-import '../widgets/faction_goals_block.dart';
-import '../widgets/faction_decorations_section.dart';
+import '../../bloc/faction/faction_bloc.dart';
+import '../../bloc/faction/faction_event.dart';
+import '../../widgets/faction/faction_activities_block.dart';
+import '../../widgets/faction/faction_currency_block.dart';
+import '../../widgets/faction/faction_reputation_block.dart';
+import '../../widgets/faction/faction_certificate_block.dart';
+import '../../widgets/faction/faction_goals_block.dart';
+import '../../widgets/faction/faction_decorations_section.dart';
 import '../../../core/constants/reputation_level.dart';
 
 class FactionDetailPage extends StatefulWidget {
