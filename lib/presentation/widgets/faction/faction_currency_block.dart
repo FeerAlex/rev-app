@@ -41,9 +41,15 @@ class FactionCurrencyBlock extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Валюта:',
-                  style: TextStyle(fontSize: 14),
+                Row(
+                  spacing: 8,
+                  children: [
+                    Icon(Icons.attach_money, size: 16, color: Colors.green[300]),
+                    const Text(
+                      'Валюта:',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ],
                 ),
                 TextButton(
                   onPressed: () async {
