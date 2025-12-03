@@ -25,8 +25,8 @@
 - `UpdateFaction` - обновление фракции
 - `DeleteFaction` - скрытие фракции (устанавливает `isVisible = false`)
 - `ShowFaction` - показ скрытой фракции (устанавливает `isVisible = true`)
-- `CalculateTimeToCurrencyGoal` - расчет времени до достижения цели по валюте (использует константы из AppSettings и среднее арифметическое валюты из FactionTemplate.orderRewards для заказов)
-- `CalculateTimeToReputationGoal` - расчет времени до достижения целевого уровня отношения (использует среднее арифметическое опыта из FactionTemplate.orderRewards для заказов)
+- `CalculateTimeToCurrencyGoal` - расчет времени до достижения цели по валюте (использует константы из AppSettings и среднее арифметическое валюты из FactionTemplate.orderReward для заказов). Возвращает `null` если `wantsCertificate = false`
+- `CalculateTimeToReputationGoal` - расчет времени до достижения целевого уровня отношения (использует среднее арифметическое опыта из FactionTemplate.orderReward для заказов)
 - `ResetDailyFlags` - сброс ежедневных отметок
 - `ReorderFactions` - изменение порядка фракций
 
@@ -102,9 +102,10 @@
 
 #### Constants
 - `AppSettings` - константы настроек приложения, организованные по функциональности (фракции, карта, брактеат)
-- `FactionsList` - статический список всех 13 фракций игры с предустановленными настройками через `FactionTemplate` (hasOrder, hasWork, hasCertificate, orderRewards)
-- `ReputationLevel` - enum уровней отношения (indifference, friendliness, respect, honor, adoration, deification, maximum)
-- `OrderReward` - класс для хранения награды за заказ (валюта и опыт)
+- `FactionsList` - статический список всех 13 фракций игры с предустановленными настройками через `FactionTemplate` (hasWork, hasCertificate, orderReward). Наличие заказов определяется наличием `orderReward` (если `orderReward != null`, значит фракция имеет заказы)
+- `ReputationLevel` - enum уровней отношения (indifference, friendliness, respect, honor, adoration, deification, maximum) с extension `ReputationLevelExtension` для методов `displayName`, `value`, `fromValue`
+- `OrderReward` - класс для хранения награды за заказ (валюта и опыт как массивы `List<int>`). Имеет статические методы `averageCurrency` и `averageExp` для вычисления среднего арифметического
+- `WorkReward` - класс для хранения награды за работу (валюта и опыт)
 - `ReputationExp` - константы опыта, требуемого для достижения уровней отношения
 
 #### Database

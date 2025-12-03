@@ -15,7 +15,7 @@
 | `id` | INTEGER PRIMARY KEY | Уникальный идентификатор фракции |
 | `name` | TEXT NOT NULL | Название фракции |
 | `currency` | INTEGER NOT NULL DEFAULT 0 | Текущее количество валюты |
-| `has_order` | INTEGER NOT NULL DEFAULT 0 | Учитывать ли заказы в расчете (0/1, используется для `ordersEnabled`) |
+| `has_order` | INTEGER NOT NULL DEFAULT 0 | Учитывать ли заказы в расчете (0/1, хранит значение `ordersEnabled` из entity Faction). **Важно:** это поле хранит настройку пользователя, а не наличие заказов во фракции. Наличие заказов определяется статическим списком фракций (`FactionTemplate.orderReward != null`) |
 | `order_completed` | INTEGER NOT NULL DEFAULT 0 | Выполнен ли заказ (0/1) |
 | `work_currency` | INTEGER | Валюта с работы (может быть NULL или 0) |
 | `work_exp` | INTEGER | Опыт с работы (может быть NULL или 0) |

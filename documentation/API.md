@@ -133,22 +133,24 @@ class CalculateTimeToCurrencyGoal {
 
 **Возвращает:**
 - `Duration` - время до достижения цели
-- `null` - если расчет невозможен (нет дохода в день)
+- `null` - если расчет невозможен (нет дохода в день или `wantsCertificate = false`)
 - `Duration.zero` - если цель уже достигнута
 
 **Логика расчета:**
-1. Рассчитывается общая стоимость всех некупленных украшений и улучшений (используются константы из `AppSettings.factions`)
-2. Добавляется стоимость сертификата (только если не куплен и `wantsCertificate = true`)
-3. Вычитается текущая валюта
-4. Рассчитывается доход в день:
+1. Если `wantsCertificate = false`, возвращается `null` (цель не установлена)
+2. Рассчитывается общая стоимость всех некупленных украшений и улучшений (используются константы из `AppSettings.factions`)
+3. Добавляется стоимость сертификата (только если не куплен и `wantsCertificate = true`)
+4. Вычитается текущая валюта
+5. Рассчитывается доход в день:
    - Валюта за заказ (только если `ordersEnabled = true` и фракция имеет заказы согласно статическому списку) - среднее арифметическое валюты из `FactionTemplate.orderReward` для данной фракции
    - Валюта за работу (только если `workReward != null` и `workReward.currency > 0`) - значение из `faction.workReward.currency`
-5. Вычисляется время: `(нужная валюта) / (валюта в день)`
+6. Вычисляется время: `(нужная валюта) / (валюта в день)`
 
 **Примечание:** 
 - Все стоимости хранятся как константы в `AppSettings.factions`, умножение не используется - применяются готовые суммы
 - Расчет учитывает только те активности, которые настроены (заказы включены и фракция имеет заказы, или работа настроена с валютой > 0)
 - Если заказы отключены или не настроены, и работа не настроена (оба поля равны 0), возвращается `null` (расчет невозможен)
+- Если `wantsCertificate = false`, возвращается `null` (цель не установлена)
 
 #### CalculateTimeToReputationGoal
 
@@ -471,35 +473,41 @@ enum ReputationLevel {
   deification, // Обожествление
   maximum, // Максимальный
 }
+
+extension ReputationLevelExtension on ReputationLevel {
+  String get displayName;
+  int get value;
+  static ReputationLevel fromValue(int value);
+}
 ```
 
-**Методы:**
+**Методы (через extension `ReputationLevelExtension`):**
 - `displayName` - получить название уровня на русском языке
 - `value` - получить числовое значение уровня (для хранения в БД)
-- `fromValue(int value)` - создать ReputationLevel из числового значения
+- `fromValue(int value)` - статический метод для создания ReputationLevel из числового значения
 
 ### OrderReward
 
-Класс для хранения награды за выполнение заказа (валюта и опыт).
+Класс для хранения награды за выполнение заказа (валюта и опыт как массивы).
 
 ```dart
 class OrderReward {
-  final int currency;
-  final int exp;
+  final List<int> currency;
+  final List<int> exp;
   
   const OrderReward({
     required this.currency,
     required this.exp,
   });
   
-  static int averageCurrency(List<OrderReward> rewards);
-  static int averageExp(List<OrderReward> rewards);
+  static int averageCurrency(OrderReward reward);
+  static int averageExp(OrderReward reward);
 }
 ```
 
-**Методы:**
-- `averageCurrency` - вычислить среднее арифметическое валюты из списка наград
-- `averageExp` - вычислить среднее арифметическое опыта из списка наград
+**Методы (статические):**
+- `averageCurrency(OrderReward reward)` - вычислить среднее арифметическое валюты из массива наград
+- `averageExp(OrderReward reward)` - вычислить среднее арифметическое опыта из массива наград
 
 ### ReputationHelper
 
@@ -603,8 +611,8 @@ final factionRepo = ServiceLocator().factionRepository;
 ```
 
 **Описание:**
-- Инициализирует SQLite базу данных версии 11
+- Инициализирует SQLite базу данных версии 12
 - Создает таблицу `factions` при первом запуске через `FactionDao.createTable()`
 - Создает экземпляры репозиториев для работы с данными
-- Миграции базы данных не используются (приложение на стадии разработки)
+- Поддерживает миграции базы данных (версии 10, 11, 12)
 
