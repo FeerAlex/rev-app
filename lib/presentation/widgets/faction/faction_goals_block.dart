@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/reputation_level.dart';
 import '../common/help_dialog.dart';
+import '../common/block_header.dart';
 
 class FactionGoalsBlock extends StatelessWidget {
   final ReputationLevel currentReputationLevel;
@@ -35,24 +36,11 @@ class FactionGoalsBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 12,
       children: [
-        Row(
-          spacing: 8,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(Icons.flag, color: Colors.orange[300], size: 20),
-            const Text(
-              'Цели',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            GestureDetector(
-              onTap: () => _showHelpDialog(context),
-              child: Icon(
-                Icons.help_outline,
-                size: 18,
-                color: Colors.grey[400],
-              ),
-            ),
-          ],
+        BlockHeader(
+          icon: Icons.flag,
+          iconColor: Colors.orange[300]!,
+          title: 'Цели',
+          onHelpTap: () => _showHelpDialog(context),
         ),
         Column(
           spacing: 8,

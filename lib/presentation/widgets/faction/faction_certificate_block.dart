@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
 import '../../../core/constants/factions_list.dart';
 import '../common/help_dialog.dart';
+import '../common/block_header.dart';
 
 class FactionCertificateBlock extends StatelessWidget {
   final Faction faction;
@@ -41,24 +42,11 @@ class FactionCertificateBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 12,
       children: [
-        Row(
-          spacing: 8,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(Icons.verified, color: Colors.purple[300], size: 20),
-            const Text(
-              'Сертификат',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            GestureDetector(
-              onTap: () => _showHelpDialog(context),
-              child: Icon(
-                Icons.help_outline,
-                size: 18,
-                color: Colors.grey[400],
-              ),
-            ),
-          ],
+        BlockHeader(
+          icon: Icons.verified,
+          iconColor: Colors.purple[300]!,
+          title: 'Сертификат',
+          onHelpTap: () => _showHelpDialog(context),
         ),
         Card(
           margin: EdgeInsets.zero,

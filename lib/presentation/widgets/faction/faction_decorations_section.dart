@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../common/help_dialog.dart';
+import '../common/block_header.dart';
 
 class FactionDecorationsSection extends StatelessWidget {
   final bool decorationRespectPurchased;
@@ -47,24 +48,11 @@ class FactionDecorationsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          spacing: 8,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(Icons.star, color: Colors.amber[300], size: 20),
-            const Text(
-              'Украшения',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            GestureDetector(
-              onTap: () => _showHelpDialog(context),
-              child: Icon(
-                Icons.help_outline,
-                size: 18,
-                color: Colors.grey[400],
-              ),
-            ),
-          ],
+        BlockHeader(
+          icon: Icons.star,
+          iconColor: Colors.amber[300]!,
+          title: 'Украшения',
+          onHelpTap: () => _showHelpDialog(context),
         ),
         const SizedBox(height: 12),
         _buildDecorationTile(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/constants/work_reward.dart';
+import '../common/block_header.dart';
 import '../common/help_dialog.dart';
 
 class FactionActivitiesBlock extends StatefulWidget {
@@ -101,24 +102,11 @@ class _FactionActivitiesBlockState extends State<FactionActivitiesBlock> {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 12,
       children: [
-        Row(
-          spacing: 8,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(Icons.check_circle_outline, color: Colors.blue[300], size: 20),
-            const Text(
-              'Ежедневные активности',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            GestureDetector(
-              onTap: _showHelpDialog,
-              child: Icon(
-                Icons.help_outline,
-                size: 18,
-                color: Colors.grey[400],
-              ),
-            ),
-          ],
+        BlockHeader(
+          icon: Icons.check_circle_outline,
+          iconColor: Colors.blue[300]!,
+          title: 'Ежедневные активности',
+          onHelpTap: _showHelpDialog,
         ),
         Column(
           spacing: 8,

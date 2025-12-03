@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../currency/currency_input_dialog.dart';
 import '../common/help_dialog.dart';
+import '../common/block_header.dart';
 
 class FactionCurrencyBlock extends StatelessWidget {
   final int currency;
@@ -27,24 +28,11 @@ class FactionCurrencyBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 12,
       children: [
-        Row(
-          spacing: 8,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(Icons.attach_money, color: Colors.green[300], size: 20),
-            const Text(
-              'Валюта',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            GestureDetector(
-              onTap: () => _showHelpDialog(context),
-              child: Icon(
-                Icons.help_outline,
-                size: 18,
-                color: Colors.grey[400],
-              ),
-            ),
-          ],
+        BlockHeader(
+          icon: Icons.attach_money,
+          iconColor: Colors.green[300]!,
+          title: 'Валюта',
+          onHelpTap: () => _showHelpDialog(context),
         ),
         Card(
           margin: EdgeInsets.zero,

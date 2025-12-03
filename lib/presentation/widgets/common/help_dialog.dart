@@ -33,6 +33,11 @@ class HelpDialog extends StatelessWidget {
           child: const Text('Понятно'),
         ),
       ],
+      contentPadding: EdgeInsets.only(top: 0, bottom: 14, left: 14, right: 14),
+      insetPadding: EdgeInsets.all(16),
+      titlePadding: EdgeInsets.all(14),
+      actionsPadding: EdgeInsets.only(top: 0, bottom: 14, left: 14, right: 14),
+      buttonPadding: EdgeInsets.zero,
     );
   }
 }
