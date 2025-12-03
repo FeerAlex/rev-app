@@ -107,6 +107,10 @@ class AppTheme {
         backgroundColor: accentOrange,
         foregroundColor: textPrimary,
       ),
+      dialogTheme: DialogThemeData(
+        insetPadding: const EdgeInsets.all(16),
+        actionsPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+      ),
     );
   }
 }

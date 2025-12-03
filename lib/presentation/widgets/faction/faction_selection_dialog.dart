@@ -61,6 +61,9 @@ class FactionSelectionDialog extends StatelessWidget {
                     context.read<FactionBloc>().add(ShowFactionEvent(faction));
                     Navigator.of(context).pop();
                   },
+                  dense: true,
+                  minTileHeight: 0,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 8),
                 );
               },
             ),
