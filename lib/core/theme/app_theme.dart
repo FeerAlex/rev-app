@@ -45,6 +45,8 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: cardBackground,
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.grey, width: 1),
@@ -55,9 +57,16 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: accentOrange, width: 2),
+          borderSide: const BorderSide(color: accentOrange, width: 1),
         ),
-        labelStyle: const TextStyle(color: textSecondary),
+        labelStyle: const TextStyle(
+          color: textSecondary,
+          fontSize: 12,
+        ),
+        floatingLabelStyle: TextStyle(
+          color: textPrimary,
+          fontSize: 12,
+        ),
         hintStyle: const TextStyle(color: textSecondary),
       ),
       textTheme: const TextTheme(

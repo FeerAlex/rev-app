@@ -72,7 +72,7 @@ class _CurrencyInputDialogState extends State<CurrencyInputDialog> {
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           style: TextButton.styleFrom(
-            foregroundColor: Colors.white70,
+            foregroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
           ),
           child: const Text('Отмена'),
         ),

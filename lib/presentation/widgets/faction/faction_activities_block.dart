@@ -176,12 +176,8 @@ class _FactionActivitiesBlockState extends State<FactionActivitiesBlock> {
                           Expanded(
                             child: TextField(
                               controller: _currencyController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Валюта/день',
-                                labelStyle: TextStyle(fontSize: 12, color: Colors.grey[400]),
-                                floatingLabelStyle: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary),
-                                isDense: true,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                               ),
                               keyboardType: TextInputType.number,
                               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -192,12 +188,8 @@ class _FactionActivitiesBlockState extends State<FactionActivitiesBlock> {
                           Expanded(
                             child: TextField(
                               controller: _expController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Опыт/день',
-                                labelStyle: TextStyle(fontSize: 12, color: Colors.grey[400]),
-                                floatingLabelStyle: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary),
-                                isDense: true,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                               ),
                               keyboardType: TextInputType.number,
                               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
