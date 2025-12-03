@@ -415,6 +415,46 @@ class FactionError extends FactionState {
 }
 ```
 
+## Presentation Layer Widgets API
+
+### HelpDialog
+
+Переиспользуемый компонент для отображения модалки помощи.
+
+```dart
+class HelpDialog extends StatelessWidget {
+  final String title;
+  final String content;
+  
+  const HelpDialog({
+    super.key,
+    required this.title,
+    required this.content,
+  });
+  
+  static void show(BuildContext context, String title, String content);
+}
+```
+
+**Параметры:**
+- `title` - заголовок модалки
+- `content` - текст помощи
+
+**Методы:**
+- `show(context, title, content)` - статический метод для удобного вызова модалки
+
+**Использование:**
+```dart
+HelpDialog.show(
+  context,
+  'О валюте',
+  'Текст помощи...',
+);
+```
+
+**Описание:**
+Единый компонент для всех модалок помощи в приложении. Используется во всех блоках с иконками помощи (`FactionCurrencyBlock`, `FactionReputationBlock`, `FactionCertificateBlock`, `FactionDecorationsSection`, `FactionActivitiesBlock`, `FactionGoalsBlock`).
+
 ## Utils API
 
 ### ReputationLevel

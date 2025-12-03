@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/reputation_level.dart';
 import '../currency/currency_input_dialog.dart';
+import '../common/help_dialog.dart';
 
 class FactionReputationBlock extends StatelessWidget {
   final ReputationLevel currentReputationLevel;
@@ -16,6 +17,16 @@ class FactionReputationBlock extends StatelessWidget {
     required this.onLevelExpChanged,
   });
 
+  void _showHelpDialog(BuildContext context) {
+    HelpDialog.show(
+      context,
+      'О репутации',
+      'Блок "Репутация" отображает текущий уровень репутации и опыт на текущем уровне.\n\n'
+      '• Текущий уровень - выберите ваш текущий уровень репутации во фракции.\n\n'
+      '• Текущий опыт - нажмите на значение, чтобы изменить количество опыта на текущем уровне. Это значение используется при расчете времени до цели по репутации.',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -24,11 +35,20 @@ class FactionReputationBlock extends StatelessWidget {
       children: [
         Row(
           spacing: 8,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(Icons.star, color: Colors.amber[300], size: 20),
             const Text(
               'Репутация',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            GestureDetector(
+              onTap: () => _showHelpDialog(context),
+              child: Icon(
+                Icons.help_outline,
+                size: 18,
+                color: Colors.grey[400],
+              ),
             ),
           ],
         ),
@@ -110,7 +130,7 @@ class FactionReputationBlock extends StatelessWidget {
                       children: [
                         Icon(Icons.trending_up, size: 16, color: Colors.blue[300]),
                         const Text(
-                          'Опыт на уровне:',
+                          'Текущий опыт:',
                           style: TextStyle(fontSize: 14),
                         ),
                       ],
@@ -121,7 +141,7 @@ class FactionReputationBlock extends StatelessWidget {
                           context: context,
                           builder: (context) => CurrencyInputDialog(
                             initialValue: currentLevelExp,
-                            title: 'Опыт на уровне',
+                            title: 'Текущий опыт',
                             labelText: 'Введите опыт',
                             allowEmpty: false,
                           ),

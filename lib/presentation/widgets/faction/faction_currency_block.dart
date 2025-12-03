@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../currency/currency_input_dialog.dart';
+import '../common/help_dialog.dart';
 
 class FactionCurrencyBlock extends StatelessWidget {
   final int currency;
@@ -11,6 +12,15 @@ class FactionCurrencyBlock extends StatelessWidget {
     required this.onCurrencyChanged,
   });
 
+  void _showHelpDialog(BuildContext context) {
+    HelpDialog.show(
+      context,
+      'О валюте',
+      'Блок "Валюта" отображает текущее количество валюты фракции.\n\n'
+      'Нажмите на значение валюты, чтобы изменить его. Это значение используется при расчете времени до цели по валюте.',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -19,11 +29,20 @@ class FactionCurrencyBlock extends StatelessWidget {
       children: [
         Row(
           spacing: 8,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(Icons.attach_money, color: Colors.green[300], size: 20),
             const Text(
               'Валюта',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            GestureDetector(
+              onTap: () => _showHelpDialog(context),
+              child: Icon(
+                Icons.help_outline,
+                size: 18,
+                color: Colors.grey[400],
+              ),
             ),
           ],
         ),

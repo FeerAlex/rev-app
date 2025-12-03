@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../common/help_dialog.dart';
 
 class FactionDecorationsSection extends StatelessWidget {
   final bool decorationRespectPurchased;
@@ -30,18 +31,38 @@ class FactionDecorationsSection extends StatelessWidget {
     required this.onAdorationUpgradedChanged,
   });
 
+  void _showHelpDialog(BuildContext context) {
+    HelpDialog.show(
+      context,
+      'Об украшениях',
+      'Блок "Украшения" позволяет отметить, какие украшения фракции куплены и улучшены.\n\n'
+      '• Куплено - отметьте, если украшение куплено.\n\n'
+      '• Улучшено - отметьте, если украшение улучшено. Доступно только для купленных украшений.\n\n'
+      'Украшения учитываются при расчете стоимости сертификата и времени до цели по валюте.',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          spacing: 8,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(Icons.star, color: Colors.amber[300], size: 20),
-            const SizedBox(width: 8),
             const Text(
               'Украшения',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            GestureDetector(
+              onTap: () => _showHelpDialog(context),
+              child: Icon(
+                Icons.help_outline,
+                size: 18,
+                color: Colors.grey[400],
+              ),
             ),
           ],
         ),

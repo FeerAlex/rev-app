@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
 import '../../../core/constants/factions_list.dart';
+import '../common/help_dialog.dart';
 
 class FactionCertificateBlock extends StatelessWidget {
   final Faction faction;
@@ -19,6 +20,15 @@ class FactionCertificateBlock extends StatelessWidget {
     return template?.hasCertificate ?? false;
   }
 
+  void _showHelpDialog(BuildContext context) {
+    HelpDialog.show(
+      context,
+      'О сертификате',
+      'Блок "Сертификат" позволяет отметить, куплен ли сертификат фракции.\n\n'
+      'Сертификат необходим для некоторых достижений и учитывается при расчете времени до цели по валюте.',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasCertificate = _hasCertificate();
@@ -33,11 +43,20 @@ class FactionCertificateBlock extends StatelessWidget {
       children: [
         Row(
           spacing: 8,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(Icons.verified, color: Colors.purple[300], size: 20),
             const Text(
               'Сертификат',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            GestureDetector(
+              onTap: () => _showHelpDialog(context),
+              child: Icon(
+                Icons.help_outline,
+                size: 18,
+                color: Colors.grey[400],
+              ),
             ),
           ],
         ),
