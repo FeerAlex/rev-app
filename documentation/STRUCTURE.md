@@ -45,27 +45,39 @@ lib/
     │       ├── faction_event.dart
     │       └── faction_state.dart
     ├── pages/                         # Страницы
-    │   ├── faction_detail_page.dart
-    │   ├── factions_list_page.dart
-    │   ├── factions_page.dart
-    │   ├── main_page.dart
-    │   └── map_page.dart
+    │   ├── faction/                   # Страницы фракций
+    │   │   ├── faction_detail_page.dart
+    │   │   ├── factions_list_page.dart
+    │   │   └── factions_page.dart
+    │   ├── main/                      # Главная страница
+    │   │   └── main_page.dart
+    │   └── map/                       # Страница карты
+    │       └── map_page.dart
     └── widgets/                       # Виджеты
-        ├── activity_badge.dart
-        ├── work_currency_badge.dart
-        ├── currency_input_dialog.dart
-        ├── faction_activities_list.dart
-        ├── faction_activities_block.dart
-        ├── faction_activities_section.dart
-        ├── faction_basic_info_section.dart
-        ├── faction_card.dart
-        ├── faction_certificate_block.dart
-        ├── currency_progress_bar.dart
-        ├── faction_decorations_section.dart
-        ├── faction_name_display.dart
-        ├── faction_selection_dialog.dart
-        ├── time_to_currency_goal_widget.dart
-        └── time_to_reputation_goal_widget.dart
+        ├── activity/                  # Виджеты активностей
+        │   └── activity_badge.dart
+        ├── currency/                  # Виджеты валюты
+        │   ├── currency_input_dialog.dart
+        │   ├── currency_progress_bar.dart
+        │   └── work_currency_badge.dart
+        ├── faction/                   # Виджеты фракций
+        │   ├── faction_activities_block.dart
+        │   ├── faction_activities_list.dart
+        │   ├── faction_activities_section.dart
+        │   ├── faction_basic_info_section.dart
+        │   ├── faction_card.dart
+        │   ├── faction_certificate_block.dart
+        │   ├── faction_currency_block.dart
+        │   ├── faction_decorations_section.dart
+        │   ├── faction_goals_block.dart
+        │   ├── faction_name_display.dart
+        │   ├── faction_reputation_block.dart
+        │   └── faction_selection_dialog.dart
+        ├── reputation/                # Виджеты репутации
+        │   └── reputation_progress_bar.dart
+        └── time_to_goal/              # Виджеты времени до цели
+            ├── time_to_currency_goal_widget.dart
+            └── time_to_reputation_goal_widget.dart
 ```
 
 ## Описание основных компонентов
@@ -200,7 +212,9 @@ lib/
 - Цели (блок `FactionGoalsBlock` с целевым уровнем репутации и галочкой "Нужен сертификат")
 
 **Вкладка "Инвентарь" (index 1):**
-- Инвентарь (блок `FactionInventoryBlock` с валютой, текущим уровнем репутации, опытом на уровне и сертификатом)
+- Валюта (блок `FactionCurrencyBlock` для редактирования валюты)
+- Репутация (блок `FactionReputationBlock` с текущим уровнем отношения и опытом на уровне)
+- Сертификат (блок `FactionCertificateBlock`)
 - Украшения (блок `FactionDecorationsSection` с тремя украшениями)
 
 **Примечание:** 
@@ -273,12 +287,15 @@ lib/
 - Прижимается к краям карточки снизу
 - Использует `faction.currentReputationLevel` и `faction.currentLevelExp` напрямую
 
-**FactionInventoryBlock**
-Блок "Инвентарь" для отображения текущего состояния во вкладке "Инвентарь":
+**FactionCurrencyBlock**
+Блок для редактирования валюты фракции, используется во вкладке "Инвентарь":
 - Позволяет редактировать валюту через диалог
+- Отображает текущее значение валюты
+
+**FactionReputationBlock**
+Блок для редактирования текущего уровня отношения и опыта на уровне, используется во вкладке "Инвентарь":
 - Позволяет выбрать текущий уровень отношения через Dropdown (без "Максимальный")
 - Позволяет редактировать опыт на текущем уровне через диалог
-- Позволяет указать наличие сертификата через чекбокс (только для фракций с сертификатом)
 
 **FactionGoalsBlock**
 Блок "Цели" для настройки целей во вкладке "Настройки":
@@ -295,11 +312,14 @@ lib/
 - Использует `FittedBox` с `BoxFit.scaleDown` для предотвращения переполнения
 
 **Дополнительные виджеты:**
-- `WorkCurrencyBadge` - бейдж для отображения валюты с работы, кликабельно для редактирования
-- `CurrencyInputDialog` - универсальный диалог для ввода/редактирования валюты (поддерживает пустые значения для валюты с работы)
-- `FactionActivitiesBlock` - блок ежедневных активностей с галочками "Заказы" и "Работы". Имеет параметры `showOrderCheckbox` и `showWorkInput` для управления видимостью элементов (скрываются для фракций без соответствующих активностей согласно статическому списку). Имеет иконку помощи с пояснением
-- `FactionInventoryBlock` - блок "Инвентарь" с валютой, текущей репутацией, опытом и сертификатом. Используется во вкладке "Инвентарь"
-- `FactionGoalsBlock` - блок "Цели" с целевым уровнем репутации и галочкой "Нужен сертификат". Используется во вкладке "Настройки". Имеет иконку помощи с пояснением
-- `FactionDecorationsSection` - секция украшений с компактными карточками для каждого украшения (Уважение, Почтение, Преклонение). Используется во вкладке "Инвентарь"
-- `FactionSelectionDialog` - диалог выбора фракции из списка скрытых фракций для добавления в видимый список
+- `WorkCurrencyBadge` - бейдж для отображения валюты с работы, кликабельно для редактирования (расположен в `widgets/currency/`)
+- `CurrencyInputDialog` - универсальный диалог для ввода/редактирования валюты (поддерживает пустые значения для валюты с работы, расположен в `widgets/currency/`)
+- `FactionActivitiesBlock` - блок ежедневных активностей с галочками "Заказы" и "Работы". Имеет параметры `showOrderCheckbox` и `showWorkInput` для управления видимостью элементов (скрываются для фракций без соответствующих активностей согласно статическому списку). Имеет иконку помощи с пояснением (расположен в `widgets/faction/`)
+- `FactionCurrencyBlock` - блок для редактирования валюты фракции. Используется во вкладке "Инвентарь" (расположен в `widgets/faction/`)
+- `FactionReputationBlock` - блок для редактирования текущего уровня отношения и опыта на уровне. Используется во вкладке "Инвентарь" (расположен в `widgets/faction/`)
+- `FactionGoalsBlock` - блок "Цели" с целевым уровнем репутации и галочкой "Нужен сертификат". Используется во вкладке "Настройки". Имеет иконку помощи с пояснением (расположен в `widgets/faction/`)
+- `FactionDecorationsSection` - секция украшений с компактными карточками для каждого украшения (Уважение, Почтение, Преклонение). Используется во вкладке "Инвентарь" (расположен в `widgets/faction/`)
+- `FactionSelectionDialog` - диалог выбора фракции из списка скрытых фракций для добавления в видимый список (расположен в `widgets/faction/`)
+- `FactionActivitiesSection` - секция активностей и сертификата (не используется в текущей реализации, но присутствует в коде, расположен в `widgets/faction/`)
+- `FactionBasicInfoSection` - секция базовой информации о фракции (не используется в текущей реализации, но присутствует в коде, расположен в `widgets/faction/`)
 

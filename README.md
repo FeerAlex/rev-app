@@ -101,6 +101,17 @@ lib/
 ├── domain/        # Доменный слой (entities, use cases)
 ├── data/          # Слой данных (DAO, репозитории)
 └── presentation/  # Слой представления (UI, BLoC)
+    ├── bloc/      # State Management (BLoC)
+    ├── pages/     # Страницы (организованы по функциональности)
+    │   ├── faction/
+    │   ├── main/
+    │   └── map/
+    └── widgets/   # Виджеты (организованы по функциональности)
+        ├── activity/
+        ├── currency/
+        ├── faction/
+        ├── reputation/
+        └── time_to_goal/
 ```
 
 ## Зависимости
