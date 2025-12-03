@@ -457,6 +457,61 @@ HelpDialog.show(
 **Описание:**
 Единый компонент для всех модалок помощи в приложении. Используется во всех блоках с иконками помощи (`FactionCurrencyBlock`, `FactionReputationBlock`, `FactionCertificateBlock`, `FactionDecorationsSection`, `FactionActivitiesBlock`, `FactionGoalsBlock`).
 
+### CurrencyInputDialog
+
+Универсальный диалог для ввода/редактирования валюты.
+
+```dart
+class CurrencyInputDialog extends StatefulWidget {
+  final int? initialValue;
+  final String title;
+  final String labelText;
+  final String? hintText;
+  final bool allowEmpty;
+  
+  const CurrencyInputDialog({
+    super.key,
+    this.initialValue,
+    required this.title,
+    required this.labelText,
+    this.hintText,
+    this.allowEmpty = false,
+  });
+}
+```
+
+**Параметры:**
+- `initialValue` - начальное значение валюты (опционально)
+- `title` - заголовок диалога
+- `labelText` - текст метки поля ввода
+- `hintText` - текст подсказки (опционально)
+- `allowEmpty` - разрешить пустое значение (по умолчанию false)
+
+**Особенности:**
+- Поле ввода имеет иконку валюты (`Icons.monetization_on`) в качестве `prefixIcon`
+- Автоматически выделяет весь текст при фокусе для быстрой замены
+- Поддерживает только числовой ввод (фильтрует нецифровые символы)
+- Возвращает `int?` при закрытии (null при отмене, значение при сохранении)
+
+**Использование:**
+```dart
+final result = await showDialog<int>(
+  context: context,
+  builder: (context) => CurrencyInputDialog(
+    initialValue: currency,
+    title: 'Валюта',
+    labelText: 'Введите количество валюты',
+    allowEmpty: false,
+  ),
+);
+if (result != null) {
+  onCurrencyChanged(result);
+}
+```
+
+**Описание:**
+Универсальный диалог для ввода валюты, используемый в различных местах приложения. Поддерживает как обязательный ввод (для основной валюты фракции), так и опциональный (для валюты с работы). Имеет визуальную иконку валюты для лучшей идентификации поля ввода.
+
 ## Utils API
 
 ### ReputationLevel

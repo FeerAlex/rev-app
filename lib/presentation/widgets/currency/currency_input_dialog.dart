@@ -63,6 +63,7 @@ class _CurrencyInputDialogState extends State<CurrencyInputDialog> {
         decoration: InputDecoration(
           labelText: widget.labelText,
           hintText: widget.hintText,
+          prefixIcon: const Icon(Icons.monetization_on),
           border: const OutlineInputBorder(),
         ),
         keyboardType: TextInputType.number,
