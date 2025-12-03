@@ -176,10 +176,12 @@ class _FactionActivitiesBlockState extends State<FactionActivitiesBlock> {
                           Expanded(
                             child: TextField(
                               controller: _currencyController,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Валюта/день',
+                                labelStyle: TextStyle(fontSize: 12, color: Colors.grey[400]),
+                                floatingLabelStyle: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary),
                                 isDense: true,
-                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                               ),
                               keyboardType: TextInputType.number,
                               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -190,10 +192,12 @@ class _FactionActivitiesBlockState extends State<FactionActivitiesBlock> {
                           Expanded(
                             child: TextField(
                               controller: _expController,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Опыт/день',
+                                labelStyle: TextStyle(fontSize: 12, color: Colors.grey[400]),
+                                floatingLabelStyle: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary),
                                 isDense: true,
-                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                               ),
                               keyboardType: TextInputType.number,
                               inputFormatters: [FilteringTextInputFormatter.digitsOnly],

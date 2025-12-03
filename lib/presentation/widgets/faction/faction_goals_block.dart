@@ -77,9 +77,9 @@ class FactionGoalsBlock extends StatelessWidget {
                     Row(
                       spacing: 8,
                       children: [
-                        Icon(Icons.flag, size: 16, color: Colors.orange[300]),
+                        Icon(Icons.star, size: 16, color: Colors.orange[300]),
                         const Text(
-                          'Целевой уровень:',
+                          'Уровень репутации:',
                           style: TextStyle(fontSize: 14),
                         ),
                       ],
