@@ -13,9 +13,39 @@ class AppSettings {
   // static const BracketSettings bracket = BracketSettings._();
 }
 
+/// Значения опыта репутации для разных групп фракций
+/// Индекс 0 = стандартные значения, индекс 1 = специальные значения
+class ReputationExpValues {
+  final List<int> indifference;
+  final List<int> friendliness;
+  final List<int> respect;
+  final List<int> honor;
+  final List<int> adoration;
+  final List<int> deification;
+
+  const ReputationExpValues({
+    required this.indifference,
+    required this.friendliness,
+    required this.respect,
+    required this.honor,
+    required this.adoration,
+    required this.deification,
+  });
+}
+
 /// Настройки фракций
 class FactionsSettings {
   const FactionsSettings._();
+
+  /// Константы опыта репутации: [стандартные, специальные]
+  static const reputationExp = ReputationExpValues(
+    indifference: [11500, 16000],
+    friendliness: [33500, 43000],
+    respect: [34000, 41000],
+    honor: [73000, 80000],
+    adoration: [105000, 115000],
+    deification: [170000, 180000],
+  );
 
   /// Стоимость улучшения украшения "Уважение" (3 * 1788 = 5364)
   final int decorationUpgradeCostRespect = 5364;

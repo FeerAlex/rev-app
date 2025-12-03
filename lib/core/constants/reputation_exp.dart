@@ -1,43 +1,32 @@
 import 'reputation_level.dart';
+import 'app_settings.dart';
+import 'factions_list.dart';
 
 /// Константы опыта, требуемого для достижения уровней отношения
 class ReputationExp {
   ReputationExp._();
 
-  // Стандартные значения опыта для уровней
-  static const int indifferenceExp = 16000; // Равнодушие
-  static const int friendlinessExp = 43000; // Дружелюбие
-  static const int respectExp = 48000; // Уважение
-  static const int honorExp = 80000; // Почтение
-  static const int adorationExpStandard = 105000; // Преклонение (стандартное)
-  static const int adorationExpSpecial = 115000; // Преклонение (для некоторых фракций)
-  static const int deificationExpStandard = 170000; // Обожествление (стандартное)
-  static const int deificationExpSpecial = 180000; // Обожествление (для некоторых фракций)
-
-  // TODO: Определить список фракций с особыми значениями
-  // Пока структура готова, конкретные фракции определим позже
-  static const List<String> factionsWithSpecialExp = [];
-
   /// Получить требуемый опыт для уровня с учетом особых значений для некоторых фракций
   static int getExpForLevel(ReputationLevel level, String factionName) {
-    final hasSpecialExp = factionsWithSpecialExp.contains(factionName);
+    final template = FactionsList.getTemplateByName(factionName);
+    final expIndex = (template?.hasSpecialExp ?? false) ? 1 : 0; // Преобразование bool в int
 
     switch (level) {
       case ReputationLevel.indifference:
-        return indifferenceExp;
+        return FactionsSettings.reputationExp.indifference[expIndex];
       case ReputationLevel.friendliness:
-        return friendlinessExp;
+        return FactionsSettings.reputationExp.friendliness[expIndex];
       case ReputationLevel.respect:
-        return respectExp;
+        return FactionsSettings.reputationExp.respect[expIndex];
       case ReputationLevel.honor:
-        return honorExp;
+        return FactionsSettings.reputationExp.honor[expIndex];
       case ReputationLevel.adoration:
-        return hasSpecialExp ? adorationExpSpecial : adorationExpStandard;
+        return FactionsSettings.reputationExp.adoration[expIndex];
       case ReputationLevel.deification:
-        return hasSpecialExp ? deificationExpSpecial : deificationExpStandard;
+        return FactionsSettings.reputationExp.deification[expIndex];
       case ReputationLevel.maximum:
         // Максимальный уровень - это достижение Обожествления
-        return hasSpecialExp ? deificationExpSpecial : deificationExpStandard;
+        return FactionsSettings.reputationExp.deification[expIndex];
     }
   }
 
