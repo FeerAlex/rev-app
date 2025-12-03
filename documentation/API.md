@@ -138,7 +138,7 @@ class CalculateTimeToCurrencyGoal {
 
 **Логика расчета:**
 1. Рассчитывается общая стоимость всех некупленных украшений и улучшений (используются константы из `AppSettings.factions`)
-2. Добавляется стоимость сертификата (если не куплен и `hasCertificate = true`)
+2. Добавляется стоимость сертификата (только если не куплен и `wantsCertificate = true`)
 3. Вычитается текущая валюта
 4. Рассчитывается доход в день:
    - Валюта за заказ (только если `ordersEnabled = true` и фракция имеет заказы согласно статическому списку) - среднее арифметическое валюты из `FactionTemplate.orderReward` для данной фракции
@@ -170,14 +170,16 @@ class CalculateTimeToReputationGoal {
 - `Duration.zero` - если цель уже достигнута
 
 **Логика расчета:**
-1. Вычисляется общий опыт на основе `currentReputationLevel` и `currentLevelExp` через `ReputationHelper.getNeededExp`
-2. Вычисляется требуемый опыт для достижения `targetReputationLevel`
-3. Рассчитывается опыт в день:
+1. Если `targetReputationLevel == null`, возвращается `null` (цель не установлена)
+2. Вычисляется общий опыт на основе `currentReputationLevel` и `currentLevelExp` через `ReputationHelper.getNeededExp`
+3. Вычисляется требуемый опыт для достижения `targetReputationLevel`
+4. Рассчитывается опыт в день:
    - Опыт за заказ (только если `ordersEnabled = true` и фракция имеет заказы согласно статическому списку) - среднее арифметическое опыта из `FactionTemplate.orderReward` для данной фракции
    - Опыт за работу (только если `workReward != null` и `workReward.exp > 0`) - значение из `faction.workReward.exp`
 4. Вычисляется время: `(нужный опыт) / (опыт в день)`
 
 **Примечание:** 
+- Если целевой уровень не установлен (`targetReputationLevel == null`), возвращается `null`
 - Расчет учитывает опыт как за заказы, так и за работу (если настроены)
 - Расчет учитывает только те источники опыта, которые настроены (заказы включены и фракция имеет заказы, или работа настроена с опытом > 0)
 
@@ -234,7 +236,8 @@ class Faction {
   final bool isVisible; // Видимость фракции в списке (по умолчанию true)
   final ReputationLevel currentReputationLevel; // Текущий уровень отношения (по умолчанию indifference)
   final int currentLevelExp; // Опыт на текущем уровне (от 0 до требуемого для уровня, по умолчанию 0)
-  final ReputationLevel targetReputationLevel; // Целевой уровень отношения (по умолчанию maximum)
+  final ReputationLevel? targetReputationLevel; // Целевой уровень отношения (null = цель не нужна, по умолчанию null)
+  final bool wantsCertificate; // Нужен ли сертификат как цель (по умолчанию false)
   
   Faction copyWith({...});
 }

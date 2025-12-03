@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
+import '../../../domain/entities/faction.dart';
+import '../../../core/constants/factions_list.dart';
 
 class FactionCertificateBlock extends StatelessWidget {
-  final bool hasCertificate;
-  final bool showCertificateCheckbox;
-  final ValueChanged<bool>? onHasCertificateChanged;
+  final Faction faction;
+  final bool certificatePurchased;
+  final ValueChanged<bool> onCertificatePurchasedChanged;
 
   const FactionCertificateBlock({
     super.key,
-    required this.hasCertificate,
-    this.showCertificateCheckbox = true,
-    this.onHasCertificateChanged,
+    required this.faction,
+    required this.certificatePurchased,
+    required this.onCertificatePurchasedChanged,
   });
+
+  bool _hasCertificate() {
+    final template = FactionsList.getTemplateByName(faction.name);
+    return template?.hasCertificate ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final hasCertificate = _hasCertificate();
+
+    if (!hasCertificate) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 12,
@@ -28,30 +41,26 @@ class FactionCertificateBlock extends StatelessWidget {
             ),
           ],
         ),
-        if (showCertificateCheckbox)
-          Card(
-            margin: EdgeInsets.zero,
-            child: CheckboxListTile(
-              dense: true,
-              title: Row(
-                spacing: 8,
-                children: [
-                  Icon(Icons.verified, size: 16, color: Colors.purple[300]),
-                  const Text('Сертификат', style: TextStyle(fontSize: 14)),
-                ],
-              ),
-              value: hasCertificate,
-              activeColor: Colors.purple,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-              onChanged: onHasCertificateChanged != null
-                  ? (value) {
-                      onHasCertificateChanged!(value ?? false);
-                    }
-                  : null,
+        Card(
+          margin: EdgeInsets.zero,
+          child: CheckboxListTile(
+            dense: true,
+            title: Row(
+              spacing: 8,
+              children: [
+                Icon(Icons.verified, size: 16, color: Colors.purple[300]),
+                const Text('Сертификат', style: TextStyle(fontSize: 14)),
+              ],
             ),
+            value: certificatePurchased,
+            activeColor: Colors.purple,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+            onChanged: (value) {
+              onCertificatePurchasedChanged(value ?? false);
+            },
           ),
+        ),
       ],
     );
   }
 }
-

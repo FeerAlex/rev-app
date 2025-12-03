@@ -6,8 +6,11 @@ import '../../../core/constants/work_reward.dart';
 import '../bloc/faction/faction_bloc.dart';
 import '../bloc/faction/faction_event.dart';
 import '../widgets/faction_activities_block.dart';
-import '../widgets/faction_inventory_block.dart';
+import '../widgets/faction_currency_block.dart';
+import '../widgets/faction_reputation_block.dart';
+import '../widgets/faction_certificate_block.dart';
 import '../widgets/faction_goals_block.dart';
+import '../widgets/faction_decorations_section.dart';
 import '../../../core/constants/reputation_level.dart';
 
 class FactionDetailPage extends StatefulWidget {
@@ -23,6 +26,7 @@ class FactionDetailPage extends StatefulWidget {
 }
 
 class _FactionDetailPageState extends State<FactionDetailPage> {
+  int _currentIndex = 0;
   late int _currency;
   late bool _orderCompleted;
   late bool _ordersEnabled;
@@ -166,123 +170,171 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
             icon: const Icon(Icons.delete),
             onPressed: _deleteFaction,
           ),
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: _saveFaction,
+          ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 24,
-          children: [
-            // Блок "Инвентарь" - текущее состояние
-            FactionInventoryBlock(
-              faction: widget.faction!,
-              currency: _currency,
-              currentReputationLevel: _currentReputationLevel,
-              currentLevelExp: _currentLevelExp,
-              certificatePurchased: _certificatePurchased,
-              decorationRespectPurchased: _decorationRespectPurchased,
-              decorationRespectUpgraded: _decorationRespectUpgraded,
-              decorationHonorPurchased: _decorationHonorPurchased,
-              decorationHonorUpgraded: _decorationHonorUpgraded,
-              decorationAdorationPurchased: _decorationAdorationPurchased,
-              decorationAdorationUpgraded: _decorationAdorationUpgraded,
-              onCurrencyChanged: (value) {
-                setState(() {
-                  _currency = value;
-                });
-              },
-              onCurrentLevelChanged: (value) {
-                setState(() {
-                  _currentReputationLevel = value;
-                });
-              },
-              onLevelExpChanged: (value) {
-                setState(() {
-                  _currentLevelExp = value;
-                });
-              },
-              onRespectPurchasedChanged: (value) {
-                setState(() {
-                  _decorationRespectPurchased = value;
-                });
-              },
-              onRespectUpgradedChanged: (value) {
-                setState(() {
-                  _decorationRespectUpgraded = value;
-                });
-              },
-              onHonorPurchasedChanged: (value) {
-                setState(() {
-                  _decorationHonorPurchased = value;
-                });
-              },
-              onHonorUpgradedChanged: (value) {
-                setState(() {
-                  _decorationHonorUpgraded = value;
-                });
-              },
-              onAdorationPurchasedChanged: (value) {
-                setState(() {
-                  _decorationAdorationPurchased = value;
-                });
-              },
-              onAdorationUpgradedChanged: (value) {
-                setState(() {
-                  _decorationAdorationUpgraded = value;
-                });
-              },
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+            // Вкладка "Настройки"
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 24,
+                children: [
+                  FactionActivitiesBlock(
+                    hasOrder: _ordersEnabled,
+                    workReward: _workReward,
+                    showOrderCheckbox: _canFactionHaveOrders(),
+                    showWorkInput: _canFactionHaveWork(),
+                    onHasOrderChanged: (value) {
+                      setState(() {
+                        _ordersEnabled = value;
+                        if (!value) {
+                          _orderCompleted = false;
+                        }
+                      });
+                    },
+                    onWorkRewardChanged: (value) {
+                      setState(() {
+                        _workReward = value;
+                        // Если оба поля 0, сбрасываем completed
+                        if (_workReward != null && _workReward!.currency == 0 && _workReward!.exp == 0) {
+                          _workCompleted = false;
+                        }
+                      });
+                    },
+                  ),
+                  FactionGoalsBlock(
+                    currentReputationLevel: _currentReputationLevel,
+                    targetReputationLevel: _targetReputationLevel,
+                    wantsCertificate: _wantsCertificate,
+                    onTargetLevelChanged: (value) {
+                      setState(() {
+                        _targetReputationLevel = value;
+                      });
+                    },
+                    onWantsCertificateChanged: (value) {
+                      setState(() {
+                        _wantsCertificate = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
             ),
-            // Блок "Ежедневные активности"
-            FactionActivitiesBlock(
-              hasOrder: _ordersEnabled,
-              workReward: _workReward,
-              showOrderCheckbox: _canFactionHaveOrders(),
-              showWorkInput: _canFactionHaveWork(),
-              onHasOrderChanged: (value) {
-                setState(() {
-                  _ordersEnabled = value;
-                  if (!value) {
-                    _orderCompleted = false;
-                  }
-                });
-              },
-              onWorkRewardChanged: (value) {
-                setState(() {
-                  _workReward = value;
-                  // Если оба поля 0, сбрасываем completed
-                  if (_workReward != null && _workReward!.currency == 0 && _workReward!.exp == 0) {
-                    _workCompleted = false;
-                  }
-                });
-              },
-            ),
-            // Блок "Цели"
-            FactionGoalsBlock(
-              targetReputationLevel: _targetReputationLevel,
-              wantsCertificate: _wantsCertificate,
-              onTargetLevelChanged: (value) {
-                setState(() {
-                  _targetReputationLevel = value;
-                });
-              },
-              onWantsCertificateChanged: (value) {
-                setState(() {
-                  _wantsCertificate = value;
-                });
-              },
+            // Вкладка "Инвентарь"
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 24,
+                children: [
+                  FactionCurrencyBlock(
+                    currency: _currency,
+                    onCurrencyChanged: (value) {
+                      setState(() {
+                        _currency = value;
+                      });
+                    },
+                  ),
+                  FactionReputationBlock(
+                    currentReputationLevel: _currentReputationLevel,
+                    currentLevelExp: _currentLevelExp,
+                    onCurrentLevelChanged: (value) {
+                      setState(() {
+                        _currentReputationLevel = value;
+                        // Если целевой уровень стал невалидным (ниже или равен текущему), переключаем на следующий доступный
+                        if (_targetReputationLevel != null && 
+                            _targetReputationLevel!.value <= value.value) {
+                          // Находим следующий доступный уровень (минимальный уровень выше текущего)
+                          final nextLevel = ReputationLevel.values.firstWhere(
+                            (level) => level.value > value.value,
+                            orElse: () => ReputationLevel.maximum,
+                          );
+                          _targetReputationLevel = nextLevel;
+                        }
+                      });
+                    },
+                    onLevelExpChanged: (value) {
+                      setState(() {
+                        _currentLevelExp = value;
+                      });
+                    },
+                  ),
+                  FactionCertificateBlock(
+                    faction: widget.faction!,
+                    certificatePurchased: _certificatePurchased,
+                    onCertificatePurchasedChanged: (value) {
+                      setState(() {
+                        _certificatePurchased = value;
+                      });
+                    },
+                  ),
+                  FactionDecorationsSection(
+                    decorationRespectPurchased: _decorationRespectPurchased,
+                    decorationRespectUpgraded: _decorationRespectUpgraded,
+                    decorationHonorPurchased: _decorationHonorPurchased,
+                    decorationHonorUpgraded: _decorationHonorUpgraded,
+                    decorationAdorationPurchased: _decorationAdorationPurchased,
+                    decorationAdorationUpgraded: _decorationAdorationUpgraded,
+                    onRespectPurchasedChanged: (value) {
+                      setState(() {
+                        _decorationRespectPurchased = value;
+                      });
+                    },
+                    onRespectUpgradedChanged: (value) {
+                      setState(() {
+                        _decorationRespectUpgraded = value;
+                      });
+                    },
+                    onHonorPurchasedChanged: (value) {
+                      setState(() {
+                        _decorationHonorPurchased = value;
+                      });
+                    },
+                    onHonorUpgradedChanged: (value) {
+                      setState(() {
+                        _decorationHonorUpgraded = value;
+                      });
+                    },
+                    onAdorationPurchasedChanged: (value) {
+                      setState(() {
+                        _decorationAdorationPurchased = value;
+                      });
+                    },
+                    onAdorationUpgradedChanged: (value) {
+                      setState(() {
+                        _decorationAdorationUpgraded = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          child: ElevatedButton(
-            onPressed: _saveFaction,
-            child: const Text('Сохранить'),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Настройки',
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.inventory_2),
+            label: 'Инвентарь',
+          ),
+        ],
       ),
     );
   }

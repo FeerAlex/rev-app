@@ -33,7 +33,8 @@
 | `is_visible` | INTEGER NOT NULL DEFAULT 1 | Видимость фракции в списке (0/1) |
 | `current_reputation_level` | INTEGER NOT NULL DEFAULT 0 | Текущий уровень отношения (0-6, соответствует ReputationLevel) |
 | `current_level_exp` | INTEGER NOT NULL DEFAULT 0 | Опыт на текущем уровне (от 0 до требуемого для уровня) |
-| `target_reputation_level` | INTEGER NOT NULL DEFAULT 6 | Целевой уровень отношения (0-6, соответствует ReputationLevel, по умолчанию 6 = Maximum) |
+| `target_reputation_level` | INTEGER DEFAULT NULL | Целевой уровень отношения (0-6, соответствует ReputationLevel, NULL = цель не нужна) |
+| `wants_certificate` | INTEGER NOT NULL DEFAULT 0 | Нужен ли сертификат как цель (0/1) |
 
 **Индексы:** нет
 
@@ -74,7 +75,8 @@ CREATE TABLE factions (
   is_visible INTEGER NOT NULL DEFAULT 1,
   current_reputation_level INTEGER NOT NULL DEFAULT 0,
   current_level_exp INTEGER NOT NULL DEFAULT 0,
-  target_reputation_level INTEGER NOT NULL DEFAULT 6
+  target_reputation_level INTEGER DEFAULT NULL,
+  wants_certificate INTEGER NOT NULL DEFAULT 0
 )
 ```
 
@@ -88,11 +90,14 @@ CREATE TABLE factions (
 
 ## Версия базы данных
 
-**Текущая версия БД:** 11
+**Текущая версия БД:** 12
 
 База данных создается при первом запуске приложения через метод `FactionDao.createTable()`. Все колонки создаются сразу при создании таблицы.
 
-**Примечание:** Миграции базы данных не используются, так как приложение находится на стадии разработки и пользователей со старыми версиями БД нет.
+**Миграции:**
+- Версия 12: Добавлена колонка `wants_certificate`, поле `target_reputation_level` сделано nullable
+
+**Примечание:** При обновлении с версии 11 на 12 автоматически добавляется колонка `wants_certificate` и изменяется `target_reputation_level` на nullable.
 
 ## Резервное копирование
 

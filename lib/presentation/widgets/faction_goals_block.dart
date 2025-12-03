@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/reputation_level.dart';
 
 class FactionGoalsBlock extends StatelessWidget {
+  final ReputationLevel currentReputationLevel;
   final ReputationLevel? targetReputationLevel;
   final bool wantsCertificate;
   final ValueChanged<ReputationLevel?> onTargetLevelChanged;
@@ -9,11 +10,33 @@ class FactionGoalsBlock extends StatelessWidget {
 
   const FactionGoalsBlock({
     super.key,
+    required this.currentReputationLevel,
     required this.targetReputationLevel,
     required this.wantsCertificate,
     required this.onTargetLevelChanged,
     required this.onWantsCertificateChanged,
   });
+
+  void _showHelpDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('О целях'),
+        content: const Text(
+          'Блок "Цели" позволяет указать, к чему вы стремитесь во фракции.\n\n'
+          '• Целевой уровень репутации - выберите уровень отношения, которого хотите достичь, или "Не нужна", если не ставите цель по репутации. В списке отображаются только уровни выше текущего.\n\n'
+          '• Нужен сертификат - включите галочку, если хотите купить сертификат. Это учитывается при расчете времени до цели по валюте.\n\n'
+          'Если целевой уровень не установлен и сертификат не нужен, расчет времени до цели по репутации и валюте не выполняется.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Понятно'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,70 +46,113 @@ class FactionGoalsBlock extends StatelessWidget {
       children: [
         Row(
           spacing: 8,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(Icons.flag, color: Colors.orange[300], size: 20),
             const Text(
               'Цели',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
+            GestureDetector(
+              onTap: () => _showHelpDialog(context),
+              child: Icon(
+                Icons.help_outline,
+                size: 18,
+                color: Colors.grey[400],
+              ),
+            ),
           ],
         ),
-        Card(
-          margin: EdgeInsets.zero,
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 12,
-              children: [
-                // Целевой уровень репутации
-                Row(
+        Column(
+          spacing: 8,
+          children: [
+            // Целевой уровень репутации
+            Card(
+              margin: EdgeInsets.zero,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Целевой уровень:',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    DropdownButton<ReputationLevel?>(
-                      value: targetReputationLevel,
-                      items: [
-                        const DropdownMenuItem<ReputationLevel?>(
-                          value: null,
-                          child: Text('Не нужна'),
+                    Row(
+                      spacing: 8,
+                      children: [
+                        Icon(Icons.flag, size: 16, color: Colors.orange[300]),
+                        const Text(
+                          'Целевой уровень:',
+                          style: TextStyle(fontSize: 14),
                         ),
-                        ...ReputationLevel.values.map((level) {
-                          return DropdownMenuItem<ReputationLevel?>(
-                            value: level,
-                            child: Text(level.displayName),
-                          );
-                        }),
                       ],
-                      onChanged: (value) {
-                        onTargetLevelChanged(value);
-                      },
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.grey[600]!,
+                          width: 1,
+                        ),
+                        color: Colors.grey[850],
+                      ),
+                      child: DropdownButton<ReputationLevel?>(
+                        value: targetReputationLevel,
+                        items: [
+                          const DropdownMenuItem<ReputationLevel?>(
+                            value: null,
+                            child: Text('Не нужна'),
+                          ),
+                          ...ReputationLevel.values
+                              .where((level) => level.value > currentReputationLevel.value)
+                              .map((level) {
+                            return DropdownMenuItem<ReputationLevel?>(
+                              value: level,
+                              child: Text(level.displayName),
+                            );
+                          }),
+                        ],
+                        onChanged: (value) {
+                          onTargetLevelChanged(value);
+                        },
+                        isDense: true,
+                        isExpanded: false,
+                        underline: const SizedBox.shrink(),
+                        icon: Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.grey[400],
+                          size: 24,
+                        ),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                        dropdownColor: Colors.grey[900],
+                      ),
                     ),
                   ],
                 ),
-                // Нужен ли сертификат
-                CheckboxListTile(
-                  dense: true,
-                  title: Row(
-                    spacing: 8,
-                    children: [
-                      Icon(Icons.verified, size: 16, color: Colors.purple[300]),
-                      const Text('Нужен сертификат', style: TextStyle(fontSize: 14)),
-                    ],
-                  ),
-                  value: wantsCertificate,
-                  activeColor: Colors.purple,
-                  contentPadding: EdgeInsets.zero,
-                  onChanged: (value) {
-                    onWantsCertificateChanged(value ?? false);
-                  },
-                ),
-              ],
+              ),
             ),
-          ),
+            // Нужен ли сертификат
+            Card(
+              margin: EdgeInsets.zero,
+              child: CheckboxListTile(
+                dense: true,
+                title: Row(
+                  spacing: 8,
+                  children: [
+                    Icon(Icons.verified, size: 16, color: Colors.purple[300]),
+                    const Text('Нужен сертификат', style: TextStyle(fontSize: 14)),
+                  ],
+                ),
+                value: wantsCertificate,
+                activeColor: Colors.purple,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                onChanged: (value) {
+                  onWantsCertificateChanged(value ?? false);
+                },
+              ),
+            ),
+          ],
         ),
       ],
     );

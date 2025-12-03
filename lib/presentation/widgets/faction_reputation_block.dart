@@ -1,26 +1,19 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/reputation_level.dart';
-import '../widgets/currency_input_dialog.dart';
-import '../../../domain/entities/faction.dart';
+import 'currency_input_dialog.dart';
 
 class FactionReputationBlock extends StatelessWidget {
-  final Faction faction;
   final ReputationLevel currentReputationLevel;
   final int currentLevelExp;
-  final ReputationLevel targetReputationLevel;
   final ValueChanged<ReputationLevel> onCurrentLevelChanged;
   final ValueChanged<int> onLevelExpChanged;
-  final ValueChanged<ReputationLevel> onTargetLevelChanged;
 
   const FactionReputationBlock({
     super.key,
-    required this.faction,
     required this.currentReputationLevel,
     required this.currentLevelExp,
-    required this.targetReputationLevel,
     required this.onCurrentLevelChanged,
     required this.onLevelExpChanged,
-    required this.onTargetLevelChanged,
   });
 
   @override
@@ -39,45 +32,88 @@ class FactionReputationBlock extends StatelessWidget {
             ),
           ],
         ),
-        Card(
-          margin: EdgeInsets.zero,
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 12,
-              children: [
-                Row(
+        Column(
+          spacing: 8,
+          children: [
+            // Текущий уровень репутации
+            Card(
+              margin: EdgeInsets.zero,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Текущий уровень:',
-                      style: TextStyle(fontSize: 14),
+                    Row(
+                      spacing: 8,
+                      children: [
+                        Icon(Icons.star, size: 16, color: Colors.amber[300]),
+                        const Text(
+                          'Текущий уровень:',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
                     ),
-                    DropdownButton<ReputationLevel>(
-                      value: currentReputationLevel,
-                      items: ReputationLevel.values
-                          .where((level) => level != ReputationLevel.maximum)
-                          .map((level) {
-                        return DropdownMenuItem(
-                          value: level,
-                          child: Text(level.displayName),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          onCurrentLevelChanged(value);
-                        }
-                      },
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.grey[600]!,
+                          width: 1,
+                        ),
+                        color: Colors.grey[850],
+                      ),
+                      child: DropdownButton<ReputationLevel>(
+                        value: currentReputationLevel,
+                        items: ReputationLevel.values
+                            .where((level) => level != ReputationLevel.maximum)
+                            .map((level) {
+                          return DropdownMenuItem(
+                            value: level,
+                            child: Text(level.displayName),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            onCurrentLevelChanged(value);
+                          }
+                        },
+                        isDense: true,
+                        isExpanded: false,
+                        underline: const SizedBox.shrink(),
+                        icon: Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.grey[400],
+                          size: 24,
+                        ),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                        dropdownColor: Colors.grey[900],
+                      ),
                     ),
                   ],
                 ),
-                Row(
+              ),
+            ),
+            // Опыт на текущем уровне
+            Card(
+              margin: EdgeInsets.zero,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Опыт на уровне:',
-                      style: TextStyle(fontSize: 14),
+                    Row(
+                      spacing: 8,
+                      children: [
+                        Icon(Icons.trending_up, size: 16, color: Colors.blue[300]),
+                        const Text(
+                          'Опыт на уровне:',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
                     ),
                     TextButton(
                       onPressed: () async {
@@ -101,32 +137,9 @@ class FactionReputationBlock extends StatelessWidget {
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Целевой уровень:',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    DropdownButton<ReputationLevel>(
-                      value: targetReputationLevel,
-                      items: ReputationLevel.values.map((level) {
-                        return DropdownMenuItem(
-                          value: level,
-                          child: Text(level.displayName),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          onTargetLevelChanged(value);
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ],
     );
