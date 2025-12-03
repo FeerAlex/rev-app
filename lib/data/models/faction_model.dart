@@ -1,7 +1,7 @@
 import '../../domain/entities/faction.dart';
+import '../../domain/entities/reputation_level.dart';
+import '../../domain/value_objects/work_reward.dart';
 import '../datasources/faction_dao.dart';
-import '../../core/constants/reputation_level.dart';
-import '../../core/constants/work_reward.dart';
 
 class FactionModel {
   static Faction fromMap(Map<String, dynamic> map) {

@@ -5,10 +5,12 @@ import '../../../core/utils/time_formatter.dart';
 
 class TimeToReputationGoalWidget extends StatefulWidget {
   final Faction? faction;
+  final CalculateTimeToReputationGoal calculateTimeToReputationGoal;
 
   const TimeToReputationGoalWidget({
     super.key,
     this.faction,
+    required this.calculateTimeToReputationGoal,
   });
 
   @override
@@ -72,8 +74,7 @@ class _TimeToReputationGoalWidgetState extends State<TimeToReputationGoalWidget>
     }
 
     try {
-      const calculateTimeToGoal = CalculateTimeToReputationGoal();
-      final duration = calculateTimeToGoal(widget.faction!);
+      final duration = widget.calculateTimeToReputationGoal(widget.faction!);
       setState(() {
         _timeToGoal = duration;
         _isLoading = false;

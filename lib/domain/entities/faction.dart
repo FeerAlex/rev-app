@@ -1,5 +1,5 @@
-import '../../core/constants/reputation_level.dart';
-import '../../core/constants/work_reward.dart';
+import 'reputation_level.dart';
+import '../value_objects/work_reward.dart';
 
 class Faction {
   final int? id;

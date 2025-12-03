@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
-import '../../../core/constants/app_settings.dart';
-import '../../../core/constants/factions_list.dart';
-import '../../../core/constants/order_reward.dart';
+import '../../../domain/usecases/calculate_time_to_currency_goal.dart';
+import '../../../domain/repositories/app_settings_repository.dart';
+import '../../../domain/repositories/faction_template_repository.dart';
+import '../../../domain/value_objects/order_reward.dart';
 import '../time_to_goal/time_to_currency_goal_widget.dart';
 import '../common/help_dialog.dart';
 
 /// Виджет для отображения прогресса валюты с progress bar
 class CurrencyProgressBar extends StatelessWidget {
   final Faction faction;
+  final CalculateTimeToCurrencyGoal calculateTimeToCurrencyGoal;
+  final AppSettingsRepository appSettingsRepository;
+  final FactionTemplateRepository factionTemplateRepository;
 
   const CurrencyProgressBar({
     super.key,
     required this.faction,
+    required this.calculateTimeToCurrencyGoal,
+    required this.appSettingsRepository,
+    required this.factionTemplateRepository,
   });
 
   int _calculateNeededCurrency(Faction faction) {
@@ -21,31 +28,31 @@ class CurrencyProgressBar extends StatelessWidget {
 
     // Украшение уважение
     if (!faction.decorationRespectPurchased) {
-      totalCost += AppSettings.factions.decorationPriceRespect;
+      totalCost += appSettingsRepository.getDecorationPriceRespect();
     }
     if (!faction.decorationRespectUpgraded) {
-      totalCost += AppSettings.factions.decorationUpgradeCostRespect;
+      totalCost += appSettingsRepository.getDecorationUpgradeCostRespect();
     }
 
     // Украшение почтение
     if (!faction.decorationHonorPurchased) {
-      totalCost += AppSettings.factions.decorationPriceHonor;
+      totalCost += appSettingsRepository.getDecorationPriceHonor();
     }
     if (!faction.decorationHonorUpgraded) {
-      totalCost += AppSettings.factions.decorationUpgradeCostHonor;
+      totalCost += appSettingsRepository.getDecorationUpgradeCostHonor();
     }
 
     // Украшение преклонение
     if (!faction.decorationAdorationPurchased) {
-      totalCost += AppSettings.factions.decorationPriceAdoration;
+      totalCost += appSettingsRepository.getDecorationPriceAdoration();
     }
     if (!faction.decorationAdorationUpgraded) {
-      totalCost += AppSettings.factions.decorationUpgradeCostAdoration;
+      totalCost += appSettingsRepository.getDecorationUpgradeCostAdoration();
     }
 
     // Сертификат
     if (!faction.certificatePurchased && faction.hasCertificate) {
-      totalCost += AppSettings.factions.certificatePrice;
+      totalCost += appSettingsRepository.getCertificatePrice();
     }
 
     return totalCost;
@@ -62,7 +69,7 @@ class CurrencyProgressBar extends StatelessWidget {
     int currencyPerDay = 0;
 
     // Потенциальный доход от заказа
-    final template = FactionsList.getTemplateByName(faction.name);
+    final template = factionTemplateRepository.getTemplateByName(faction.name);
     if (faction.ordersEnabled && template != null && template.orderReward != null) {
       currencyPerDay += OrderReward.averageCurrency(template.orderReward!);
     }
@@ -83,7 +90,7 @@ class CurrencyProgressBar extends StatelessWidget {
       reasons.add('• Включите галочку "Нужен сертификат" в блоке "Цели"');
     }
     
-    final template = FactionsList.getTemplateByName(faction.name);
+    final template = factionTemplateRepository.getTemplateByName(faction.name);
     final hasOrderReward = template != null && template.orderReward != null;
     final hasWorkCurrency = faction.workReward != null && faction.workReward!.currency > 0;
     
@@ -199,7 +206,10 @@ class CurrencyProgressBar extends StatelessWidget {
                       ],
                     ),
                   ),
-                  TimeToCurrencyGoalWidget(faction: faction),
+                  TimeToCurrencyGoalWidget(
+                    faction: faction,
+                    calculateTimeToCurrencyGoal: calculateTimeToCurrencyGoal,
+                  ),
                 ],
               ),
             ),

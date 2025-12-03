@@ -1,11 +1,17 @@
 import 'dart:math';
 import '../entities/faction.dart';
-import '../../core/constants/app_settings.dart';
-import '../../core/constants/factions_list.dart';
-import '../../core/constants/order_reward.dart';
+import '../repositories/app_settings_repository.dart';
+import '../repositories/faction_template_repository.dart';
+import '../value_objects/order_reward.dart';
 
 class CalculateTimeToCurrencyGoal {
-  const CalculateTimeToCurrencyGoal();
+  final AppSettingsRepository _settingsRepository;
+  final FactionTemplateRepository _templateRepository;
+
+  CalculateTimeToCurrencyGoal(
+    this._settingsRepository,
+    this._templateRepository,
+  );
 
   Duration? call(Faction faction) {
     // Если сертификат не нужен как цель, расчет не выполняется
@@ -40,31 +46,31 @@ class CalculateTimeToCurrencyGoal {
 
     // Украшение уважение
     if (!faction.decorationRespectPurchased) {
-      totalCost += AppSettings.factions.decorationPriceRespect;
+      totalCost += _settingsRepository.getDecorationPriceRespect();
     }
     if (!faction.decorationRespectUpgraded) {
-      totalCost += AppSettings.factions.decorationUpgradeCostRespect;
+      totalCost += _settingsRepository.getDecorationUpgradeCostRespect();
     }
 
     // Украшение почтение
     if (!faction.decorationHonorPurchased) {
-      totalCost += AppSettings.factions.decorationPriceHonor;
+      totalCost += _settingsRepository.getDecorationPriceHonor();
     }
     if (!faction.decorationHonorUpgraded) {
-      totalCost += AppSettings.factions.decorationUpgradeCostHonor;
+      totalCost += _settingsRepository.getDecorationUpgradeCostHonor();
     }
 
     // Украшение преклонение
     if (!faction.decorationAdorationPurchased) {
-      totalCost += AppSettings.factions.decorationPriceAdoration;
+      totalCost += _settingsRepository.getDecorationPriceAdoration();
     }
     if (!faction.decorationAdorationUpgraded) {
-      totalCost += AppSettings.factions.decorationUpgradeCostAdoration;
+      totalCost += _settingsRepository.getDecorationUpgradeCostAdoration();
     }
 
     // Сертификат (только если нужен как цель и не куплен)
     if (!faction.certificatePurchased && faction.wantsCertificate) {
-      totalCost += AppSettings.factions.certificatePrice;
+      totalCost += _settingsRepository.getCertificatePrice();
     }
 
     return totalCost;
@@ -75,7 +81,7 @@ class CalculateTimeToCurrencyGoal {
     int currencyPerDay = 0;
 
     // Потенциальный доход от заказа (только если заказы включены и фракция имеет заказы согласно статическому списку)
-    final template = FactionsList.getTemplateByName(faction.name);
+    final template = _templateRepository.getTemplateByName(faction.name);
     if (faction.ordersEnabled && template != null && template.orderReward != null) {
       // Вычисляем среднее арифметическое валюты из награды за заказы
       currencyPerDay += OrderReward.averageCurrency(template.orderReward!);

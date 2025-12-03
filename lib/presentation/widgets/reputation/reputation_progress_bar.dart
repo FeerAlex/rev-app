@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
-import '../../../core/utils/reputation_helper.dart';
-import '../../../core/constants/reputation_level.dart';
-import '../../../core/constants/factions_list.dart';
-import '../../../core/constants/order_reward.dart';
+import '../../../domain/entities/reputation_level.dart';
+import '../../../domain/usecases/calculate_time_to_reputation_goal.dart';
+import '../../../domain/repositories/faction_template_repository.dart';
+import '../../../domain/value_objects/order_reward.dart';
+import '../../../domain/utils/reputation_helper.dart';
 import '../time_to_goal/time_to_reputation_goal_widget.dart';
 import '../common/help_dialog.dart';
 
 /// Виджет для отображения прогресса уровня отношения с progress bar
 class ReputationProgressBar extends StatelessWidget {
   final Faction faction;
+  final ReputationHelper reputationHelper;
+  final CalculateTimeToReputationGoal calculateTimeToReputationGoal;
+  final FactionTemplateRepository factionTemplateRepository;
 
   const ReputationProgressBar({
     super.key,
     required this.faction,
+    required this.reputationHelper,
+    required this.calculateTimeToReputationGoal,
+    required this.factionTemplateRepository,
   });
 
   /// Проверяет, есть ли данные для расчета времени до цели
@@ -27,7 +34,7 @@ class ReputationProgressBar extends StatelessWidget {
     int expPerDay = 0;
 
     // Потенциальный доход от заказа
-    final template = FactionsList.getTemplateByName(faction.name);
+    final template = factionTemplateRepository.getTemplateByName(faction.name);
     if (faction.ordersEnabled && template != null && template.orderReward != null) {
       expPerDay += OrderReward.averageExp(template.orderReward!);
     }
@@ -48,7 +55,7 @@ class ReputationProgressBar extends StatelessWidget {
       reasons.add('• Установите целевой уровень репутации в блоке "Цели"');
     }
     
-    final template = FactionsList.getTemplateByName(faction.name);
+    final template = factionTemplateRepository.getTemplateByName(faction.name);
     final hasOrderReward = template != null && template.orderReward != null;
     final hasWorkExp = faction.workReward != null && faction.workReward!.exp > 0;
     
@@ -80,7 +87,7 @@ class ReputationProgressBar extends StatelessWidget {
       return false;
     }
 
-    final neededExp = ReputationHelper.getNeededExp(
+    final neededExp = reputationHelper.getNeededExp(
       faction.currentReputationLevel,
       faction.currentLevelExp,
       faction.targetReputationLevel!,
@@ -142,7 +149,7 @@ class ReputationProgressBar extends StatelessWidget {
 
     final currentLevel = faction.currentReputationLevel;
     final expInCurrentLevel = faction.currentLevelExp;
-    final requiredExpForCurrentLevel = ReputationHelper.getRequiredExpForCurrentLevel(
+    final requiredExpForCurrentLevel = reputationHelper.getRequiredExpForCurrentLevel(
       currentLevel,
       faction.name,
     );
@@ -184,7 +191,10 @@ class ReputationProgressBar extends StatelessWidget {
                           ],
                         ),
                       ),
-                      TimeToReputationGoalWidget(faction: faction),
+                      TimeToReputationGoalWidget(
+                        faction: faction,
+                        calculateTimeToReputationGoal: calculateTimeToReputationGoal,
+                      ),
                     ],
                   ),
                 ),

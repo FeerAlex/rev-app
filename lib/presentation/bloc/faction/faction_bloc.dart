@@ -3,11 +3,11 @@ import '../../../domain/entities/faction.dart';
 import '../../../domain/usecases/add_faction.dart';
 import '../../../domain/usecases/delete_faction.dart';
 import '../../../domain/usecases/get_all_factions.dart';
+import '../../../domain/usecases/get_hidden_factions.dart';
 import '../../../domain/usecases/reset_daily_flags.dart';
 import '../../../domain/usecases/update_faction.dart';
 import '../../../domain/usecases/reorder_factions.dart';
 import '../../../domain/usecases/show_faction.dart';
-import '../../../domain/repositories/faction_repository.dart';
 import 'faction_event.dart';
 import 'faction_state.dart';
 
@@ -19,7 +19,7 @@ class FactionBloc extends Bloc<FactionEvent, FactionState> {
   final ResetDailyFlags _resetDailyFlags;
   final ReorderFactions _reorderFactions;
   final ShowFaction _showFaction;
-  final FactionRepository _repository;
+  final GetHiddenFactions _getHiddenFactions;
 
   FactionBloc(
     this._getAllFactions,
@@ -29,7 +29,7 @@ class FactionBloc extends Bloc<FactionEvent, FactionState> {
     this._resetDailyFlags,
     this._reorderFactions,
     this._showFaction,
-    this._repository,
+    this._getHiddenFactions,
   ) : super(const FactionInitial()) {
     on<LoadFactions>(_onLoadFactions);
     on<AddFactionEvent>(_onAddFaction);
@@ -170,7 +170,7 @@ class FactionBloc extends Bloc<FactionEvent, FactionState> {
 
   /// Получить скрытые фракции для диалога выбора
   Future<List<Faction>> getHiddenFactions() async {
-    return await _repository.getHiddenFactions();
+    return await _getHiddenFactions();
   }
 }
 

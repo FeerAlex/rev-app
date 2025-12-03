@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/faction.dart';
-import '../../../core/constants/factions_list.dart';
-import '../../../core/constants/work_reward.dart';
+import '../../../domain/repositories/faction_template_repository.dart';
+import '../../../domain/value_objects/work_reward.dart';
 import '../../bloc/faction/faction_bloc.dart';
 import '../../bloc/faction/faction_event.dart';
 import '../../widgets/faction/faction_activities_block.dart';
@@ -11,14 +11,16 @@ import '../../widgets/faction/faction_reputation_block.dart';
 import '../../widgets/faction/faction_certificate_block.dart';
 import '../../widgets/faction/faction_goals_block.dart';
 import '../../widgets/faction/faction_decorations_section.dart';
-import '../../../core/constants/reputation_level.dart';
+import '../../../domain/entities/reputation_level.dart';
 
 class FactionDetailPage extends StatefulWidget {
   final Faction? faction;
+  final FactionTemplateRepository factionTemplateRepository;
 
   const FactionDetailPage({
     super.key,
     this.faction,
+    required this.factionTemplateRepository,
   });
 
   @override
@@ -79,7 +81,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
       return;
     }
 
-    final template = FactionsList.getTemplateByName(widget.faction!.name);
+    final template = widget.factionTemplateRepository.getTemplateByName(widget.faction!.name);
     final faction = Faction(
       id: widget.faction!.id,
       name: widget.faction!.name,
@@ -110,13 +112,13 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
 
   bool _canFactionHaveOrders() {
     if (widget.faction == null) return false;
-    final template = FactionsList.getTemplateByName(widget.faction!.name);
+    final template = widget.factionTemplateRepository.getTemplateByName(widget.faction!.name);
     return template?.orderReward != null;
   }
 
   bool _canFactionHaveWork() {
     if (widget.faction == null) return false;
-    final template = FactionsList.getTemplateByName(widget.faction!.name);
+    final template = widget.factionTemplateRepository.getTemplateByName(widget.faction!.name);
     return template?.hasWork ?? false;
   }
 
@@ -352,6 +354,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
                   ),
                   FactionCertificateBlock(
                     faction: widget.faction!,
+                    factionTemplateRepository: widget.factionTemplateRepository,
                     certificatePurchased: _certificatePurchased,
                     onCertificatePurchasedChanged: (value) {
                       if (value == true) {

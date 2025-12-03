@@ -38,7 +38,7 @@ class FactionsSettings {
   const FactionsSettings._();
 
   /// Константы опыта репутации: [стандартные, специальные]
-  static const reputationExp = ReputationExpValues(
+  final ReputationExpValues reputationExp = const ReputationExpValues(
     indifference: [11500, 16000],
     friendliness: [33500, 43000],
     respect: [34000, 41000],

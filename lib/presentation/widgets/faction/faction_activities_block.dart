@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../core/constants/work_reward.dart';
+import '../../../domain/value_objects/work_reward.dart';
 import '../common/block_header.dart';
 import '../common/help_dialog.dart';
 

@@ -1,12 +1,24 @@
 import 'dart:math';
 import '../entities/faction.dart';
-import '../../core/constants/factions_list.dart';
-import '../../core/constants/order_reward.dart';
-import '../../core/utils/reputation_helper.dart';
+import '../repositories/faction_template_repository.dart';
+import '../repositories/app_settings_repository.dart';
+import '../value_objects/order_reward.dart';
+import '../utils/reputation_exp.dart';
+import '../utils/reputation_helper.dart';
 
 /// Расчет времени до достижения целевого уровня отношения
 class CalculateTimeToReputationGoal {
-  const CalculateTimeToReputationGoal();
+  final FactionTemplateRepository _templateRepository;
+  final AppSettingsRepository _settingsRepository;
+  late final ReputationHelper _reputationHelper;
+
+  CalculateTimeToReputationGoal(
+    this._templateRepository,
+    this._settingsRepository,
+  ) {
+    final reputationExp = ReputationExp(_settingsRepository, _templateRepository);
+    _reputationHelper = ReputationHelper(reputationExp);
+  }
 
   Duration? call(Faction faction) {
     // Если цель не установлена, возвращаем null
@@ -15,7 +27,7 @@ class CalculateTimeToReputationGoal {
     }
 
     // Вычисляем, сколько опыта нужно для достижения целевого уровня
-    final neededExp = ReputationHelper.getNeededExp(
+    final neededExp = _reputationHelper.getNeededExp(
       faction.currentReputationLevel,
       faction.currentLevelExp,
       faction.targetReputationLevel!,
@@ -44,7 +56,7 @@ class CalculateTimeToReputationGoal {
     int expPerDay = 0;
 
     // Потенциальный доход от заказа (только если заказы включены и фракция имеет заказы согласно статическому списку)
-    final template = FactionsList.getTemplateByName(faction.name);
+    final template = _templateRepository.getTemplateByName(faction.name);
     if (faction.ordersEnabled && template != null && template.orderReward != null) {
       // Вычисляем среднее арифметическое опыта из награды за заказы
       expPerDay += OrderReward.averageExp(template.orderReward!);

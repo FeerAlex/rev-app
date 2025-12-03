@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/faction.dart';
-import '../../../core/constants/factions_list.dart';
+import '../../../domain/repositories/faction_template_repository.dart';
 import '../common/help_dialog.dart';
 import '../common/block_header.dart';
 
 class FactionCertificateBlock extends StatelessWidget {
   final Faction faction;
+  final FactionTemplateRepository factionTemplateRepository;
   final bool certificatePurchased;
   final ValueChanged<bool> onCertificatePurchasedChanged;
 
   const FactionCertificateBlock({
     super.key,
     required this.faction,
+    required this.factionTemplateRepository,
     required this.certificatePurchased,
     required this.onCertificatePurchasedChanged,
   });
 
   bool _hasCertificate() {
-    final template = FactionsList.getTemplateByName(faction.name);
+    final template = factionTemplateRepository.getTemplateByName(faction.name);
     return template?.hasCertificate ?? false;
   }
 

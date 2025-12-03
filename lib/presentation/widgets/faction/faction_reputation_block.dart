@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/reputation_level.dart';
+import '../../../domain/entities/reputation_level.dart';
 import '../currency/currency_input_dialog.dart';
 import '../common/help_dialog.dart';
 import '../common/block_header.dart';

@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../domain/usecases/calculate_time_to_currency_goal.dart';
+import '../../../domain/usecases/calculate_time_to_reputation_goal.dart';
+import '../../../domain/repositories/app_settings_repository.dart';
+import '../../../domain/repositories/faction_template_repository.dart';
+import '../../../domain/utils/reputation_helper.dart';
 import '../../bloc/faction/faction_bloc.dart';
 import '../../bloc/faction/faction_event.dart';
 import '../../bloc/faction/faction_state.dart';
@@ -7,7 +12,20 @@ import '../../widgets/faction/faction_card.dart';
 import 'faction_detail_page.dart';
 
 class FactionsListPage extends StatelessWidget {
-  const FactionsListPage({super.key});
+  final ReputationHelper reputationHelper;
+  final CalculateTimeToCurrencyGoal calculateTimeToCurrencyGoal;
+  final CalculateTimeToReputationGoal calculateTimeToReputationGoal;
+  final AppSettingsRepository appSettingsRepository;
+  final FactionTemplateRepository factionTemplateRepository;
+
+  const FactionsListPage({
+    super.key,
+    required this.reputationHelper,
+    required this.calculateTimeToCurrencyGoal,
+    required this.calculateTimeToReputationGoal,
+    required this.appSettingsRepository,
+    required this.factionTemplateRepository,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -118,10 +136,18 @@ class FactionsListPage extends StatelessWidget {
                     },
                     child: FactionCard(
                       faction: faction,
+                      reputationHelper: reputationHelper,
+                      calculateTimeToCurrencyGoal: calculateTimeToCurrencyGoal,
+                      calculateTimeToReputationGoal: calculateTimeToReputationGoal,
+                      appSettingsRepository: appSettingsRepository,
+                      factionTemplateRepository: factionTemplateRepository,
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => FactionDetailPage(faction: faction),
+                            builder: (context) => FactionDetailPage(
+                              faction: faction,
+                              factionTemplateRepository: factionTemplateRepository,
+                            ),
                           ),
                         );
                       },
@@ -145,7 +171,10 @@ class FactionsListPage extends StatelessWidget {
                         // Открываем страницу деталей для редактирования репутации
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => FactionDetailPage(faction: faction),
+                            builder: (context) => FactionDetailPage(
+                              faction: faction,
+                              factionTemplateRepository: factionTemplateRepository,
+                            ),
                           ),
                         );
                       },

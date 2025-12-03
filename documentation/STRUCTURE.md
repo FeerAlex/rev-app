@@ -6,40 +6,54 @@
 lib/
 ├── main.dart                          # Точка входа приложения
 ├── core/                              # Ядро приложения
-│   ├── database/                      # Настройка БД
-│   ├── di/                            # Dependency Injection
-│   │   └── service_locator.dart       # DI контейнер
 │   ├── theme/                         # Тема приложения
 │   │   └── app_theme.dart             # Темная тема в стиле игры
-│   ├── constants/                     # Константы
-│   │   └── app_settings.dart          # Настройки приложения
 │   └── utils/                         # Утилиты
-│       ├── daily_reset_helper.dart    # Сброс ежедневных отметок
 │       └── time_formatter.dart         # Форматирование времени
 ├── domain/                            # Доменный слой
 │   ├── entities/                      # Сущности
-│   │   └── faction.dart
+│   │   ├── faction.dart
+│   │   ├── faction_template.dart
+│   │   └── reputation_level.dart
 │   ├── repositories/                  # Интерфейсы репозиториев
-│   │   └── faction_repository.dart
-│   └── usecases/                      # Сценарии использования
-│       ├── add_faction.dart
-│       ├── calculate_time_to_currency_goal.dart
-│       ├── calculate_time_to_reputation_goal.dart
-│       ├── delete_faction.dart
-│       ├── get_all_factions.dart
-│       ├── initialize_factions.dart
-│       ├── reset_daily_flags.dart
-│       ├── show_faction.dart
-│       ├── update_faction.dart
-│       └── reorder_factions.dart
+│   │   ├── faction_repository.dart
+│   │   ├── faction_template_repository.dart
+│   │   ├── app_settings_repository.dart
+│   │   └── date_time_provider.dart
+│   ├── usecases/                      # Сценарии использования
+│   │   ├── add_faction.dart
+│   │   ├── calculate_time_to_currency_goal.dart
+│   │   ├── calculate_time_to_reputation_goal.dart
+│   │   ├── delete_faction.dart
+│   │   ├── get_all_factions.dart
+│   │   ├── get_hidden_factions.dart
+│   │   ├── initialize_factions.dart
+│   │   ├── reset_daily_flags.dart
+│   │   ├── show_faction.dart
+│   │   ├── update_faction.dart
+│   │   └── reorder_factions.dart
+│   ├── utils/                         # Утилиты
+│   │   ├── daily_reset_helper.dart    # Сброс ежедневных отметок
+│   │   ├── reputation_exp.dart         # Утилита для работы с опытом репутации
+│   │   └── reputation_helper.dart      # Утилита для работы с уровнями отношения
+│   └── value_objects/                 # Value Objects
+│       ├── order_reward.dart
+│       └── work_reward.dart
 ├── data/                               # Слой данных
 │   ├── datasources/                   # Источники данных
-│   │   └── faction_dao.dart           # DAO для фракций
+│   │   ├── faction_dao.dart           # DAO для фракций
+│   │   ├── factions_list.dart        # Статический список фракций
+│   │   └── app_settings.dart          # Константы настроек приложения
 │   ├── models/                        # Модели данных
 │   │   └── faction_model.dart
 │   └── repositories/                  # Реализации репозиториев
-│       └── faction_repository_impl.dart
+│       ├── faction_repository_impl.dart
+│       ├── faction_template_repository_impl.dart
+│       ├── app_settings_repository_impl.dart
+│       └── date_time_provider_impl.dart
 └── presentation/                       # Слой представления
+    ├── di/                            # Dependency Injection
+    │   └── service_locator.dart       # DI контейнер
     ├── bloc/                          # State Management
     │   └── faction/
     │       ├── faction_bloc.dart
@@ -88,45 +102,10 @@ lib/
 
 ### Core Layer
 
-#### AppSettings
-Константы настроек приложения, организованные по функциональности. Структура расширяема для будущих функций (карта, брактеат).
-
-**FactionsSettings:**
-- `decorationUpgradeCostRespect = 5364` (3 * 1788)
-- `decorationUpgradeCostHonor = 7152` (4 * 1788)
-- `decorationUpgradeCostAdoration = 10728` (6 * 1788)
-- `decorationPriceRespect = 7888`
-- `decorationPriceHonor = 9888`
-- `decorationPriceAdoration = 15888`
-- `currencyPerWork = 100` - валюта за выполнение работы
-- `certificatePrice = 7888`
-
-**Использование:** `AppSettings.factions.decorationPriceRespect`
-
-#### FactionsList
-Статический список всех доступных фракций игры с предустановленными настройками. Каждая фракция имеет шаблон (`FactionTemplate`) с полями:
-- `name` - название фракции
-- `hasWork` - есть ли работа во фракции
-- `hasCertificate` - есть ли сертификат во фракции
-- `orderReward` - награда за заказы (валюта и опыт как массивы `List<int>`) (nullable, только для фракций с заказами)
-
-**Использование:** 
-- `FactionsList.allFactions` - получить все фракции
-- `FactionsList.getTemplateByName(String name)` - получить шаблон фракции по имени
-- `FactionsList.createFactionFromTemplate(template)` - создать фракцию из шаблона
-
-**Примечание:** 
-- Наличие заказов определяется наличием `orderReward` (если `orderReward != null`, значит фракция имеет заказы)
-- Для фракций с заказами в `orderReward` хранятся массивы значений валюты и опыта, которые могут варьироваться в разные дни. При расчете времени до цели используется среднее арифметическое валюты и опыта отдельно через статические методы `OrderReward.averageCurrency` и `OrderReward.averageExp`
-
-#### ServiceLocator
-Централизованный контейнер для управления зависимостями. Инициализирует базу данных (версия 12) и создает экземпляры репозиториев. База данных создается при первом запуске через `FactionDao.createTable()`. Поддерживает миграции базы данных (версии 10, 11, 12).
-
-#### DailyResetHelper
-Проверяет при запуске приложения, нужно ли сбросить ежедневные отметки (заказы/события). Использует SharedPreferences для хранения даты последнего сброса.
+**Важно:** Core layer не содержит бизнес-логики и не зависит от Domain, Data и Presentation слоев. Содержит только инфраструктурные компоненты (тема, утилиты форматирования).
 
 #### TimeFormatter
-Форматирует Duration в читаемый формат на русском языке (дни, часы, минуты).
+Форматирует Duration в читаемый формат на русском языке (только дни с округлением вверх).
 
 #### AppTheme
 Темная тема приложения, стилизованная под игру Revelation Online:
@@ -136,6 +115,17 @@ lib/
 - Стилизованные карточки, кнопки, поля ввода
 
 ### Domain Layer
+
+#### Utils
+
+**DailyResetHelper**
+Проверяет при запуске приложения, нужно ли сбросить ежедневные отметки (заказы/события). Принимает `FactionRepository`, `AppSettingsRepository` и `DateTimeProvider` через параметры метода `checkAndReset()` для сброса ежедневных флагов и работы с датой последнего сброса. **Важно:** Не использует инфраструктурные зависимости напрямую - все доступы к инфраструктуре идут через репозитории и провайдеры, что соответствует принципам Clean Architecture.
+
+**ReputationExp**
+Утилита для работы с опытом репутации. Требует репозитории для получения настроек.
+
+**ReputationHelper**
+Утилита для работы с уровнями отношения и опытом (вычисление общего опыта, нужного опыта и т.д.).
 
 #### Entities
 
@@ -159,7 +149,7 @@ lib/
 
 ### Data Layer
 
-#### DAO (Data Access Objects)
+#### Data Sources (Источники данных)
 
 **FactionDao**
 - `createTable()` - создание таблицы factions
@@ -172,11 +162,63 @@ lib/
 - `updateFactionOrder()` - обновление порядка одной фракции
 - `updateFactionsOrder()` - массовое обновление порядка фракций
 
+**FactionsList**
+Статический список всех доступных фракций игры с предустановленными настройками. Использует `FactionTemplate` entity из Domain layer. Каждая фракция имеет шаблон с полями:
+- `name` - название фракции
+- `hasWork` - есть ли работа во фракции
+- `hasCertificate` - есть ли сертификат во фракции
+- `hasSpecialExp` - есть ли специальные значения опыта
+- `orderReward` - награда за заказы (валюта и опыт как массивы `List<int>`) (nullable, только для фракций с заказами)
+
+**Использование:** 
+- `FactionsList.allFactions` - получить все фракции (возвращает `List<FactionTemplate>` из Domain layer)
+- `FactionsList.getTemplateByName(String name)` - получить шаблон фракции по имени (возвращает `FactionTemplate?` из Domain layer)
+- `FactionsList.createFactionFromTemplate(template)` - создать фракцию из шаблона
+
+**Примечание:** 
+- Наличие заказов определяется наличием `orderReward` (если `orderReward != null`, значит фракция имеет заказы)
+- Для фракций с заказами в `orderReward` хранятся массивы значений валюты и опыта, которые могут варьироваться в разные дни. При расчете времени до цели используется среднее арифметическое валюты и опыта отдельно через статические методы `OrderReward.averageCurrency` и `OrderReward.averageExp`
+- `FactionsList` использует domain entity `FactionTemplate` напрямую, без дублирования
+
+**AppSettings**
+Константы настроек приложения, организованные по функциональности. Структура расширяема для будущих функций (карта, брактеат).
+
+**FactionsSettings:**
+- `decorationUpgradeCostRespect = 5364` (3 * 1788)
+- `decorationUpgradeCostHonor = 7152` (4 * 1788)
+- `decorationUpgradeCostAdoration = 10728` (6 * 1788)
+- `decorationPriceRespect = 7888`
+- `decorationPriceHonor = 9888`
+- `decorationPriceAdoration = 15888`
+- `currencyPerWork = 100` - валюта за выполнение работы
+- `certificatePrice = 7888`
+
+**Использование:** `AppSettings.factions.decorationPriceRespect`
+
 #### Models
 
 Модели выполняют маппинг между entities и данными базы данных (Map<String, dynamic>).
 
+#### Repositories (Реализации репозиториев)
+
+**FactionRepositoryImpl**
+Реализация интерфейса `FactionRepository` из Domain layer. Использует `FactionDao` для работы с базой данных.
+
+**FactionTemplateRepositoryImpl**
+Реализация интерфейса `FactionTemplateRepository` из Domain layer. Использует `FactionsList` из Data layer для получения шаблонов фракций. Возвращает domain entities напрямую без конвертации, так как `FactionsList` уже использует domain entity `FactionTemplate`. Для создания `Faction` из шаблона использует `FactionsList.createFactionFromTemplate()`, избегая дублирования логики.
+
+**AppSettingsRepositoryImpl**
+Реализация интерфейса `AppSettingsRepository` из Domain layer. Использует `AppSettings.factions` из Data layer для получения настроек приложения. Использует SharedPreferences для работы с датой последнего ежедневного сброса (методы `getLastResetDate()` и `saveLastResetDate()`).
+
+**DateTimeProviderImpl**
+Реализация интерфейса `DateTimeProvider` из Domain layer. Использует библиотеку `timezone` для работы с московским часовым поясом. Предоставляет методы для получения текущего времени в московском часовом поясе, начала дня и преобразования дат. Используется в `DailyResetHelper` для определения необходимости ежедневного сброса отметок.
+
 ### Presentation Layer
+
+#### Dependency Injection
+
+**ServiceLocator**
+Централизованный контейнер для управления зависимостями. Расположен в `presentation/di/service_locator.dart`. Инициализирует базу данных (версия 12) и создает экземпляры репозиториев и провайдеров (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider). База данных создается при первом запуске через `FactionDao.createTable()`. Поддерживает миграции базы данных (версии 10, 11, 12). Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров. Используется на уровне страниц для создания зависимостей, которые затем передаются в виджеты через конструкторы.
 
 #### BLoC
 
@@ -197,7 +239,7 @@ lib/
 2. Карта - открывает MapPage
 
 **FactionsPage**
-Страница фракций, отображающая список всех фракций. Имеет FloatingActionButton для добавления новой фракции.
+Страница фракций, отображающая список всех фракций. Имеет FloatingActionButton для добавления новой фракции. Создает все необходимые зависимости через ServiceLocator (ReputationHelper, use cases, репозитории) и передает их в FactionsListPage через конструктор.
 
 **FactionsListPage**
 Отображает список всех фракций с возможностью:
@@ -207,8 +249,10 @@ lib/
 - Переключения статуса заказов и сертификата через бейджи/иконки
 - Обновления списка через pull-to-refresh (RefreshIndicator)
 
+Получает все зависимости через конструктор (ReputationHelper, CalculateTimeToCurrencyGoal, CalculateTimeToReputationGoal, AppSettingsRepository, FactionTemplateRepository). Не использует ServiceLocator напрямую, что обеспечивает соблюдение принципа Dependency Inversion.
+
 **FactionDetailPage**
-Страница редактирования фракции с нижней навигацией (BottomNavigationBar). Название фракции отображается в заголовке AppBar. Кнопка сохранения находится в AppBar.
+Страница редактирования фракции с нижней навигацией (BottomNavigationBar). Название фракции отображается в заголовке AppBar. Кнопка сохранения находится в AppBar. Получает `FactionTemplateRepository` через конструктор для проверки наличия заказов/работы/сертификата (не обращается напрямую к Data layer).
 
 Страница разделена на две вкладки:
 
@@ -240,6 +284,7 @@ lib/
 - Строка 1: Название фракции (`FactionNameDisplay`) и список активностей (`FactionActivitiesList`)
 - Строка 2: Progress bar валюты (`CurrencyProgressBar`) и время до цели по валюте (`TimeToCurrencyGoalWidget`)
 - Строка 3: Progress bar опыта (`ReputationProgressBar`) и время до цели по репутации (`TimeToReputationGoalWidget`)
+- Получает `AppSettingsRepository` и `FactionTemplateRepository` через конструктор и передает их в дочерние виджеты
 
 **FactionNameDisplay**
 Виджет отображения названия фракции с заданным стилем (жирный, 18px, белый).
@@ -250,11 +295,13 @@ lib/
 - Progress bar с оранжевым/акцентным цветом
 - Кликабельный - при клике открывает `CurrencyInputDialog` для редактирования валюты
 - Использует ту же логику расчета нужной валюты, что и `CalculateTimeToCurrencyGoal`
+- Получает `AppSettingsRepository` и `FactionTemplateRepository` через конструктор (не обращается напрямую к Data layer)
 
 **FactionActivitiesList**
 Виджет отображения списка активностей в виде бейджей:
 - **Заказ** - отображается только если `ordersEnabled == true` и фракция имеет заказы согласно статическому списку, кликабельно для переключения статуса `orderCompleted`
 - **Работа** - отображается только если фракция имеет работу согласно статическому списку и `workReward != null` с хотя бы одним полем > 0, показывает валюту с работы (если указана) или "Работа", кликабельно для переключения статуса `workCompleted`
+- Получает `FactionTemplateRepository` через конструктор для проверки наличия заказов/работы (не обращается напрямую к Data layer)
 
 Бейджи всегда видны: заполненные, если активность выполнена, с контуром, если не выполнена.
 
@@ -293,6 +340,7 @@ lib/
 - Progress bar с цветом, соответствующим уровню отношения
 - Прижимается к краям карточки снизу
 - Использует `faction.currentReputationLevel` и `faction.currentLevelExp` напрямую
+- Получает `FactionTemplateRepository` через конструктор для проверки наличия заказов (не обращается напрямую к Data layer)
 
 **HelpDialog**
 Переиспользуемый компонент для отображения модалки помощи:
@@ -323,6 +371,7 @@ lib/
 - Отображается только для фракций с сертификатом (определяется по статическому списку)
 - Позволяет отметить, куплен ли сертификат
 - Имеет иконку помощи с пояснением о сертификате
+- Получает `FactionTemplateRepository` через конструктор для проверки наличия сертификата (не обращается напрямую к Data layer)
 
 **FactionDecorationsSection**
 Секция украшений с компактными карточками для каждого украшения (Уважение, Почтение, Преклонение):

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/work_reward.dart';
+import '../../../domain/value_objects/work_reward.dart';
 
 class WorkRewardBadge extends StatelessWidget {
   final WorkReward? workReward;

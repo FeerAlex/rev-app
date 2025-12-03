@@ -5,10 +5,12 @@ import '../../../core/utils/time_formatter.dart';
 
 class TimeToCurrencyGoalWidget extends StatefulWidget {
   final Faction? faction;
+  final CalculateTimeToCurrencyGoal calculateTimeToCurrencyGoal;
 
   const TimeToCurrencyGoalWidget({
     super.key,
     this.faction,
+    required this.calculateTimeToCurrencyGoal,
   });
 
   @override
@@ -71,8 +73,7 @@ class _TimeToCurrencyGoalWidgetState extends State<TimeToCurrencyGoalWidget> {
     }
 
     try {
-      const calculateTimeToGoal = CalculateTimeToCurrencyGoal();
-      final duration = calculateTimeToGoal(widget.faction!);
+      final duration = widget.calculateTimeToCurrencyGoal(widget.faction!);
       setState(() {
         _timeToGoal = duration;
         _isLoading = false;

@@ -10,7 +10,9 @@
 
 ```dart
 abstract class FactionRepository {
-  Future<List<Faction>> getAllFactions();
+  Future<List<Faction>> getAllFactions(); // Только видимые
+  Future<List<Faction>> getAllFactionsIncludingHidden(); // Все, включая скрытые
+  Future<List<Faction>> getHiddenFactions(); // Только скрытые
   Future<Faction?> getFactionById(int id);
   Future<int> addFaction(Faction faction);
   Future<void> updateFaction(Faction faction);
@@ -23,14 +25,37 @@ abstract class FactionRepository {
 **Методы:**
 
 - `getAllFactions()` - возвращает список видимых фракций (`isVisible = true`), отсортированный по полю `displayOrder`
-- `getAllFactionsIncludingHidden()` - возвращает все фракции, включая скрытые
-- `getHiddenFactions()` - возвращает только скрытые фракции (`isVisible = false`)
+- `getAllFactionsIncludingHidden()` - возвращает все фракции, включая скрытые, отсортированные по полю `displayOrder`
+- `getHiddenFactions()` - возвращает только скрытые фракции (`isVisible = false`), отсортированные по полю `displayOrder`
 - `getFactionById(int id)` - возвращает фракцию по ID или null
 - `addFaction(Faction faction)` - добавляет новую фракцию, возвращает ID
 - `updateFaction(Faction faction)` - обновляет существующую фракцию
 - `deleteFaction(int id)` - скрывает фракцию (устанавливает `isVisible = false`)
-- `resetDailyFlags()` - сбрасывает отметки заказов для всех фракций
+- `resetDailyFlags()` - сбрасывает отметки `orderCompleted` и `workCompleted` для всех фракций
 - `reorderFactions(List<int> factionIds)` - изменяет порядок фракций согласно переданному списку ID
+
+#### DateTimeProvider
+
+Интерфейс для работы с датой и временем в московском часовом поясе. Используется для абстракции работы с часовыми поясами из Domain layer.
+
+```dart
+abstract class DateTimeProvider {
+  DateTime getNowInMoscow();
+  DateTime getTodayInMoscow();
+  DateTime getStartOfDayInMoscow(DateTime dateTime);
+  DateTime toUtc(DateTime dateTime);
+}
+```
+
+**Методы:**
+
+- `getNowInMoscow()` - возвращает текущее время в московском часовом поясе
+- `getTodayInMoscow()` - возвращает начало текущего дня в московском часовом поясе
+- `getStartOfDayInMoscow(DateTime dateTime)` - преобразует DateTime в московское время и возвращает начало дня
+- `toUtc(DateTime dateTime)` - преобразует DateTime в UTC
+
+**Использование:**
+Используется в `DailyResetHelper` для определения необходимости ежедневного сброса отметок. Реализация находится в Data layer (`DateTimeProviderImpl`) и использует библиотеку `timezone` для работы с часовыми поясами.
 
 ### Use Cases
 
@@ -104,6 +129,21 @@ class ShowFaction {
 **Параметры:**
 - `faction` - фракция для показа
 
+#### GetHiddenFactions
+
+Получение списка скрытых фракций.
+
+```dart
+class GetHiddenFactions {
+  Future<List<Faction>> call();
+}
+```
+
+**Возвращает:** Список скрытых фракций (`isVisible = false`), отсортированный по полю `displayOrder`
+
+**Описание:**
+Используется для отображения списка скрытых фракций в диалоге выбора при добавлении новой фракции.
+
 #### InitializeFactions
 
 Инициализация всех фракций из статического списка.
@@ -123,7 +163,14 @@ class InitializeFactions {
 
 ```dart
 class CalculateTimeToCurrencyGoal {
-  const CalculateTimeToCurrencyGoal();
+  final AppSettingsRepository _settingsRepository;
+  final FactionTemplateRepository _templateRepository;
+  
+  CalculateTimeToCurrencyGoal(
+    this._settingsRepository,
+    this._templateRepository,
+  );
+  
   Duration? call(Faction faction);
 }
 ```
@@ -158,7 +205,14 @@ class CalculateTimeToCurrencyGoal {
 
 ```dart
 class CalculateTimeToReputationGoal {
-  const CalculateTimeToReputationGoal();
+  final FactionTemplateRepository _templateRepository;
+  final AppSettingsRepository _settingsRepository;
+  
+  CalculateTimeToReputationGoal(
+    this._templateRepository,
+    this._settingsRepository,
+  );
+  
   Duration? call(Faction faction);
 }
 ```
@@ -195,7 +249,8 @@ class ResetDailyFlags {
 }
 ```
 
-Сбрасывает отметки `orderCompleted` для всех фракций.
+**Описание:**
+Сбрасывает отметки `orderCompleted` и `workCompleted` для всех фракций. Вызывается автоматически при запуске приложения через `DailyResetHelper`, если последний сброс был не сегодня (по московскому времени).
 
 #### ReorderFactions
 
@@ -245,39 +300,56 @@ class Faction {
 }
 ```
 
-### AppSettings
+### AppSettingsRepository
 
-Константы настроек приложения, организованные по функциональности.
+Интерфейс для получения настроек приложения и работы с датой последнего ежедневного сброса.
 
 ```dart
-class AppSettings {
-  static const FactionsSettings factions = FactionsSettings._();
-  // TODO: map, bracket для будущих функций
-}
-
-class FactionsSettings {
-  const FactionsSettings._();
-  
-  final int decorationUpgradeCostRespect = 5364;  // 3 * 1788
-  final int decorationUpgradeCostHonor = 7152;  // 4 * 1788
-  final int decorationUpgradeCostAdoration = 10728;  // 6 * 1788
-  final int decorationPriceRespect = 7888;
-  final int decorationPriceHonor = 9888;
-  final int decorationPriceAdoration = 15888;
-  final int currencyPerWork = 100;  // Валюта за выполнение работы
-  final int certificatePrice = 7888;
+abstract class AppSettingsRepository {
+  int getDecorationUpgradeCostRespect();
+  int getDecorationUpgradeCostHonor();
+  int getDecorationUpgradeCostAdoration();
+  int getDecorationPriceRespect();
+  int getDecorationPriceHonor();
+  int getDecorationPriceAdoration();
+  int getCertificatePrice();
+  int getExpForLevel(String factionName, int levelIndex, bool hasSpecialExp);
+  int getTotalExpForLevel(String factionName, int levelIndex, bool hasSpecialExp);
+  Future<DateTime?> getLastResetDate();
+  Future<void> saveLastResetDate(DateTime date);
 }
 ```
 
-**Использование:**
-```dart
-AppSettings.factions.decorationPriceRespect
-AppSettings.factions.certificatePrice
-```
+**Методы:**
+- Методы для получения стоимости украшений и сертификата
+- Методы для получения опыта репутации (с учетом специальных значений для некоторых фракций)
+- Методы для работы с датой последнего ежедневного сброса
 
 **Примечание:** 
-- Все стоимости хранятся как готовые суммы (не используется умножение). Структура расширяема для будущих функций (карта, брактеат).
-- `currencyPerWork` больше не используется для расчета времени до цели - используется значение из `faction.workReward.currency`
+- Реализация (`AppSettingsRepositoryImpl`) использует константы из `AppSettings` (Data layer) и SharedPreferences для хранения даты сброса
+- Все стоимости хранятся как готовые суммы (не используется умножение)
+- Структура расширяема для будущих функций (карта, брактеат)
+
+### FactionTemplateRepository
+
+Интерфейс для работы с шаблонами фракций.
+
+```dart
+abstract class FactionTemplateRepository {
+  List<FactionTemplate> getAllTemplates();
+  FactionTemplate? getTemplateByName(String name);
+  Faction createFactionFromTemplate(FactionTemplate template);
+}
+```
+
+**Методы:**
+- `getAllTemplates()` - возвращает список всех шаблонов фракций
+- `getTemplateByName(String name)` - возвращает шаблон фракции по имени или null
+- `createFactionFromTemplate(FactionTemplate template)` - создает Faction entity из шаблона
+
+**Примечание:** 
+- Реализация (`FactionTemplateRepositoryImpl`) использует `FactionsList` из Data layer
+- Возвращает domain entities напрямую без конвертации
 
 ### FactionTemplate
 
@@ -288,28 +360,25 @@ class FactionTemplate {
   final String name;
   final bool hasWork;
   final bool hasCertificate;
+  final bool hasSpecialExp;
   final OrderReward? orderReward; // Награда за заказы (валюта и опыт) (nullable, только для фракций с заказами)
   
   const FactionTemplate({
     required this.name,
     required this.hasWork,
     required this.hasCertificate,
+    this.hasSpecialExp = false,
     this.orderReward,
   });
 }
 ```
 
-**Использование:**
-```dart
-// Получить все фракции
-FactionsList.allFactions
-
-// Получить шаблон фракции по имени
-FactionsList.getTemplateByName('Жители Сулана')
-
-// Создать фракцию из шаблона
-FactionsList.createFactionFromTemplate(template)
-```
+**Поля:**
+- `name` - название фракции
+- `hasWork` - есть ли работа во фракции
+- `hasCertificate` - есть ли сертификат во фракции
+- `hasSpecialExp` - есть ли специальные значения опыта для этой фракции
+- `orderReward` - награда за заказы (nullable, только для фракций с заказами)
 
 **Примечание:** 
 - Каждая фракция в статическом списке имеет предустановленные значения `hasWork` и `hasCertificate`, которые определяют, какие активности доступны для этой фракции
@@ -637,11 +706,23 @@ class AppTheme {
 
 ```dart
 class DailyResetHelper {
-  static Future<void> checkAndReset();
+  static Future<void> checkAndReset(
+    FactionRepository factionRepository,
+    AppSettingsRepository appSettingsRepository,
+    DateTimeProvider dateTimeProvider,
+  );
 }
 ```
 
 Проверяет и сбрасывает ежедневные отметки при необходимости. Должен вызываться при запуске приложения.
+
+**Параметры:**
+- `factionRepository` - репозиторий для работы с фракциями (для сброса ежедневных флагов)
+- `appSettingsRepository` - репозиторий для работы с настройками (для получения и сохранения даты последнего сброса)
+- `dateTimeProvider` - провайдер для работы с датой и временем в московском часовом поясе
+
+**Описание:**
+Сравнивает текущую дату в московском часовом поясе с датой последнего сброса. Если последний сброс был не сегодня, сбрасывает ежедневные отметки (`orderCompleted` и `workCompleted`) для всех фракций и сохраняет текущую дату как дату последнего сброса. Работа с часовыми поясами абстрагирована через `DateTimeProvider` интерфейс, что обеспечивает соблюдение принципов Clean Architecture.
 
 ## ServiceLocator
 

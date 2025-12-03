@@ -1,6 +1,7 @@
 import '../../domain/entities/faction.dart';
-import 'order_reward.dart';
-import 'reputation_level.dart';
+import '../../domain/entities/faction_template.dart';
+import '../../domain/entities/reputation_level.dart';
+import '../../domain/value_objects/order_reward.dart' as domain;
 
 /// Статический список всех доступных фракций в игре
 class FactionsList {
@@ -13,58 +14,58 @@ class FactionsList {
       hasWork: true,
       hasCertificate: true,
       hasSpecialExp: true,
-      orderReward: OrderReward(currency: [176, 176], exp: [1100, 1100]),
+      orderReward: domain.OrderReward(currency: [176, 176], exp: [1100, 1100]),
     ),
     FactionTemplate(
       name: 'Фалмари',
       hasWork: true,
       hasCertificate: true,
-      orderReward: OrderReward(currency: [90, 105], exp: [900, 1050]),
+      orderReward: domain.OrderReward(currency: [90, 105], exp: [900, 1050]),
     ),
     FactionTemplate(
       name: 'Грибной народ',
       hasWork: true,
       hasCertificate: true,
-      orderReward: OrderReward(currency: [85, 80], exp: [850, 800]),
+      orderReward: domain.OrderReward(currency: [85, 80], exp: [850, 800]),
     ),
     FactionTemplate(
       name: 'Озёрная деревня',
       hasWork: true,
       hasCertificate: true,
       hasSpecialExp: true,
-      orderReward: OrderReward(currency: [60, 60], exp: [600, 600]),
+      orderReward: domain.OrderReward(currency: [60, 60], exp: [600, 600]),
     ),
     FactionTemplate(
       name: 'Медведи',
       hasWork: true,
       hasCertificate: true,
-      orderReward: OrderReward(currency: [100, 100], exp: [1000, 1000]),
+      orderReward: domain.OrderReward(currency: [100, 100], exp: [1000, 1000]),
     ),
     FactionTemplate(
       name: 'Крылатые',
       hasWork: true,
       hasCertificate: true,
-      orderReward: OrderReward(currency: [105, 125], exp: [1050, 1250]),
+      orderReward: domain.OrderReward(currency: [105, 125], exp: [1050, 1250]),
     ),
     FactionTemplate(
       name: 'Монастырь Сноу-Шу',
       hasWork: true,
       hasCertificate: true,
       hasSpecialExp: true,
-      orderReward: OrderReward(currency: [114, 144], exp: [900, 900]),
+      orderReward: domain.OrderReward(currency: [114, 144], exp: [900, 900]),
     ),
     FactionTemplate(
       name: 'Северные волки',
       hasWork: true,
       hasCertificate: true,
-      orderReward: OrderReward(currency: [120, 120], exp: [1200, 1200]),
+      orderReward: domain.OrderReward(currency: [120, 120], exp: [1200, 1200]),
     ),
     FactionTemplate(
       name: 'Императорская академия',
       hasWork: true,
       hasCertificate: true,
       hasSpecialExp: true,
-      orderReward: OrderReward(currency: [66, 66], exp: [1100, 1100]),
+      orderReward: domain.OrderReward(currency: [66, 66], exp: [1100, 1100]),
     ),
   ];
 
@@ -129,19 +130,3 @@ class FactionsList {
   }
 }
 
-/// Шаблон фракции для статического списка
-class FactionTemplate {
-  final String name;
-  final bool hasWork;
-  final bool hasCertificate;
-  final bool hasSpecialExp; // true = специальные значения опыта, false = стандартные
-  final OrderReward? orderReward; // Награда за заказы (валюта и опыт)
-
-  const FactionTemplate({
-    required this.name,
-    required this.hasWork,
-    required this.hasCertificate,
-    this.hasSpecialExp = false, // По умолчанию стандартные значения
-    this.orderReward,
-  });
-}

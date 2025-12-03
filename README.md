@@ -86,6 +86,28 @@ flutter analyze
 - ✅ Иконки помощи во всех блоках (Ежедневные активности, Цели, Валюта, Репутация, Сертификат, Украшения)
 - ✅ Переиспользуемый компонент HelpDialog для единообразных модалок помощи
 
+## Архитектура
+
+Приложение построено по принципам **Clean Architecture** без компромиссов.
+
+### Соответствие Clean Architecture
+
+**Проект полностью соответствует принципам Clean Architecture без компромиссов.** Все зависимости между слоями проверены и соответствуют правилам (проверка выполнена в январе 2025):
+
+- ✅ **Domain Layer** - не зависит от внешних слоев (Data, Presentation, Core)
+- ✅ **Data Layer** - зависит только от Domain layer (реализует интерфейсы репозиториев)
+- ✅ **Presentation Layer** - зависит от Domain layer (use cases, entities, репозитории через интерфейсы) и может зависеть от Data layer через ServiceLocator
+- ✅ **Core Layer** - не зависит от Domain, Data и Presentation слоев
+
+### Слои архитектуры
+
+1. **Domain Layer** (`lib/domain/`) - бизнес-логика, entities, use cases, интерфейсы репозиториев
+2. **Data Layer** (`lib/data/`) - реализация репозиториев, DAO, источники данных
+3. **Presentation Layer** (`lib/presentation/`) - UI, BLoC, виджеты, DI (ServiceLocator)
+4. **Core Layer** (`lib/core/`) - тема, утилиты форматирования
+
+Подробное описание архитектуры см. в [documentation/ARCHITECTURE.md](documentation/ARCHITECTURE.md).
+
 ## Технологии
 
 - **Flutter** - фреймворк для разработки
@@ -98,10 +120,11 @@ flutter analyze
 
 ```
 lib/
-├── core/          # Ядро приложения (DI, утилиты)
+├── core/          # Ядро приложения (тема, утилиты)
 ├── domain/        # Доменный слой (entities, use cases)
 ├── data/          # Слой данных (DAO, репозитории)
-└── presentation/  # Слой представления (UI, BLoC)
+└── presentation/  # Слой представления (UI, BLoC, DI)
+    ├── di/        # Dependency Injection
     ├── bloc/      # State Management (BLoC)
     ├── pages/     # Страницы (организованы по функциональности)
     │   ├── faction/
