@@ -138,21 +138,27 @@
 
 Приложение использует Material Icons с следующими назначениями:
 
-- `Icons.group` - фракции
+- `Icons.group` - фракции (в Drawer)
+- `Icons.group_outlined` - фракции (в списке)
 - `Icons.map` - карта
 - `Icons.add` - добавление
-- `Icons.delete` - скрытие фракции
-- `Icons.monetization_on` - валюта
-- `Icons.today` - ежедневные активности
-- `Icons.star` - украшения
-- `Icons.verified` - сертификат
-- `Icons.access_time` - время до цели
-- `Icons.check_circle` - достижение цели
-- `Icons.shopping_cart` - заказ
+- `Icons.delete` - удаление/скрытие фракции
+- `Icons.save` - сохранение
+- `Icons.settings` - настройки (вкладка)
+- `Icons.inventory_2` - инвентарь (вкладка)
 - `Icons.menu` - меню (burger)
-- `Icons.list` - список
+- `Icons.attach_money` - валюта
+- `Icons.check_circle_outline` - ежедневные активности
+- `Icons.shopping_cart` - заказ
+- `Icons.work_outline` - работа
+- `Icons.star` - репутация/украшения
 - `Icons.verified` - сертификат
-- `Icons.monetization_on` - валюта
+- `Icons.flag` - цели
+- `Icons.arrow_drop_down` - выпадающий список
+- `Icons.trending_up` - опыт
+- `Icons.help_outline` - помощь
+- `Icons.block` - блокировка (в progress bar)
+- `Icons.check` - достижение цели (в progress bar)
 
 ## Скрытие фракций
 
