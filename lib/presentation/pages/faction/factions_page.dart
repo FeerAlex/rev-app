@@ -46,12 +46,14 @@ class FactionsPage extends StatelessWidget {
         ),
         title: const Text('Фракции'),
       ),
-      body: FactionsListPage(
-        reputationHelper: reputationHelper,
-        calculateTimeToCurrencyGoal: calculateTimeToCurrencyGoal,
-        calculateTimeToReputationGoal: calculateTimeToReputationGoal,
-        appSettingsRepository: appSettingsRepository,
-        factionTemplateRepository: factionTemplateRepository,
+      body: SafeArea(
+        child: FactionsListPage(
+          reputationHelper: reputationHelper,
+          calculateTimeToCurrencyGoal: calculateTimeToCurrencyGoal,
+          calculateTimeToReputationGoal: calculateTimeToReputationGoal,
+          appSettingsRepository: appSettingsRepository,
+          factionTemplateRepository: factionTemplateRepository,
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
