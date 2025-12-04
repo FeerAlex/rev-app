@@ -19,10 +19,12 @@ class MapPage extends StatelessWidget {
         title: const Text('Карта'),
         backgroundColor: Colors.black,
       ),
-      body: const Center(
-        child: Text(
-          'Карта ресурсов',
-          style: TextStyle(color: Colors.white),
+      body: SafeArea(
+        child: const Center(
+          child: Text(
+            'Карта ресурсов',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ),
     );

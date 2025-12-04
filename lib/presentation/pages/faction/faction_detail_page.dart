@@ -169,7 +169,9 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
       // Не должно быть возможности открыть страницу без фракции
       return Scaffold(
         appBar: AppBar(title: const Text('Ошибка')),
-        body: const Center(child: Text('Фракция не выбрана')),
+        body: SafeArea(
+          child: const Center(child: Text('Фракция не выбрана')),
+        ),
       );
     }
 
@@ -187,9 +189,10 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
           ),
         ],
       ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
+      body: SafeArea(
+        child: IndexedStack(
+          index: _currentIndex,
+          children: [
             // Вкладка "Настройки"
             SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -391,6 +394,7 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
             ),
           ],
         ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
