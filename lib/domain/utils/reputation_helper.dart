@@ -50,9 +50,9 @@ class ReputationHelper {
       return _reputationExp.getTotalExpForLevel(ReputationLevel.deification, factionName) +
           _reputationExp.getExpForLevel(ReputationLevel.deification, factionName);
     }
-    // Для остальных уровней: сумма всех предыдущих + требуемый для целевого уровня
-    return _reputationExp.getTotalExpForLevel(targetLevel, factionName) +
-        _reputationExp.getExpForLevel(targetLevel, factionName);
+    // Для остальных уровней: сумма всех предыдущих уровней (без добавления опыта самого уровня)
+    // Это соответствует логике getCurrentReputationLevel, которая проверяет totalExp >= getTotalExpForLevel
+    return _reputationExp.getTotalExpForLevel(targetLevel, factionName);
   }
 
   /// Вычислить общий опыт на основе текущего уровня и опыта на уровне
