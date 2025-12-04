@@ -175,6 +175,8 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
       );
     }
 
+    final hasGoals = _wantsCertificate || _targetReputationLevel != null;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.faction!.name),
@@ -248,172 +250,175 @@ class _FactionDetailPageState extends State<FactionDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 24,
                 children: [
-                  FactionCurrencyBlock(
-                    currency: _currency,
-                    onCurrencyChanged: (value) {
-                      setState(() {
-                        _currency = value;
-                      });
-                    },
-                  ),
-                  FactionReputationBlock(
-                    currentReputationLevel: _currentReputationLevel,
-                    currentLevelExp: _currentLevelExp,
-                    onCurrentLevelChanged: (value) {
-                      setState(() {
-                        _currentReputationLevel = value;
-                        // Если целевой уровень стал невалидным (ниже или равен текущему), переключаем на следующий доступный
-                        if (_targetReputationLevel != null && 
-                            _targetReputationLevel!.value <= value.value) {
-                          // Находим следующий доступный уровень (минимальный уровень выше текущего)
-                          final nextLevel = ReputationLevel.values.firstWhere(
-                            (level) => level.value > value.value,
-                            orElse: () => ReputationLevel.maximum,
-                          );
-                          _targetReputationLevel = nextLevel;
-                        }
-                      });
-                    },
-                    onLevelExpChanged: (value) {
-                      setState(() {
-                        _currentLevelExp = value;
-                      });
-                    },
-                  ),
-                  
-                  FactionDecorationsSection(
-                    decorationRespectPurchased: _decorationRespectPurchased,
-                    decorationRespectUpgraded: _decorationRespectUpgraded,
-                    decorationHonorPurchased: _decorationHonorPurchased,
-                    decorationHonorUpgraded: _decorationHonorUpgraded,
-                    decorationAdorationPurchased: _decorationAdorationPurchased,
-                    decorationAdorationUpgraded: _decorationAdorationUpgraded,
-                    onRespectPurchasedChanged: (value) {
-                      setState(() {
-                        _decorationRespectPurchased = value;
-                        // Если сняли "Куплено", автоматически снимаем "Улучшено"
-                        if (!value) {
-                          _decorationRespectUpgraded = false;
-                        }
-                        // Если сняли галочку с украшения и сертификат куплен, снимаем галочку с сертификата
-                        if (!value && _certificatePurchased) {
-                          _certificatePurchased = false;
-                        }
-                      });
-                    },
-                    onRespectUpgradedChanged: (value) {
-                      setState(() {
-                        _decorationRespectUpgraded = value;
-                        // Если сняли "Улучшено" и сертификат куплен, снимаем галочку с сертификата
-                        if (!value && _certificatePurchased) {
-                          _certificatePurchased = false;
-                        }
-                      });
-                    },
-                    onHonorPurchasedChanged: (value) {
-                      setState(() {
-                        _decorationHonorPurchased = value;
-                        // Если сняли "Куплено", автоматически снимаем "Улучшено"
-                        if (!value) {
-                          _decorationHonorUpgraded = false;
-                        }
-                        // Если сняли галочку с украшения и сертификат куплен, снимаем галочку с сертификата
-                        if (!value && _certificatePurchased) {
-                          _certificatePurchased = false;
-                        }
-                      });
-                    },
-                    onHonorUpgradedChanged: (value) {
-                      setState(() {
-                        _decorationHonorUpgraded = value;
-                        // Если сняли "Улучшено" и сертификат куплен, снимаем галочку с сертификата
-                        if (!value && _certificatePurchased) {
-                          _certificatePurchased = false;
-                        }
-                      });
-                    },
-                    onAdorationPurchasedChanged: (value) {
-                      setState(() {
-                        _decorationAdorationPurchased = value;
-                        // Если сняли "Куплено", автоматически снимаем "Улучшено"
-                        if (!value) {
-                          _decorationAdorationUpgraded = false;
-                        }
-                        // Если сняли галочку с украшения и сертификат куплен, снимаем галочку с сертификата
-                        if (!value && _certificatePurchased) {
-                          _certificatePurchased = false;
-                        }
-                      });
-                    },
-                    onAdorationUpgradedChanged: (value) {
-                      setState(() {
-                        _decorationAdorationUpgraded = value;
-                        // Если сняли "Улучшено" и сертификат куплен, снимаем галочку с сертификата
-                        if (!value && _certificatePurchased) {
-                          _certificatePurchased = false;
-                        }
-                      });
-                    },
-                  ),
-                  FactionCertificateBlock(
-                    faction: widget.faction!,
-                    factionTemplateRepository: widget.factionTemplateRepository,
-                    certificatePurchased: _certificatePurchased,
-                    onCertificatePurchasedChanged: (value) {
-                      if (value == true) {
-                        // Проверяем, что все украшения куплены и улучшены
-                        if (!_areAllDecorationsPurchasedAndUpgraded()) {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('Невозможно купить сертификат'),
-                              content: const Text(
-                                'Для покупки сертификата необходимо купить и улучшить все украшения фракции:\n\n'
-                                '• Уважение\n'
-                                '• Почтение\n'
-                                '• Преклонение',
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: const Text('Понятно'),
+                  if (_targetReputationLevel != null)
+                    FactionReputationBlock(
+                      currentReputationLevel: _currentReputationLevel,
+                      currentLevelExp: _currentLevelExp,
+                      onCurrentLevelChanged: (value) {
+                        setState(() {
+                          _currentReputationLevel = value;
+                          // Если целевой уровень стал невалидным (ниже или равен текущему), переключаем на следующий доступный
+                          if (_targetReputationLevel != null && 
+                              _targetReputationLevel!.value <= value.value) {
+                            // Находим следующий доступный уровень (минимальный уровень выше текущего)
+                            final nextLevel = ReputationLevel.values.firstWhere(
+                              (level) => level.value > value.value,
+                              orElse: () => ReputationLevel.maximum,
+                            );
+                            _targetReputationLevel = nextLevel;
+                          }
+                        });
+                      },
+                      onLevelExpChanged: (value) {
+                        setState(() {
+                          _currentLevelExp = value;
+                        });
+                      },
+                    ),
+                  if (_wantsCertificate) ...[
+                    FactionCurrencyBlock(
+                      currency: _currency,
+                      onCurrencyChanged: (value) {
+                        setState(() {
+                          _currency = value;
+                        });
+                      },
+                    ),
+                    FactionDecorationsSection(
+                      decorationRespectPurchased: _decorationRespectPurchased,
+                      decorationRespectUpgraded: _decorationRespectUpgraded,
+                      decorationHonorPurchased: _decorationHonorPurchased,
+                      decorationHonorUpgraded: _decorationHonorUpgraded,
+                      decorationAdorationPurchased: _decorationAdorationPurchased,
+                      decorationAdorationUpgraded: _decorationAdorationUpgraded,
+                      onRespectPurchasedChanged: (value) {
+                        setState(() {
+                          _decorationRespectPurchased = value;
+                          // Если сняли "Куплено", автоматически снимаем "Улучшено"
+                          if (!value) {
+                            _decorationRespectUpgraded = false;
+                          }
+                          // Если сняли галочку с украшения и сертификат куплен, снимаем галочку с сертификата
+                          if (!value && _certificatePurchased) {
+                            _certificatePurchased = false;
+                          }
+                        });
+                      },
+                      onRespectUpgradedChanged: (value) {
+                        setState(() {
+                          _decorationRespectUpgraded = value;
+                          // Если сняли "Улучшено" и сертификат куплен, снимаем галочку с сертификата
+                          if (!value && _certificatePurchased) {
+                            _certificatePurchased = false;
+                          }
+                        });
+                      },
+                      onHonorPurchasedChanged: (value) {
+                        setState(() {
+                          _decorationHonorPurchased = value;
+                          // Если сняли "Куплено", автоматически снимаем "Улучшено"
+                          if (!value) {
+                            _decorationHonorUpgraded = false;
+                          }
+                          // Если сняли галочку с украшения и сертификат куплен, снимаем галочку с сертификата
+                          if (!value && _certificatePurchased) {
+                            _certificatePurchased = false;
+                          }
+                        });
+                      },
+                      onHonorUpgradedChanged: (value) {
+                        setState(() {
+                          _decorationHonorUpgraded = value;
+                          // Если сняли "Улучшено" и сертификат куплен, снимаем галочку с сертификата
+                          if (!value && _certificatePurchased) {
+                            _certificatePurchased = false;
+                          }
+                        });
+                      },
+                      onAdorationPurchasedChanged: (value) {
+                        setState(() {
+                          _decorationAdorationPurchased = value;
+                          // Если сняли "Куплено", автоматически снимаем "Улучшено"
+                          if (!value) {
+                            _decorationAdorationUpgraded = false;
+                          }
+                          // Если сняли галочку с украшения и сертификат куплен, снимаем галочку с сертификата
+                          if (!value && _certificatePurchased) {
+                            _certificatePurchased = false;
+                          }
+                        });
+                      },
+                      onAdorationUpgradedChanged: (value) {
+                        setState(() {
+                          _decorationAdorationUpgraded = value;
+                          // Если сняли "Улучшено" и сертификат куплен, снимаем галочку с сертификата
+                          if (!value && _certificatePurchased) {
+                            _certificatePurchased = false;
+                          }
+                        });
+                      },
+                    ),
+                    FactionCertificateBlock(
+                      faction: widget.faction!,
+                      factionTemplateRepository: widget.factionTemplateRepository,
+                      certificatePurchased: _certificatePurchased,
+                      onCertificatePurchasedChanged: (value) {
+                        if (value == true) {
+                          // Проверяем, что все украшения куплены и улучшены
+                          if (!_areAllDecorationsPurchasedAndUpgraded()) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Невозможно купить сертификат'),
+                                content: const Text(
+                                  'Для покупки сертификата необходимо купить и улучшить все украшения фракции:\n\n'
+                                  '• Уважение\n'
+                                  '• Почтение\n'
+                                  '• Преклонение',
                                 ),
-                              ],
-                            ),
-                          );
-                          return;
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: const Text('Понятно'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            return;
+                          }
                         }
-                      }
-                      setState(() {
-                        _certificatePurchased = value;
-                      });
-                    },
-                  ),
+                        setState(() {
+                          _certificatePurchased = value;
+                        });
+                      },
+                    ),
+                  ],
                 ],
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Настройки',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.inventory_2),
-            label: 'Инвентарь',
-          ),
-        ],
-      ),
+      bottomNavigationBar: hasGoals
+          ? BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.settings),
+                  label: 'Настройки',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.inventory_2),
+                  label: 'Инвентарь',
+                ),
+              ],
+            )
+          : null,
     );
   }
-
 }

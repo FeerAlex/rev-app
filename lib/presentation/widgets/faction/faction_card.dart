@@ -53,6 +53,7 @@ class FactionCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
+              spacing: 12,
               children: [
                 // Строка 1: Название + Активности
                 Row(
@@ -78,32 +79,35 @@ class FactionCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
                 // Строка 2: Progress bar валюты и опыта рядом друг с другом
-                Row(
-                  children: [
-                    Expanded(
-                      child: CurrencyProgressBar(
-                        faction: faction,
-                        calculateTimeToCurrencyGoal: calculateTimeToCurrencyGoal,
-                        appSettingsRepository: appSettingsRepository,
-                        factionTemplateRepository: factionTemplateRepository,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: onExpTap,
-                        child: ReputationProgressBar(
-                          faction: faction,
-                          reputationHelper: reputationHelper,
-                          calculateTimeToReputationGoal: calculateTimeToReputationGoal,
-                          factionTemplateRepository: factionTemplateRepository,
+                if (faction.wantsCertificate || faction.targetReputationLevel != null) ...[
+                  Row(
+                    spacing: 8,
+                    children: [
+                      if (faction.wantsCertificate)
+                        Expanded(
+                          child: CurrencyProgressBar(
+                            faction: faction,
+                            calculateTimeToCurrencyGoal: calculateTimeToCurrencyGoal,
+                            appSettingsRepository: appSettingsRepository,
+                            factionTemplateRepository: factionTemplateRepository,
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
-                ),
+                      if (faction.targetReputationLevel != null)
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: onExpTap,
+                            child: ReputationProgressBar(
+                              faction: faction,
+                              reputationHelper: reputationHelper,
+                              calculateTimeToReputationGoal: calculateTimeToReputationGoal,
+                              factionTemplateRepository: factionTemplateRepository,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
