@@ -90,7 +90,10 @@ lib/
         │   ├── faction_goals_block.dart
         │   ├── faction_name_display.dart
         │   ├── faction_reputation_block.dart
-        │   └── faction_selection_dialog.dart
+        │   ├── faction_selection_dialog.dart
+        │   └── tabs/                  # Вкладки страницы редактирования фракции
+        │       ├── faction_inventory_tab.dart
+        │       └── faction_settings_tab.dart
         ├── reputation/                # Виджеты репутации
         │   └── reputation_progress_bar.dart
         └── time_to_goal/              # Виджеты времени до цели
@@ -279,17 +282,21 @@ lib/
 **FactionDetailPage**
 Страница редактирования фракции с нижней навигацией (BottomNavigationBar). Название фракции отображается в заголовке AppBar. Кнопка сохранения находится в AppBar. Получает `FactionTemplateRepository` через конструктор для проверки наличия заказов/работы/сертификата (не обращается напрямую к Data layer).
 
-Страница разделена на две вкладки:
+Страница разделена на две вкладки (реализованы в `widgets/faction/tabs/`):
 
-**Вкладка "Настройки" (index 0):**
+**Вкладка "Настройки" (index 0) - `FactionSettingsTab`:**
 - Ежедневные активности (блок `FactionActivitiesBlock` с галочкой "Заказы" и полями ввода для работы)
 - Цели (блок `FactionGoalsBlock` с целевым уровнем репутации и галочкой "Нужен сертификат")
 
-**Вкладка "Инвентарь" (index 1):**
+**Вкладка "Инвентарь" (index 1) - `FactionInventoryTab`:**
 - Валюта (блок `FactionCurrencyBlock` для редактирования валюты)
 - Репутация (блок `FactionReputationBlock` с текущим уровнем отношения и опытом на уровне)
 - Сертификат (блок `FactionCertificateBlock`)
 - Украшения (блок `FactionDecorationsSection` с тремя украшениями)
+
+**Условия отображения блоков:**
+- **FactionReputationBlock:** Отображается только если `targetReputationLevel != null` (установлен целевой уровень репутации). Позволяет редактировать текущий уровень репутации и опыт
+- **FactionCurrencyBlock, FactionDecorationsSection, FactionCertificateBlock:** Отображаются только если `wantsCertificate == true` (нужен сертификат как цель). Эти блоки связаны с целью по валюте (покупка украшений и сертификата)
 
 **Примечание:** 
 - Валюту можно редактировать из карточки фракции или во вкладке "Инвентарь"
@@ -310,6 +317,14 @@ lib/
 - Строка 2: Progress bar валюты (`CurrencyProgressBar`) и время до цели по валюте (`TimeToCurrencyGoalWidget`)
 - Строка 3: Progress bar опыта (`ReputationProgressBar`) и время до цели по репутации (`TimeToReputationGoalWidget`)
 - Получает `AppSettingsRepository` и `FactionTemplateRepository` через конструктор и передает их в дочерние виджеты
+
+**Условия отображения:**
+- **Строка с progress bars (строка 2):** Отображается только если установлена хотя бы одна цель:
+  - `wantsCertificate == true` (нужен сертификат как цель)
+  - ИЛИ `targetReputationLevel != null` (установлен целевой уровень репутации)
+  - Если обе цели не установлены, строка с progress bars не отображается
+- **CurrencyProgressBar:** Отображается только если `wantsCertificate == true`. Показывает прогресс по валюте для покупки украшений и сертификата
+- **ReputationProgressBar:** Отображается только если `targetReputationLevel != null`. Показывает прогресс по опыту репутации до целевого уровня
 
 **FactionNameDisplay**
 Виджет отображения названия фракции с заданным стилем (жирный, 18px, белый).
