@@ -223,13 +223,14 @@ lib/
 #### BLoC
 
 **FactionBloc**
-- `LoadFactions` - загрузка всех фракций
+- `LoadFactions` - загрузка всех видимых фракций
 - `AddFactionEvent` - добавление фракции
-- `UpdateFactionEvent` - обновление фракции
-- `DeleteFactionEvent` - скрытие фракции
+- `UpdateFactionEvent` - обновление фракции (с оптимистичным обновлением UI)
+- `DeleteFactionEvent` - скрытие фракции (устанавливает `isVisible = false`)
+- `ShowFactionEvent` - показ скрытой фракции (устанавливает `isVisible = true`)
 - `ResetDailyFlagsEvent` - сброс ежедневных отметок
 - `ReorderFactionsEvent` - изменение порядка фракций (с оптимистичным обновлением UI)
-- `UpdateFactionEvent` - обновление фракции (с оптимистичным обновлением UI)
+- `getHiddenFactions()` - метод для получения скрытых фракций (используется в диалоге выбора)
 
 #### Pages
 

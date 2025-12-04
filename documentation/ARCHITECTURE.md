@@ -134,8 +134,22 @@
 #### BLoC (State Management)
 - `FactionBloc` - управление состоянием фракций
   - **Зависимости:** BLoC зависит только от Use Cases, не использует Repository напрямую
+  - **События:**
+    - `LoadFactions` - загрузка всех видимых фракций
+    - `AddFactionEvent` - добавление новой фракции
+    - `UpdateFactionEvent` - обновление фракции
+    - `DeleteFactionEvent` - скрытие фракции (устанавливает `isVisible = false`)
+    - `ShowFactionEvent` - показ скрытой фракции (устанавливает `isVisible = true`)
+    - `ResetDailyFlagsEvent` - сброс ежедневных отметок
+    - `ReorderFactionsEvent` - изменение порядка фракций
+  - **Состояния:**
+    - `FactionInitial` - начальное состояние
+    - `FactionLoading` - загрузка данных
+    - `FactionLoaded` - данные загружены (содержит список фракций)
+    - `FactionError` - ошибка (содержит сообщение об ошибке)
   - **Оптимистичные обновления:** При обновлении фракции (`UpdateFactionEvent`) и изменении порядка (`ReorderFactionsEvent`) UI обновляется мгновенно, сохранение в БД происходит в фоне. При ошибке состояние восстанавливается из БД.
   - **Pull-to-refresh:** Поддержка обновления списка через свайп вниз (`RefreshIndicator`)
+  - **Методы:** `getHiddenFactions()` - получение скрытых фракций для диалога выбора
 
 #### Dependency Injection
 - `di/service_locator.dart` - простой DI контейнер для управления зависимостями. Создает и управляет всеми репозиториями (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider). Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров.

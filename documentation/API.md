@@ -462,6 +462,11 @@ class ResetDailyFlagsEvent extends FactionEvent;
 class ReorderFactionsEvent extends FactionEvent {
   final List<int> factionIds;
 }
+
+// Показ скрытой фракции
+class ShowFactionEvent extends FactionEvent {
+  final Faction faction;
+}
 ```
 
 ### BLoC States
@@ -733,6 +738,9 @@ class ServiceLocator {
   Future<void> init();
   Database get database;
   FactionRepository get factionRepository;
+  FactionTemplateRepository get factionTemplateRepository;
+  AppSettingsRepository get appSettingsRepository;
+  DateTimeProvider get dateTimeProvider;
 }
 ```
 
@@ -741,13 +749,18 @@ class ServiceLocator {
 // Инициализация (в main.dart)
 await ServiceLocator().init();
 
-// Получение репозитория
+// Получение репозиториев и провайдеров
 final factionRepo = ServiceLocator().factionRepository;
+final templateRepo = ServiceLocator().factionTemplateRepository;
+final settingsRepo = ServiceLocator().appSettingsRepository;
+final dateTimeProvider = ServiceLocator().dateTimeProvider;
 ```
 
 **Описание:**
 - Инициализирует SQLite базу данных версии 12
 - Создает таблицу `factions` при первом запуске через `FactionDao.createTable()`
-- Создает экземпляры репозиториев для работы с данными
+- Создает экземпляры репозиториев и провайдеров для работы с данными
 - Поддерживает миграции базы данных (версии 10, 11, 12)
+- Singleton паттерн - один экземпляр на все приложение
+- Используется только на уровне страниц (Pages) для создания зависимостей
 
