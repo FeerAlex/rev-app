@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../domain/entities/reputation_level.dart';
 import '../../../domain/value_objects/work_reward.dart';
 import '../common/block_header.dart';
 import '../common/help_dialog.dart';
@@ -9,6 +10,8 @@ class FactionActivitiesBlock extends StatefulWidget {
   final WorkReward? workReward;
   final bool showOrderCheckbox;
   final bool showWorkInput;
+  final bool wantsCertificate;
+  final ReputationLevel? targetReputationLevel;
   final ValueChanged<bool>? onHasOrderChanged;
   final ValueChanged<WorkReward?>? onWorkRewardChanged;
 
@@ -18,6 +21,8 @@ class FactionActivitiesBlock extends StatefulWidget {
     this.workReward,
     this.showOrderCheckbox = true,
     this.showWorkInput = true,
+    required this.wantsCertificate,
+    this.targetReputationLevel,
     this.onHasOrderChanged,
     this.onWorkRewardChanged,
   });
@@ -87,8 +92,8 @@ class _FactionActivitiesBlockState extends State<FactionActivitiesBlock> {
       'О ежедневных активностях',
       'Блок "Ежедневные активности" позволяет настроить, какие источники дохода учитываются при расчете времени до цели.\n\n'
       '• Заказы - включите галочку, если хотите учитывать заказы в расчете. Заказы дают валюту и опыт ежедневно.\n\n'
-      '• Работа - укажите валюту и опыт, которые вы получаете за работу каждый день. Эти значения используются в калькуляторе времени до цели по валюте и репутации. Можно указать только валюту, только опыт, или оба значения.\n\n'
-      'Если галочка "Заказы" выключена или поля работы пустые, соответствующие источники дохода не учитываются в расчетах.',
+      '• Работа/События - укажите валюту и опыт, которые вы получаете за работу и события каждый день. Эти значения используются в калькуляторе времени до цели по валюте и репутации. Можно указать только валюту, только опыт, или оба значения.\n\n'
+      'Если галочка "Заказы" выключена или поля работы/событий пустые, соответствующие источники дохода не учитываются в расчетах.',
     );
   }
 
@@ -147,34 +152,36 @@ class _FactionActivitiesBlockState extends State<FactionActivitiesBlock> {
                         spacing: 8,
                         children: [
                           Icon(Icons.work_outline, size: 16, color: Colors.amber[300]),
-                          const Text('Работа', style: TextStyle(fontSize: 14)),
+                          const Text('Работа/События', style: TextStyle(fontSize: 14)),
                         ],
                       ),
                       Row(
+                        spacing: 8,
                         children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _currencyController,
-                              decoration: const InputDecoration(
-                                labelText: 'Валюта/день',
+                          if (widget.wantsCertificate)
+                            Expanded(
+                              child: TextField(
+                                controller: _currencyController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Валюта/день',
+                                ),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                onChanged: (_) => _updateWorkReward(),
                               ),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              onChanged: (_) => _updateWorkReward(),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: TextField(
-                              controller: _expController,
-                              decoration: const InputDecoration(
-                                labelText: 'Опыт/день',
+                          if (widget.targetReputationLevel != null)
+                            Expanded(
+                              child: TextField(
+                                controller: _expController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Опыт/день',
+                                ),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                onChanged: (_) => _updateWorkReward(),
                               ),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              onChanged: (_) => _updateWorkReward(),
                             ),
-                          ),
                         ],
                       ),
                     ],

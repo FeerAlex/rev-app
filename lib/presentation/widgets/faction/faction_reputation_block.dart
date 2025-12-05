@@ -23,8 +23,8 @@ class FactionReputationBlock extends StatelessWidget {
       context,
       'О репутации',
       'Блок "Репутация" отображает текущий уровень репутации и опыт на текущем уровне.\n\n'
-      '• Текущий уровень - выберите ваш текущий уровень репутации во фракции.\n\n'
-      '• Текущий опыт - нажмите на значение, чтобы изменить количество опыта на текущем уровне. Это значение используется при расчете времени до цели по репутации.',
+      '• Уровень - выберите ваш текущий уровень репутации во фракции.\n\n'
+      '• Опыт - нажмите на значение, чтобы изменить количество опыта на текущем уровне. Это значение используется при расчете времени до цели по репутации.',
     );
   }
 
@@ -56,7 +56,7 @@ class FactionReputationBlock extends StatelessWidget {
                       children: [
                         Icon(Icons.star, size: 16, color: Colors.amber[300]),
                         const Text(
-                          'Текущий уровень:',
+                          'Уровень:',
                           style: TextStyle(fontSize: 14),
                         ),
                       ],
@@ -118,7 +118,7 @@ class FactionReputationBlock extends StatelessWidget {
                       children: [
                         Icon(Icons.trending_up, size: 16, color: Colors.blue[300]),
                         const Text(
-                          'Текущий опыт:',
+                          'Опыт:',
                           style: TextStyle(fontSize: 14),
                         ),
                       ],
@@ -129,7 +129,7 @@ class FactionReputationBlock extends StatelessWidget {
                           context: context,
                           builder: (context) => CurrencyInputDialog(
                             initialValue: currentLevelExp,
-                            title: 'Текущий опыт',
+                            title: 'Опыт',
                             labelText: 'Введите опыт',
                             allowEmpty: false,
                           ),
