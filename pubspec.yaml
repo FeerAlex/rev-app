@@ -48,6 +48,10 @@ dependencies:
   intl: ^0.19.0
   timezone: ^0.9.2
   shared_preferences: ^2.2.2
+  
+  # File operations
+  share_plus: ^10.0.0
+  file_picker: ^8.1.2
 
 dev_dependencies:
   flutter_test:

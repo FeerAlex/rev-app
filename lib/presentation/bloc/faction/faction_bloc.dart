@@ -12,14 +12,14 @@ import 'faction_event.dart';
 import 'faction_state.dart';
 
 class FactionBloc extends Bloc<FactionEvent, FactionState> {
-  final GetAllFactions _getAllFactions;
-  final AddFaction _addFaction;
-  final UpdateFaction _updateFaction;
-  final DeleteFaction _deleteFaction;
-  final ResetDailyFlags _resetDailyFlags;
-  final ReorderFactions _reorderFactions;
-  final ShowFaction _showFaction;
-  final GetHiddenFactions _getHiddenFactions;
+  GetAllFactions _getAllFactions;
+  AddFaction _addFaction;
+  UpdateFaction _updateFaction;
+  DeleteFaction _deleteFaction;
+  ResetDailyFlags _resetDailyFlags;
+  ReorderFactions _reorderFactions;
+  ShowFaction _showFaction;
+  GetHiddenFactions _getHiddenFactions;
 
   FactionBloc(
     this._getAllFactions,
@@ -38,6 +38,27 @@ class FactionBloc extends Bloc<FactionEvent, FactionState> {
     on<ResetDailyFlagsEvent>(_onResetDailyFlags);
     on<ReorderFactionsEvent>(_onReorderFactions);
     on<ShowFactionEvent>(_onShowFaction);
+  }
+
+  /// Обновляет use cases с новыми репозиториями (используется после импорта БД)
+  void updateUseCases(
+    GetAllFactions getAllFactions,
+    AddFaction addFaction,
+    UpdateFaction updateFaction,
+    DeleteFaction deleteFaction,
+    ResetDailyFlags resetDailyFlags,
+    ReorderFactions reorderFactions,
+    ShowFaction showFaction,
+    GetHiddenFactions getHiddenFactions,
+  ) {
+    _getAllFactions = getAllFactions;
+    _addFaction = addFaction;
+    _updateFaction = updateFaction;
+    _deleteFaction = deleteFaction;
+    _resetDailyFlags = resetDailyFlags;
+    _reorderFactions = reorderFactions;
+    _showFaction = showFaction;
+    _getHiddenFactions = getHiddenFactions;
   }
 
   Future<void> _onLoadFactions(

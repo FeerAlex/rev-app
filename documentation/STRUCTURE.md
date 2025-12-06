@@ -19,14 +19,20 @@ lib/
 │   │   ├── faction_repository.dart
 │   │   ├── faction_template_repository.dart
 │   │   ├── app_settings_repository.dart
-│   │   └── date_time_provider.dart
+│   │   ├── date_time_provider.dart
+│   │   ├── file_exporter.dart
+│   │   ├── file_importer.dart
+│   │   ├── database_path_provider.dart
+│   │   └── database_initializer.dart
 │   ├── usecases/                      # Сценарии использования
 │   │   ├── add_faction.dart
 │   │   ├── calculate_time_to_currency_goal.dart
 │   │   ├── calculate_time_to_reputation_goal.dart
 │   │   ├── delete_faction.dart
+│   │   ├── export_database.dart
 │   │   ├── get_all_factions.dart
 │   │   ├── get_hidden_factions.dart
+│   │   ├── import_database.dart
 │   │   ├── initialize_factions.dart
 │   │   ├── reset_daily_flags.dart
 │   │   ├── show_faction.dart
@@ -50,7 +56,12 @@ lib/
 │       ├── faction_repository_impl.dart
 │       ├── faction_template_repository_impl.dart
 │       ├── app_settings_repository_impl.dart
-│       └── date_time_provider_impl.dart
+│       ├── date_time_provider_impl.dart
+│       ├── file_exporter_impl.dart
+│       ├── file_importer_impl.dart
+│       ├── database_path_provider_impl.dart
+│       ├── database_initializer_impl.dart
+│       └── repository_factory.dart
 └── presentation/                       # Слой представления
     ├── di/                            # Dependency Injection
     │   └── service_locator.dart       # DI контейнер
@@ -240,12 +251,29 @@ lib/
 **DateTimeProviderImpl**
 Реализация интерфейса `DateTimeProvider` из Domain layer. Использует библиотеку `timezone` для работы с московским часовым поясом. Предоставляет методы для получения текущего времени в московском часовом поясе, начала дня и преобразования дат. Используется в `DailyResetHelper` для определения необходимости ежедневного сброса отметок.
 
+**FileExporterImpl**
+Реализация интерфейса `FileExporter` из Domain layer. Использует библиотеку `share_plus` для экспорта файла базы данных. Предоставляет метод `exportFile()` для экспорта файла по указанному пути.
+
+**FileImporterImpl**
+Реализация интерфейса `FileImporter` из Domain layer. Использует библиотеку `file_picker` для выбора файла при импорте базы данных. Предоставляет метод `importFile()` для выбора файла пользователем. Обрабатывает различные случаи (прямой путь к файлу, файлы из облачных хранилищ через bytes). **Важно:** Валидация файла (проверка, что это валидная SQLite БД с таблицей `factions`) выполняется в `DatabasePathProvider.reinitializeDatabase()`, а не в `FileImporter`.
+
+**DatabasePathProviderImpl**
+Реализация интерфейса `DatabasePathProvider` из Domain layer. Управляет путями к базе данных и переинициализацией БД после импорта. Валидирует импортируемые файлы (проверяет наличие таблицы factions) и обеспечивает корректное переключение между базами данных. Использует `DatabaseInitializer` через интерфейс из Domain layer для создания таблиц при переинициализации БД.
+
+**DatabaseInitializerImpl**
+Реализация интерфейса `DatabaseInitializer` из Domain layer. Использует `FactionDao.createTable()` для создания таблиц базы данных. Позволяет Presentation layer не зависеть напрямую от Data layer datasources, что соответствует принципам Clean Architecture.
+
+#### Factory (Фабрика репозиториев)
+
+**RepositoryFactory**
+Фабрика для создания репозиториев в Data layer. Инкапсулирует создание репозиториев с их зависимостями внутри Data layer, что позволяет Presentation layer (ServiceLocator) создавать репозитории без прямого знания о datasources (FactionDao). Предоставляет статический метод `createFactionRepository(Database db)` для создания `FactionRepositoryImpl` с `FactionDao`. **Важно:** Фабрика обеспечивает соблюдение принципов Clean Architecture и Dependency Inversion, скрывая детали реализации Data layer от Presentation layer.
+
 ### Presentation Layer
 
 #### Dependency Injection
 
 **ServiceLocator**
-Централизованный контейнер для управления зависимостями. Расположен в `presentation/di/service_locator.dart`. Инициализирует базу данных (версия 1) и создает экземпляры репозиториев и провайдеров (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider). База данных создается при первом запуске через `FactionDao.createTable()`. Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров. Используется на уровне страниц для создания зависимостей, которые затем передаются в виджеты через конструкторы.
+Централизованный контейнер для управления зависимостями. Расположен в `presentation/di/service_locator.dart`. Инициализирует базу данных (версия 1) и создает экземпляры репозиториев и провайдеров (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider, FileExporter, FileImporter, DatabasePathProvider, DatabaseInitializer). База данных создается при первом запуске через `DatabaseInitializer` (используется интерфейс из Domain layer, реализация из Data layer). **Важно:** ServiceLocator использует `DatabaseInitializer` через интерфейс из Domain layer и `RepositoryFactory` для создания репозиториев, что позволяет избежать прямых зависимостей от Data layer datasources (FactionDao) и соответствует принципам Clean Architecture. Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров. Используется на уровне страниц для создания зависимостей, которые затем передаются в виджеты через конструкторы. Предоставляет методы `getDatabasePath()` для получения пути к БД и `reinitializeDatabase()` для переинициализации БД после импорта (валидация файла, закрытие текущего соединения, копирование импортированного файла, переоткрытие соединения).
 
 #### BLoC
 

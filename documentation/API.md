@@ -57,6 +57,76 @@ abstract class DateTimeProvider {
 **Использование:**
 Используется в `DailyResetHelper` для определения необходимости ежедневного сброса отметок. Реализация находится в Data layer (`DateTimeProviderImpl`) и использует библиотеку `timezone` для работы с часовыми поясами.
 
+#### FileExporter
+
+Интерфейс для экспорта файлов. Используется для экспорта базы данных.
+
+```dart
+abstract class FileExporter {
+  Future<bool> exportFile(String filePath);
+}
+```
+
+**Методы:**
+
+- `exportFile(String filePath)` - экспортирует файл по указанному пути. Возвращает `true`, если экспорт успешен, `false` в противном случае.
+
+**Использование:**
+Используется в `ExportDatabase` use case для экспорта базы данных. Реализация находится в Data layer (`FileExporterImpl`) и использует библиотеку `share_plus` для экспорта файла.
+
+#### FileImporter
+
+Интерфейс для импорта файлов. Используется для импорта базы данных.
+
+```dart
+abstract class FileImporter {
+  Future<String?> importFile();
+}
+```
+
+**Методы:**
+
+- `importFile()` - импортирует файл. Возвращает путь к выбранному файлу или `null`, если пользователь отменил выбор.
+
+**Использование:**
+Используется в `ImportDatabase` use case для импорта базы данных. Реализация находится в Data layer (`FileImporterImpl`) и использует библиотеку `file_picker` для выбора файла.
+
+#### DatabasePathProvider
+
+Интерфейс для получения пути к базе данных и переинициализации БД после импорта.
+
+```dart
+abstract class DatabasePathProvider {
+  Future<String> getDatabasePath();
+  Future<void> reinitializeDatabase(String importedFilePath);
+}
+```
+
+**Методы:**
+
+- `getDatabasePath()` - возвращает путь к файлу базы данных
+- `reinitializeDatabase(String importedFilePath)` - переинициализирует базу данных с новым файлом. Валидирует импортируемый файл (проверяет, что это валидная SQLite БД с таблицей `factions`), закрывает текущее соединение, копирует импортированный файл на место текущей БД и переоткрывает соединение.
+
+**Использование:**
+Используется в `ExportDatabase` и `ImportDatabase` use cases. Реализация находится в Data layer (`DatabasePathProviderImpl`).
+
+#### DatabaseInitializer
+
+Интерфейс для инициализации базы данных (создание таблиц). Используется для абстракции создания таблиц из Domain layer, что позволяет Presentation layer не зависеть от Data layer datasources.
+
+```dart
+abstract class DatabaseInitializer {
+  Future<void> initializeDatabase(Object db);
+}
+```
+
+**Методы:**
+
+- `initializeDatabase(Object db)` - инициализирует базу данных, создавая необходимые таблицы. Параметр `db` должен быть экземпляром `Database` из sqflite.
+
+**Использование:**
+Используется в `ServiceLocator` для инициализации базы данных при первом запуске и при переинициализации после импорта. Реализация находится в Data layer (`DatabaseInitializerImpl`) и использует `FactionDao.createTable()` для создания таблиц. Это позволяет Presentation layer не зависеть напрямую от Data layer datasources, что соответствует принципам Clean Architecture.
+
 ### Use Cases
 
 #### GetAllFactions
@@ -267,6 +337,71 @@ class ReorderFactions {
 
 **Описание:**
 Обновляет поле `displayOrder` для каждой фракции согласно её позиции в переданном списке. Используется для сохранения порядка после drag-and-drop в UI. Реализовано с оптимистичным обновлением UI - порядок обновляется мгновенно, сохранение в БД происходит в фоне.
+
+#### ExportDatabase
+
+Экспорт базы данных.
+
+```dart
+class ExportDatabase {
+  final FileExporter _fileExporter;
+  final DatabasePathProvider _databasePathProvider;
+  
+  ExportDatabase(
+    this._fileExporter,
+    this._databasePathProvider,
+  );
+  
+  Future<bool> call();
+}
+```
+
+**Возвращает:**
+- `true` - если экспорт успешен
+- `false` - если произошла ошибка
+
+**Описание:**
+Экспортирует файл базы данных `rev_app.db` через системный диалог экспорта. Пользователь может выбрать способ экспорта (сохранить в файловый менеджер, отправить по email, сохранить в облачное хранилище и т.д.). Использует `FileExporter` для экспорта файла и `DatabasePathProvider` для получения пути к БД.
+
+**Использование:**
+Вызывается из UI при нажатии на кнопку "Экспорт БД" в меню навигации (Drawer).
+
+#### ImportDatabase
+
+Импорт базы данных.
+
+```dart
+class ImportDatabase {
+  final FileImporter _fileImporter;
+  
+  ImportDatabase(this._fileImporter);
+  
+  Future<String?> call();
+}
+```
+
+**Возвращает:**
+- `String?` - путь к выбранному файлу, если выбор успешен
+- `null` - если пользователь отменил выбор файла
+- Выбрасывает исключение, если произошла ошибка
+
+**Описание:**
+Выбирает файл для импорта базы данных через `FileImporter` (использует file_picker). Возвращает путь к выбранному файлу или `null`, если пользователь отменил выбор.
+
+**Важно:**
+- `ImportDatabase` только выбирает файл, но не выполняет валидацию и переинициализацию БД
+- Валидация файла и переинициализация БД выполняются в `ServiceLocator.reinitializeDatabase()` через `DatabasePathProvider`
+- Процесс импорта в UI включает:
+  1. Выбор файла через `ImportDatabase` (возвращает путь к файлу)
+  2. Валидацию файла и переинициализацию БД через `ServiceLocator.reinitializeDatabase()`:
+     - Валидация: проверка, что это валидная SQLite БД с таблицей `factions`
+     - Закрытие текущего соединения с БД
+     - Копирование импортированного файла на место текущей БД
+     - Переоткрытие соединения с БД
+  3. Обновление use cases в BLoC с новыми репозиториями
+
+**Использование:**
+Вызывается из UI при нажатии на кнопку "Импорт БД" в меню навигации (Drawer). Перед импортом показывается диалог подтверждения. После выбора файла вызывается `ServiceLocator.reinitializeDatabase()` для валидации и переинициализации БД.
 
 ## Entities
 
@@ -736,11 +871,17 @@ class ServiceLocator {
   factory ServiceLocator() => _instance;
   
   Future<void> init();
+  Future<String> getDatabasePath();
+  Future<void> reinitializeDatabase(String importedFilePath);
+  
   Database get database;
   FactionRepository get factionRepository;
   FactionTemplateRepository get factionTemplateRepository;
   AppSettingsRepository get appSettingsRepository;
   DateTimeProvider get dateTimeProvider;
+  FileExporter get fileExporter;
+  FileImporter get fileImporter;
+  DatabasePathProvider get databasePathProvider;
 }
 ```
 
@@ -754,6 +895,15 @@ final factionRepo = ServiceLocator().factionRepository;
 final templateRepo = ServiceLocator().factionTemplateRepository;
 final settingsRepo = ServiceLocator().appSettingsRepository;
 final dateTimeProvider = ServiceLocator().dateTimeProvider;
+final fileExporter = ServiceLocator().fileExporter;
+final fileImporter = ServiceLocator().fileImporter;
+final databasePathProvider = ServiceLocator().databasePathProvider;
+
+// Получение пути к БД
+final dbPath = await ServiceLocator().getDatabasePath();
+
+// Переинициализация БД после импорта
+await ServiceLocator().reinitializeDatabase(importedFilePath);
 ```
 
 **Описание:**
@@ -762,4 +912,13 @@ final dateTimeProvider = ServiceLocator().dateTimeProvider;
 - Создает экземпляры репозиториев и провайдеров для работы с данными
 - Singleton паттерн - один экземпляр на все приложение
 - Используется только на уровне страниц (Pages) для создания зависимостей
+
+**Методы:**
+- `getDatabasePath()` - возвращает путь к файлу базы данных
+- `reinitializeDatabase(String importedFilePath)` - переинициализирует базу данных с новым файлом после импорта:
+  - Валидирует импортируемый файл (проверяет, что это валидная SQLite БД с таблицей `factions`)
+  - Закрывает текущее соединение с БД
+  - Копирует импортированный файл на место текущей БД
+  - Переоткрывает соединение с БД
+  - Обновляет все репозитории с новым соединением
 

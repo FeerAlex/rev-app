@@ -67,6 +67,9 @@ class FactionDao {
   }
 
   Future<List<Map<String, dynamic>>> getAllFactions() async {
+    if (!_db.isOpen) {
+      throw Exception('Database is closed when calling getAllFactions');
+    }
     return await _db.query(
       tableName,
       where: '$columnIsVisible = ?',
