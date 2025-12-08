@@ -15,7 +15,9 @@ class QuestionsData {
       return jsonList.map((json) => Question(
         id: json['id'] as int,
         question: json['question'] as String,
-        answer: json['answer'] as String,
+        answers: (json['answers'] as List<dynamic>)
+            .map((e) => e as String)
+            .toList(),
       )).toList();
     } catch (e) {
       // Если файл не найден или произошла ошибка, возвращаем пустой список

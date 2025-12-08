@@ -12,15 +12,13 @@ class QuestionCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: const Color(0xFF2A2A2A),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 12.0,
-            ),
-            child: Text(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Text(
               question.question,
               style: const TextStyle(
                 color: Colors.white,
@@ -28,27 +26,30 @@ class QuestionCard extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-          ),
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
+            Wrap(
+              spacing: 4,
+              runSpacing: 4,
+              children: question.answers.map((answer) {
+                return Chip(
+                  label: Text(
+                    answer,
+                    style: TextStyle(
+                      color: color,
+                      fontSize: 12,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  backgroundColor: color.withValues(alpha: 0.1),
+                  side: BorderSide.none,
+                  padding: EdgeInsets.zero,
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                );
+              }).toList(),
             ),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
-            child: Text(
-              question.answer,
-              style: TextStyle(
-                color: color,
-                fontSize: 12,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

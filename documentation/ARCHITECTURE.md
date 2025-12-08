@@ -34,7 +34,7 @@
 - `Faction` - представляет фракцию со всеми её параметрами
 - `ReputationLevel` - enum уровней отношения (indifference, friendliness, respect, honor, adoration, deification, maximum) с extension `ReputationLevelExtension` для методов `displayName`, `value`, `fromValue`
 - `FactionTemplate` - шаблон фракции для статического списка
-- `Question` - представляет вопрос и ответ для функционала "Клуб знатоков" (id, question, answer)
+- `Question` - представляет вопрос и ответы для функционала "Клуб знатоков" (id, question, answers - массив строк)
 
 #### Value Objects
 - `WorkReward` - класс для хранения награды за работу (валюта и опыт)
@@ -71,7 +71,7 @@
 - `ExportDatabase` - экспорт базы данных (использует FileExporter и DatabasePathProvider)
 - `ImportDatabase` - импорт базы данных (использует только FileImporter для выбора файла). Валидация файла и переинициализация БД выполняются в `ServiceLocator.reinitializeDatabase()` через `DatabasePathProvider`
 - `GetAllQuestions` - получение всех вопросов из репозитория
-- `SearchQuestions` - поиск вопросов по запросу (по тексту вопроса и ответа, без учета регистра)
+- `SearchQuestions` - поиск вопросов по запросу (по тексту вопроса и всем элементам массива ответов, без учета регистра)
 
 **Важно:** Все Use Cases зависят только от Domain слоя (entities, repositories интерфейсы) и не имеют зависимостей от внешних слоев (Core, Data, Presentation).
 
@@ -99,7 +99,7 @@
 - `DatabasePathProviderImpl` - реализация DatabasePathProvider (управляет путями к БД и переинициализацией после импорта, валидирует импортируемые файлы). Использует `DatabaseInitializer` для создания таблиц при переинициализации БД
 - `FileImporterImpl` - реализация FileImporter (использует file_picker для выбора файла при импорте)
 - `DatabaseInitializerImpl` - реализация DatabaseInitializer (использует `FactionDao.createTable()` для создания таблиц). Позволяет Presentation layer не зависеть напрямую от Data layer datasources
-- `QuestionRepositoryImpl` - реализация QuestionRepository (использует QuestionsData для загрузки данных из JSON). Кэширует вопросы в памяти для быстрого поиска. Реализует поиск по тексту вопроса и ответа без учета регистра
+- `QuestionRepositoryImpl` - реализация QuestionRepository (использует QuestionsData для загрузки данных из JSON). Кэширует вопросы в памяти для быстрого поиска. Реализует поиск по тексту вопроса и всем элементам массива ответов без учета регистра
 
 #### Factory (Фабрика репозиториев)
 - `RepositoryFactory` - фабрика для создания репозиториев. Инкапсулирует создание репозиториев с их зависимостями внутри Data layer. Предоставляет метод `createFactionRepository(Database db)` для создания `FactionRepositoryImpl` с `FactionDao`. **Важно:** Фабрика позволяет Presentation layer (ServiceLocator) создавать репозитории без прямого знания о datasources (FactionDao), что соответствует принципам Clean Architecture и Dependency Inversion.
@@ -135,7 +135,7 @@
 - `FactionBasicInfoSection` - секция базовой информации о фракции (не используется в текущей реализации)
 
 **Виджеты Клуба знатоков** (`widgets/quiz_club/`):
-- `QuestionCard` - карточка вопроса/ответа для отображения результатов поиска. Отображает текст вопроса (белый, жирный) и текст ответа под ним (приглушенный серый, меньшим шрифтом)
+- `QuestionCard` - карточка вопроса/ответа для отображения результатов поиска. Отображает текст вопроса (белый, жирный) и ответы в виде чипсов под ним (каждый ответ в отдельном чипсе с оранжевым цветом, автоматический перенос на новую строку)
 
 **Виджеты валюты** (`widgets/currency/`):
 - `CurrencyProgressBar` - progress bar для отображения прогресса валюты с возможностью редактирования. Получает `AppSettingsRepository` и `FactionTemplateRepository` через конструктор

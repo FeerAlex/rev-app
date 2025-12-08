@@ -28,7 +28,7 @@ class QuestionRepositoryImpl implements QuestionRepository {
 
     return allQuestions.where((question) {
       return question.question.toLowerCase().contains(queryLower) ||
-          question.answer.toLowerCase().contains(queryLower);
+          question.answers.any((answer) => answer.toLowerCase().contains(queryLower));
     }).toList();
   }
 }
