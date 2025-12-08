@@ -38,9 +38,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: cardBackground,
         elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -59,15 +57,9 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: accentOrange, width: 1),
         ),
-        labelStyle: const TextStyle(
-          color: textSecondary,
-          fontSize: 12,
-        ),
-        floatingLabelStyle: TextStyle(
-          color: textPrimary,
-          fontSize: 12,
-        ),
-        hintStyle: const TextStyle(color: textSecondary),
+        labelStyle: const TextStyle(color: textSecondary, fontSize: 12),
+        floatingLabelStyle: TextStyle(color: textPrimary, fontSize: 12),
+        hintStyle: const TextStyle(color: textSecondary, fontSize: 12),
       ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(color: textPrimary),
@@ -98,9 +90,7 @@ class AppTheme {
           backgroundColor: accentOrange,
           foregroundColor: textPrimary,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -114,4 +104,3 @@ class AppTheme {
     );
   }
 }
-

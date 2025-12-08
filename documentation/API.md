@@ -127,6 +127,25 @@ abstract class DatabaseInitializer {
 **Использование:**
 Используется в `ServiceLocator` для инициализации базы данных при первом запуске и при переинициализации после импорта. Реализация находится в Data layer (`DatabaseInitializerImpl`) и использует `FactionDao.createTable()` для создания таблиц. Это позволяет Presentation layer не зависеть напрямую от Data layer datasources, что соответствует принципам Clean Architecture.
 
+#### QuestionRepository
+
+Интерфейс для работы с вопросами "Клуба знатоков".
+
+```dart
+abstract class QuestionRepository {
+  Future<List<Question>> getAllQuestions();
+  Future<List<Question>> searchQuestions(String query);
+}
+```
+
+**Методы:**
+
+- `getAllQuestions()` - возвращает список всех вопросов из источника данных
+- `searchQuestions(String query)` - выполняет поиск вопросов по запросу. Поиск выполняется одновременно по тексту вопроса и ответа, без учета регистра. Возвращает список вопросов, содержащих запрос в тексте вопроса или ответа
+
+**Использование:**
+Используется в use cases `GetAllQuestions` и `SearchQuestions` для работы с вопросами. Реализация находится в Data layer (`QuestionRepositoryImpl`) и использует `QuestionsData` для загрузки данных из JSON файла. Вопросы кэшируются в памяти для быстрого поиска.
+
 ### Use Cases
 
 #### GetAllFactions
@@ -403,6 +422,52 @@ class ImportDatabase {
 **Использование:**
 Вызывается из UI при нажатии на кнопку "Импорт БД" в меню навигации (Drawer). Перед импортом показывается диалог подтверждения. После выбора файла вызывается `ServiceLocator.reinitializeDatabase()` для валидации и переинициализации БД.
 
+#### GetAllQuestions
+
+Получение всех вопросов "Клуба знатоков".
+
+```dart
+class GetAllQuestions {
+  final QuestionRepository repository;
+  
+  GetAllQuestions(this.repository);
+  
+  Future<List<Question>> call();
+}
+```
+
+**Возвращает:**
+- `Future<List<Question>>` - список всех вопросов из источника данных
+
+**Описание:**
+Получает все вопросы из репозитория. Используется для загрузки начального списка вопросов на странице поиска.
+
+#### SearchQuestions
+
+Поиск вопросов по запросу.
+
+```dart
+class SearchQuestions {
+  final QuestionRepository repository;
+  
+  SearchQuestions(this.repository);
+  
+  Future<List<Question>> call(String query);
+}
+```
+
+**Параметры:**
+- `query` - текст поискового запроса
+
+**Возвращает:**
+- `Future<List<Question>>` - список вопросов, содержащих запрос в тексте вопроса или ответа
+
+**Описание:**
+Выполняет поиск вопросов по запросу. Поиск выполняется одновременно по тексту вопроса и ответа, без учета регистра. При пустом запросе возвращает все вопросы.
+
+**Использование:**
+Вызывается из UI при изменении текста в поисковой строке на странице "Клуб знатоков". Результаты отображаются в виде карточек с вопросами и ответами.
+
 ## Entities
 
 ### Faction
@@ -519,6 +584,32 @@ class FactionTemplate {
 - Каждая фракция в статическом списке имеет предустановленные значения `hasWork` и `hasCertificate`, которые определяют, какие активности доступны для этой фракции
 - Для фракций с заказами в поле `orderReward` хранится награда за заказы (валюта и опыт как массивы), которые могут варьироваться в разные дни. При расчете времени до цели используется среднее арифметическое валюты и опыта отдельно
 - Наличие заказов определяется наличием `orderReward` (если `orderReward != null`, значит фракция имеет заказы)
+
+### Question
+
+Вопрос и ответ для функционала "Клуб знатоков".
+
+```dart
+class Question {
+  final int id;
+  final String question;
+  final String answer;
+  
+  const Question({
+    required this.id,
+    required this.question,
+    required this.answer,
+  });
+}
+```
+
+**Поля:**
+- `id` - уникальный идентификатор вопроса
+- `question` - текст вопроса
+- `answer` - текст ответа
+
+**Использование:**
+Используется для хранения вопросов и ответов из ивента "Клуб знатоков" игры Revelation Online. Вопросы загружаются из JSON файла `assets/questions.json` через `QuestionsData` и кэшируются в памяти через `QuestionRepositoryImpl`.
 
 ### WorkReward
 

@@ -34,6 +34,7 @@
 - `Faction` - представляет фракцию со всеми её параметрами
 - `ReputationLevel` - enum уровней отношения (indifference, friendliness, respect, honor, adoration, deification, maximum) с extension `ReputationLevelExtension` для методов `displayName`, `value`, `fromValue`
 - `FactionTemplate` - шаблон фракции для статического списка
+- `Question` - представляет вопрос и ответ для функционала "Клуб знатоков" (id, question, answer)
 
 #### Value Objects
 - `WorkReward` - класс для хранения награды за работу (валюта и опыт)
@@ -48,6 +49,7 @@
 - `FileImporter` - интерфейс для импорта файлов (используется для импорта базы данных)
 - `DatabasePathProvider` - интерфейс для получения пути к базе данных и переинициализации БД после импорта
 - `DatabaseInitializer` - интерфейс для инициализации базы данных (создание таблиц). Используется для абстракции создания таблиц из Domain layer, что позволяет Presentation layer не зависеть от Data layer datasources
+- `QuestionRepository` - интерфейс для работы с вопросами "Клуба знатоков" (получение всех вопросов, поиск по запросу)
 
 #### Utils
 - `ReputationExp` - утилита для работы с опытом репутации (требует репозитории для получения настроек)
@@ -68,6 +70,8 @@
 - `ReorderFactions` - изменение порядка фракций
 - `ExportDatabase` - экспорт базы данных (использует FileExporter и DatabasePathProvider)
 - `ImportDatabase` - импорт базы данных (использует только FileImporter для выбора файла). Валидация файла и переинициализация БД выполняются в `ServiceLocator.reinitializeDatabase()` через `DatabasePathProvider`
+- `GetAllQuestions` - получение всех вопросов из репозитория
+- `SearchQuestions` - поиск вопросов по запросу (по тексту вопроса и ответа, без учета регистра)
 
 **Важно:** Все Use Cases зависят только от Domain слоя (entities, repositories интерфейсы) и не имеют зависимостей от внешних слоев (Core, Data, Presentation).
 
@@ -82,10 +86,9 @@
 
 #### Data Sources (Источники данных)
 - `FactionDao` - DAO для работы с таблицей factions в SQLite
-
-#### Data Sources (Источники данных)
 - `FactionsList` - статический список всех 13 фракций игры с предустановленными настройками. Использует `FactionTemplate` entity из Domain layer (hasWork, hasCertificate, orderReward). Наличие заказов определяется наличием `orderReward` (если `orderReward != null`, значит фракция имеет заказы)
 - `AppSettings` - константы настроек приложения, организованные по функциональности (фракции, карта, брактеат)
+- `QuestionsData` - источник данных для загрузки вопросов из JSON файла (`assets/questions.json`). Загружает вопросы при первом обращении, используется `QuestionRepositoryImpl` для кэширования данных в памяти
 
 #### Repositories (Реализации репозиториев)
 - `FactionRepositoryImpl` - реализация FactionRepository
@@ -96,6 +99,7 @@
 - `DatabasePathProviderImpl` - реализация DatabasePathProvider (управляет путями к БД и переинициализацией после импорта, валидирует импортируемые файлы). Использует `DatabaseInitializer` для создания таблиц при переинициализации БД
 - `FileImporterImpl` - реализация FileImporter (использует file_picker для выбора файла при импорте)
 - `DatabaseInitializerImpl` - реализация DatabaseInitializer (использует `FactionDao.createTable()` для создания таблиц). Позволяет Presentation layer не зависеть напрямую от Data layer datasources
+- `QuestionRepositoryImpl` - реализация QuestionRepository (использует QuestionsData для загрузки данных из JSON). Кэширует вопросы в памяти для быстрого поиска. Реализует поиск по тексту вопроса и ответа без учета регистра
 
 #### Factory (Фабрика репозиториев)
 - `RepositoryFactory` - фабрика для создания репозиториев. Инкапсулирует создание репозиториев с их зависимостями внутри Data layer. Предоставляет метод `createFactionRepository(Database db)` для создания `FactionRepositoryImpl` с `FactionDao`. **Важно:** Фабрика позволяет Presentation layer (ServiceLocator) создавать репозитории без прямого знания о datasources (FactionDao), что соответствует принципам Clean Architecture и Dependency Inversion.
@@ -112,6 +116,7 @@
 - `pages/faction/factions_list_page.dart` - список видимых фракций с возможностью скрытия свайпом и изменения порядка (drag-and-drop). Получает все зависимости (ReputationHelper, use cases, репозитории) через конструктор
 - `pages/faction/faction_detail_page.dart` - детальная информация и редактирование фракции (оптимизированная версия с компактными секциями). Название фракции отображается в заголовке AppBar. Получает `FactionTemplateRepository` через конструктор
 - `pages/map/map_page.dart` - заглушка для будущей карты ресурсов
+- `pages/quiz_club/quiz_club_page.dart` - страница поиска вопросов "Клуба знатоков" с поисковой строкой и списком результатов. Получает use cases `GetAllQuestions` и `SearchQuestions` через конструктор
 
 #### Widgets (Виджеты)
 
@@ -128,6 +133,9 @@
 - `FactionSelectionDialog` - диалог выбора фракции из списка скрытых
 - `FactionActivitiesSection` - секция активностей и сертификата (не используется в текущей реализации)
 - `FactionBasicInfoSection` - секция базовой информации о фракции (не используется в текущей реализации)
+
+**Виджеты Клуба знатоков** (`widgets/quiz_club/`):
+- `QuestionCard` - карточка вопроса/ответа для отображения результатов поиска. Отображает текст вопроса (белый, жирный) и текст ответа под ним (приглушенный серый, меньшим шрифтом)
 
 **Виджеты валюты** (`widgets/currency/`):
 - `CurrencyProgressBar` - progress bar для отображения прогресса валюты с возможностью редактирования. Получает `AppSettingsRepository` и `FactionTemplateRepository` через конструктор
@@ -165,7 +173,7 @@
   - **Методы:** `getHiddenFactions()` - получение скрытых фракций для диалога выбора
 
 #### Dependency Injection
-- `di/service_locator.dart` - простой DI контейнер для управления зависимостями. Создает и управляет всеми репозиториями и провайдерами (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider, FileExporter, FileImporter, DatabasePathProvider, DatabaseInitializer). Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров. **Важно:** ServiceLocator работает только с интерфейсами из Domain layer и не использует приведение типов к конкретным реализациям. Использует `DatabaseInitializer` через интерфейс из Domain layer для инициализации базы данных и `RepositoryFactory` для создания репозиториев, что позволяет избежать прямых зависимостей от Data layer datasources (FactionDao). Предоставляет методы `getDatabasePath()` и `reinitializeDatabase()` для работы с импортом/экспортом БД.
+- `di/service_locator.dart` - простой DI контейнер для управления зависимостями. Создает и управляет всеми репозиториями и провайдерами (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider, FileExporter, FileImporter, DatabasePathProvider, DatabaseInitializer, QuestionRepository). Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров. **Важно:** ServiceLocator работает только с интерфейсами из Domain layer и не использует приведение типов к конкретным реализациям. Использует `DatabaseInitializer` через интерфейс из Domain layer для инициализации базы данных и `RepositoryFactory` для создания репозиториев, что позволяет избежать прямых зависимостей от Data layer datasources (FactionDao). Предоставляет методы `getDatabasePath()` и `reinitializeDatabase()` для работы с импортом/экспортом БД.
 
 **Правила использования ServiceLocator:**
 - ServiceLocator используется **только на уровне страниц (Pages)** для создания зависимостей

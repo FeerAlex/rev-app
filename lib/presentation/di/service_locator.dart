@@ -7,6 +7,7 @@ import '../../../data/repositories/file_exporter_impl.dart';
 import '../../../data/repositories/database_path_provider_impl.dart';
 import '../../../data/repositories/file_importer_impl.dart';
 import '../../../data/repositories/database_initializer_impl.dart';
+import '../../../data/repositories/question_repository_impl.dart';
 import '../../../data/repositories/repository_factory.dart';
 import '../../../domain/repositories/faction_repository.dart';
 import '../../../domain/repositories/faction_template_repository.dart';
@@ -16,6 +17,7 @@ import '../../../domain/repositories/file_exporter.dart';
 import '../../../domain/repositories/file_importer.dart';
 import '../../../domain/repositories/database_path_provider.dart';
 import '../../../domain/repositories/database_initializer.dart';
+import '../../../domain/repositories/question_repository.dart';
 
 class ServiceLocator {
   static final ServiceLocator _instance = ServiceLocator._internal();
@@ -32,6 +34,7 @@ class ServiceLocator {
   FileImporter? _fileImporter;
   DatabasePathProvider? _databasePathProvider;
   DatabaseInitializer? _databaseInitializer;
+  QuestionRepository? _questionRepository;
 
   Future<void> init() async {
     final databasesPath = await getDatabasesPath();
@@ -53,6 +56,7 @@ class ServiceLocator {
     _dateTimeProvider = DateTimeProviderImpl();
     _fileExporter = FileExporterImpl();
     _fileImporter = FileImporterImpl();
+    _questionRepository = QuestionRepositoryImpl();
     _databasePathProvider = DatabasePathProviderImpl(
       _database,
       _databasePath,
@@ -99,5 +103,6 @@ class ServiceLocator {
   FileExporter get fileExporter => _fileExporter!;
   FileImporter get fileImporter => _fileImporter!;
   DatabasePathProvider get databasePathProvider => _databasePathProvider!;
+  QuestionRepository get questionRepository => _questionRepository!;
 }
 

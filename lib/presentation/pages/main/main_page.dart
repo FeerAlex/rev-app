@@ -11,8 +11,11 @@ import '../../../domain/usecases/reset_daily_flags.dart';
 import '../../../domain/usecases/reorder_factions.dart';
 import '../../../domain/usecases/show_faction.dart';
 import '../../../domain/usecases/get_hidden_factions.dart';
+import '../../../domain/usecases/get_all_questions.dart';
+import '../../../domain/usecases/search_questions.dart';
 import '../faction/factions_page.dart';
 import '../map/map_page.dart';
+import '../quiz_club/quiz_club_page.dart';
 import '../../bloc/faction/faction_bloc.dart';
 import '../../bloc/faction/faction_event.dart';
 
@@ -27,10 +30,25 @@ class _MainPageState extends State<MainPage> {
   int _currentPage = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  late final List<Widget> _pages = [
-    FactionsPage(scaffoldKey: _scaffoldKey),
-    MapPage(scaffoldKey: _scaffoldKey),
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    final serviceLocator = ServiceLocator();
+    final getAllQuestions = GetAllQuestions(serviceLocator.questionRepository);
+    final searchQuestions = SearchQuestions(serviceLocator.questionRepository);
+    
+    _pages = [
+      FactionsPage(scaffoldKey: _scaffoldKey),
+      MapPage(scaffoldKey: _scaffoldKey),
+      QuizClubPage(
+        scaffoldKey: _scaffoldKey,
+        getAllQuestions: getAllQuestions,
+        searchQuestions: searchQuestions,
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +94,17 @@ class _MainPageState extends State<MainPage> {
                       onTap: () {
                         setState(() {
                           _currentPage = 1;
+                        });
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.quiz),
+                      title: const Text('Клуб знатоков'),
+                      selected: _currentPage == 2,
+                      onTap: () {
+                        setState(() {
+                          _currentPage = 2;
                         });
                         Navigator.pop(context);
                       },

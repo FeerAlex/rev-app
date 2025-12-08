@@ -14,6 +14,7 @@ lib/
 │   ├── entities/                      # Сущности
 │   │   ├── faction.dart
 │   │   ├── faction_template.dart
+│   │   ├── question.dart
 │   │   └── reputation_level.dart
 │   ├── repositories/                  # Интерфейсы репозиториев
 │   │   ├── faction_repository.dart
@@ -23,7 +24,8 @@ lib/
 │   │   ├── file_exporter.dart
 │   │   ├── file_importer.dart
 │   │   ├── database_path_provider.dart
-│   │   └── database_initializer.dart
+│   │   ├── database_initializer.dart
+│   │   └── question_repository.dart
 │   ├── usecases/                      # Сценарии использования
 │   │   ├── add_faction.dart
 │   │   ├── calculate_time_to_currency_goal.dart
@@ -37,7 +39,9 @@ lib/
 │   │   ├── reset_daily_flags.dart
 │   │   ├── show_faction.dart
 │   │   ├── update_faction.dart
-│   │   └── reorder_factions.dart
+│   │   ├── reorder_factions.dart
+│   │   ├── get_all_questions.dart
+│   │   └── search_questions.dart
 │   ├── utils/                         # Утилиты
 │   │   ├── daily_reset_helper.dart    # Сброс ежедневных отметок
 │   │   ├── reputation_exp.dart         # Утилита для работы с опытом репутации
@@ -49,7 +53,8 @@ lib/
 │   ├── datasources/                   # Источники данных
 │   │   ├── faction_dao.dart           # DAO для фракций
 │   │   ├── factions_list.dart        # Статический список фракций
-│   │   └── app_settings.dart          # Константы настроек приложения
+│   │   ├── app_settings.dart          # Константы настроек приложения
+│   │   └── questions_data.dart        # Загрузка вопросов из JSON
 │   ├── models/                        # Модели данных
 │   │   └── faction_model.dart
 │   └── repositories/                  # Реализации репозиториев
@@ -61,6 +66,7 @@ lib/
 │       ├── file_importer_impl.dart
 │       ├── database_path_provider_impl.dart
 │       ├── database_initializer_impl.dart
+│       ├── question_repository_impl.dart
 │       └── repository_factory.dart
 └── presentation/                       # Слой представления
     ├── di/                            # Dependency Injection
@@ -293,6 +299,7 @@ lib/
 Главная страница с Drawer для навигации между разделами:
 1. Фракции - открывает FactionsPage
 2. Карта - открывает MapPage
+3. Клуб знатоков - открывает QuizClubPage
 
 **FactionsPage**
 Страница фракций, отображающая список всех фракций. Имеет FloatingActionButton для добавления новой фракции. Создает все необходимые зависимости через ServiceLocator (ReputationHelper, use cases, репозитории) и передает их в FactionsListPage через конструктор.
@@ -336,6 +343,14 @@ lib/
 
 **MapPage**
 Заглушка для будущей функциональности карты ресурсов.
+
+**QuizClubPage**
+Страница поиска вопросов "Клуба знатоков". Содержит:
+- Поисковую строку в верхней части
+- Список результатов поиска в виде карточек вопросов
+- Сообщения об ошибках и пустых результатах
+- Поддержку pull-to-refresh для обновления данных
+- Получает use cases `GetAllQuestions` и `SearchQuestions` через конструктор
 
 #### Widgets
 
@@ -468,4 +483,7 @@ lib/
 - `FactionSelectionDialog` - диалог выбора фракции из списка скрытых фракций для добавления в видимый список (расположен в `widgets/faction/`)
 - `FactionActivitiesSection` - секция активностей и сертификата (не используется в текущей реализации, но присутствует в коде, расположен в `widgets/faction/`)
 - `FactionBasicInfoSection` - секция базовой информации о фракции (не используется в текущей реализации, но присутствует в коде, расположен в `widgets/faction/`)
+
+**Виджеты Клуба знатоков** (`widgets/quiz_club/`):
+- `QuestionCard` - карточка вопроса/ответа для отображения результатов поиска. Отображает текст вопроса (белый, жирный, 16px) и текст ответа под ним (приглушенный серый, 14px)
 
