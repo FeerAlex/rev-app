@@ -60,6 +60,7 @@ class AppTheme {
         labelStyle: const TextStyle(color: textSecondary, fontSize: 12),
         floatingLabelStyle: TextStyle(color: textPrimary, fontSize: 12),
         hintStyle: const TextStyle(color: textSecondary, fontSize: 12),
+        constraints: const BoxConstraints(minHeight: 40, maxHeight: 40),
       ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(color: textPrimary),

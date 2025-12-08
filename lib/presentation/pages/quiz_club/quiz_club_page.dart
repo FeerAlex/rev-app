@@ -101,8 +101,6 @@ class _QuizClubPageState extends State<QuizClubPage> {
             // Поисковая строка
             Padding(
               padding: const EdgeInsets.all(16),
-                child: SizedBox(
-                height: 40,
                 child: TextField(
                   controller: _searchController,
                   style: const TextStyle(fontSize: 12),
@@ -123,7 +121,6 @@ class _QuizClubPageState extends State<QuizClubPage> {
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                 ),
-              ),
             ),
             // Список результатов
             Expanded(
