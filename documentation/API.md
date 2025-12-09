@@ -609,7 +609,7 @@ class Question {
 - `answers` - массив текстов ответов (может содержать несколько правильных ответов)
 
 **Использование:**
-Используется для хранения вопросов и ответов из ивента "Клуб знатоков" игры Revelation Online. Вопросы загружаются из JSON файла `assets/questions.json` через `QuestionsData` и кэшируются в памяти через `QuestionRepositoryImpl`.
+Используется для хранения вопросов и ответов из ивента "Клуб знатоков" игры Revelation Online. Вопросы загружаются из JSON файла `assets/questions/questions_club.json` через `QuestionsData` и кэшируются в памяти через `QuestionRepositoryImpl`.
 
 ### WorkReward
 

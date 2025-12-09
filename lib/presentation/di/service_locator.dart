@@ -34,7 +34,8 @@ class ServiceLocator {
   FileImporter? _fileImporter;
   DatabasePathProvider? _databasePathProvider;
   DatabaseInitializer? _databaseInitializer;
-  QuestionRepository? _questionRepository;
+  QuestionRepository? _clubQuestionRepository;
+  QuestionRepository? _theosophyQuestionRepository;
 
   Future<void> init() async {
     final databasesPath = await getDatabasesPath();
@@ -56,7 +57,10 @@ class ServiceLocator {
     _dateTimeProvider = DateTimeProviderImpl();
     _fileExporter = FileExporterImpl();
     _fileImporter = FileImporterImpl();
-    _questionRepository = QuestionRepositoryImpl();
+    _clubQuestionRepository = QuestionRepositoryImpl();
+    _theosophyQuestionRepository = QuestionRepositoryImpl(
+      assetPath: 'assets/questions/questions_theosophy.json',
+    );
     _databasePathProvider = DatabasePathProviderImpl(
       _database,
       _databasePath,
@@ -103,6 +107,7 @@ class ServiceLocator {
   FileExporter get fileExporter => _fileExporter!;
   FileImporter get fileImporter => _fileImporter!;
   DatabasePathProvider get databasePathProvider => _databasePathProvider!;
-  QuestionRepository get questionRepository => _questionRepository!;
+  QuestionRepository get clubQuestionRepository => _clubQuestionRepository!;
+  QuestionRepository get theosophyQuestionRepository => _theosophyQuestionRepository!;
 }
 

@@ -6,10 +6,12 @@ import '../../domain/entities/question.dart';
 class QuestionsData {
   const QuestionsData._();
 
-  /// Загружает вопросы из JSON файла
-  static Future<List<Question>> loadQuestionsFromJson() async {
+  static const defaultAssetPath = 'assets/questions/questions_club.json';
+
+  /// Загружает вопросы из JSON файла по указанному пути
+  static Future<List<Question>> loadQuestionsFromJson({String assetPath = defaultAssetPath}) async {
     try {
-      final String jsonString = await rootBundle.loadString('assets/questions.json');
+      final String jsonString = await rootBundle.loadString(assetPath);
       final List<dynamic> jsonList = json.decode(jsonString) as List<dynamic>;
       
       return jsonList.map((json) => Question(

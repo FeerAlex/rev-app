@@ -77,7 +77,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/questions.json
+    - assets/questions/questions_club.json
+    - assets/questions/questions_theosophy.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

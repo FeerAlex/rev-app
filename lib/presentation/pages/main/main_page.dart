@@ -15,7 +15,7 @@ import '../../../domain/usecases/get_all_questions.dart';
 import '../../../domain/usecases/search_questions.dart';
 import '../faction/factions_page.dart';
 import '../map/map_page.dart';
-import '../quiz_club/quiz_club_page.dart';
+import '../quiz/quiz_page.dart';
 import '../../bloc/faction/faction_bloc.dart';
 import '../../bloc/faction/faction_event.dart';
 
@@ -36,16 +36,20 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     final serviceLocator = ServiceLocator();
-    final getAllQuestions = GetAllQuestions(serviceLocator.questionRepository);
-    final searchQuestions = SearchQuestions(serviceLocator.questionRepository);
+    final getAllClubQuestions = GetAllQuestions(serviceLocator.clubQuestionRepository);
+    final searchClubQuestions = SearchQuestions(serviceLocator.clubQuestionRepository);
+    final getAllTheosophyQuestions = GetAllQuestions(serviceLocator.theosophyQuestionRepository);
+    final searchTheosophyQuestions = SearchQuestions(serviceLocator.theosophyQuestionRepository);
     
     _pages = [
       FactionsPage(scaffoldKey: _scaffoldKey),
       MapPage(scaffoldKey: _scaffoldKey),
-      QuizClubPage(
+      QuizTabsPage(
         scaffoldKey: _scaffoldKey,
-        getAllQuestions: getAllQuestions,
-        searchQuestions: searchQuestions,
+        clubGetAllQuestions: getAllClubQuestions,
+        clubSearchQuestions: searchClubQuestions,
+        examGetAllQuestions: getAllTheosophyQuestions,
+        examSearchQuestions: searchTheosophyQuestions,
       ),
     ];
   }
@@ -100,7 +104,7 @@ class _MainPageState extends State<MainPage> {
                     ),
                     ListTile(
                       leading: const Icon(Icons.quiz),
-                      title: const Text('Клуб знатоков'),
+                      title: const Text('Клуб / Экзамен'),
                       selected: _currentPage == 2,
                       onTap: () {
                         setState(() {

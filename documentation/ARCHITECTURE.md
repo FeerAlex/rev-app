@@ -88,7 +88,7 @@
 - `FactionDao` - DAO для работы с таблицей factions в SQLite
 - `FactionsList` - статический список всех 13 фракций игры с предустановленными настройками. Использует `FactionTemplate` entity из Domain layer (hasWork, hasCertificate, orderReward). Наличие заказов определяется наличием `orderReward` (если `orderReward != null`, значит фракция имеет заказы)
 - `AppSettings` - константы настроек приложения, организованные по функциональности (фракции, карта, брактеат)
-- `QuestionsData` - источник данных для загрузки вопросов из JSON файла (`assets/questions.json`). Загружает вопросы при первом обращении, используется `QuestionRepositoryImpl` для кэширования данных в памяти
+- `QuestionsData` - источник данных для загрузки вопросов из JSON файла (`assets/questions/questions_club.json`). Загружает вопросы при первом обращении, используется `QuestionRepositoryImpl` для кэширования данных в памяти
 
 #### Repositories (Реализации репозиториев)
 - `FactionRepositoryImpl` - реализация FactionRepository
