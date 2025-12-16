@@ -146,6 +146,23 @@ abstract class QuestionRepository {
 **Использование:**
 Используется в use cases `GetAllQuestions` и `SearchQuestions` для работы с вопросами. Реализация находится в Data layer (`QuestionRepositoryImpl`) и использует `QuestionsData` для загрузки данных из JSON файла. Вопросы кэшируются в памяти для быстрого поиска.
 
+#### TextRecognizer
+
+Интерфейс для распознавания текста с изображений с помощью OCR.
+
+```dart
+abstract class TextRecognizer {
+  Future<String> recognizeTextFromImage(String imagePath);
+}
+```
+
+**Методы:**
+
+- `recognizeTextFromImage(String imagePath)` - распознает текст с изображения по указанному пути. Возвращает распознанный текст или пустую строку при ошибке.
+
+**Использование:**
+Используется в use case `RecognizeQuestionFromImage` для распознавания текста с фотографий вопросов. Реализация находится в Data layer (`TextRecognizerImpl`) и использует `TesseractTextRecognizer` для работы с Tesseract OCR.
+
 ### Use Cases
 
 #### GetAllFactions
@@ -467,6 +484,56 @@ class SearchQuestions {
 
 **Использование:**
 Вызывается из UI при изменении текста в поисковой строке на странице "Клуб знатоков". Результаты отображаются в виде карточек с вопросами и ответами.
+
+#### RecognizeQuestionFromImage
+
+Распознавание вопроса с изображения с помощью OCR и fuzzy search.
+
+```dart
+class RecognizeQuestionFromImage {
+  final TextRecognizer textRecognizer;
+  final QuestionRepository clubQuestionRepository;
+  final QuestionRepository examQuestionRepository;
+  final double threshold;
+  
+  RecognizeQuestionFromImage({
+    required this.textRecognizer,
+    required this.clubQuestionRepository,
+    required this.examQuestionRepository,
+    this.threshold = 0.6,
+  });
+  
+  Future<RecognitionResult> call(String imagePath);
+}
+```
+
+**Параметры:**
+- `imagePath` - путь к файлу изображения
+
+**Возвращает:**
+- `RecognitionResult` - результат распознавания с найденным вопросом (если найден), коэффициентом совпадения и распознанным текстом
+
+**Описание:**
+Объединяет OCR (TextRecognizer) и fuzzy search по базе вопросов. Процесс:
+1. Распознает текст с изображения через OCR
+2. Загружает все вопросы из обоих источников (клуб и экзамен)
+3. Разбивает распознанный текст на строки
+4. Ищет лучшее совпадение среди всех строк и полного текста используя алгоритм Levenshtein distance
+5. Возвращает результат с найденным вопросом, если коэффициент совпадения выше порога (по умолчанию 0.6)
+
+**RecognitionResult:**
+```dart
+class RecognitionResult {
+  final Question? question;  // Найденный вопрос (null если не найден)
+  final double score;        // Коэффициент совпадения (0.0 - 1.0)
+  final String recognizedText; // Распознанный текст с изображения
+  
+  bool get isFound => question != null;
+}
+```
+
+**Использование:**
+Вызывается из UI при сканировании вопроса через камеру на странице "Клуб знатоков". Если вопрос найден, он автоматически заполняется в поисковую строку.
 
 ## Entities
 
@@ -811,7 +878,94 @@ if (result != null) {
 **Описание:**
 Универсальный диалог для ввода валюты, используемый в различных местах приложения. Поддерживает как обязательный ввод (для основной валюты фракции), так и опциональный (для валюты с работы).
 
+### CameraScanPage
+
+Страница для съемки вопроса с камеры с фиксированной рамкой.
+
+```dart
+class CameraScanPage extends StatefulWidget {
+  const CameraScanPage({super.key});
+}
+```
+
+**Описание:**
+Страница для съемки изображения вопроса с помощью камеры устройства. Отображает камеру с фиксированной рамкой (80% ширины экрана, соотношение 16:9) по центру экрана. При нажатии кнопки съемки изображение автоматически обрезается по рамке, обрабатывается для улучшения качества OCR и возвращается в виде пути к файлу.
+
+**Особенности:**
+- Фиксированная рамка для обрезки (80% ширины экрана, 16:9)
+- Автоматическая обработка изображения для OCR:
+  - Конвертация в grayscale
+  - Gaussian blur для удаления шума
+  - Увеличение контрастности
+  - Бинаризация с Otsu threshold
+  - Удаление шумов
+  - Upscale для маленьких изображений (минимум 300px)
+- Автоматическая обработка ориентации изображения
+- Автоматическое удаление временных файлов после использования
+
+**Использование:**
+```dart
+final croppedImagePath = await Navigator.push<String>(
+  context,
+  MaterialPageRoute(
+    builder: (context) => const CameraScanPage(),
+  ),
+);
+```
+
+**Возвращает:**
+- `String?` - путь к обработанному изображению или `null`, если съемка отменена
+
 ## Utils API
+
+### Text Similarity
+
+Утилиты для работы с текстовым сходством и нечётким поиском.
+
+#### normalizeText
+
+Нормализует текст для сравнения.
+
+```dart
+String normalizeText(String text);
+```
+
+**Описание:**
+Приводит текст к lowercase, удаляет знаки препинания, оставляет только буквы и пробелы (включая русские), убирает множественные пробелы.
+
+#### calculateSimilarity
+
+Вычисляет коэффициент сходства между двумя строками.
+
+```dart
+double calculateSimilarity(String text1, String text2);
+```
+
+**Описание:**
+Использует алгоритм Levenshtein distance (расстояние редактирования). Возвращает значение от 0.0 (нет совпадения) до 1.0 (полное совпадение).
+
+#### findBestMatch
+
+Находит лучшее совпадение вопроса в списке.
+
+```dart
+MatchResult? findBestMatch(
+  String query,
+  List<Question> questions, {
+  double threshold = 0.6,
+});
+```
+
+**Параметры:**
+- `query` - поисковый запрос (распознанный текст)
+- `questions` - список вопросов для поиска
+- `threshold` - минимальный порог совпадения (по умолчанию 0.6 = 60%)
+
+**Возвращает:**
+- `MatchResult?` - результат с вопросом и score, или null если не найдено
+
+**Описание:**
+Использует `normalizeText` для нормализации текста и `calculateSimilarity` для вычисления сходства. Возвращает только совпадения выше порога.
 
 ### ReputationLevel
 
@@ -973,6 +1127,8 @@ class ServiceLocator {
   FileExporter get fileExporter;
   FileImporter get fileImporter;
   DatabasePathProvider get databasePathProvider;
+  TextRecognizer get textRecognizer;
+  RecognizeQuestionFromImage get recognizeQuestionFromImage;
 }
 ```
 
@@ -995,12 +1151,17 @@ final dbPath = await ServiceLocator().getDatabasePath();
 
 // Переинициализация БД после импорта
 await ServiceLocator().reinitializeDatabase(importedFilePath);
+
+// Получение OCR компонентов
+final textRecognizer = ServiceLocator().textRecognizer;
+final recognizeQuestionFromImage = ServiceLocator().recognizeQuestionFromImage;
 ```
 
 **Описание:**
 - Инициализирует SQLite базу данных версии 1
 - Создает таблицу `factions` при первом запуске через `FactionDao.createTable()`
 - Создает экземпляры репозиториев и провайдеров для работы с данными
+- Создает экземпляры OCR компонентов (TextRecognizer, RecognizeQuestionFromImage)
 - Singleton паттерн - один экземпляр на все приложение
 - Используется только на уровне страниц (Pages) для создания зависимостей
 

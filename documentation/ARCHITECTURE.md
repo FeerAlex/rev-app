@@ -50,11 +50,16 @@
 - `DatabasePathProvider` - интерфейс для получения пути к базе данных и переинициализации БД после импорта
 - `DatabaseInitializer` - интерфейс для инициализации базы данных (создание таблиц). Используется для абстракции создания таблиц из Domain layer, что позволяет Presentation layer не зависеть от Data layer datasources
 - `QuestionRepository` - интерфейс для работы с вопросами "Клуба знатоков" (получение всех вопросов, поиск по запросу)
+- `TextRecognizer` - интерфейс для распознавания текста с изображений с помощью OCR
 
 #### Utils
 - `ReputationExp` - утилита для работы с опытом репутации (требует репозитории для получения настроек)
 - `ReputationHelper` - утилита для работы с уровнями отношения и опытом (вычисление общего опыта, нужного опыта и т.д.)
 - `DailyResetHelper` - помощник для ежедневного сброса отметок. Принимает `FactionRepository`, `AppSettingsRepository` и `DateTimeProvider` через параметры метода `checkAndReset()` для сброса ежедневных флагов и работы с датой последнего сброса. **Важно:** Не использует инфраструктурные зависимости напрямую - работа с часовыми поясами абстрагирована через `DateTimeProvider` интерфейс
+- `text_similarity.dart` - утилиты для работы с текстовым сходством и нечётким поиском:
+  - `normalizeText()` - нормализация текста для сравнения
+  - `calculateSimilarity()` - вычисление коэффициента сходства (Levenshtein distance)
+  - `findBestMatch()` - поиск лучшего совпадения вопроса в списке
 
 #### Use Cases (Сценарии использования)
 - `GetAllFactions` - получение видимых фракций
@@ -72,6 +77,7 @@
 - `ImportDatabase` - импорт базы данных (использует только FileImporter для выбора файла). Валидация файла и переинициализация БД выполняются в `ServiceLocator.reinitializeDatabase()` через `DatabasePathProvider`
 - `GetAllQuestions` - получение всех вопросов из репозитория
 - `SearchQuestions` - поиск вопросов по запросу (по тексту вопроса и всем элементам массива ответов, без учета регистра)
+- `RecognizeQuestionFromImage` - распознавание вопроса с изображения с помощью OCR и fuzzy search. Объединяет TextRecognizer и поиск по базе вопросов используя алгоритм Levenshtein distance
 
 **Важно:** Все Use Cases зависят только от Domain слоя (entities, repositories интерфейсы) и не имеют зависимостей от внешних слоев (Core, Data, Presentation).
 
@@ -89,6 +95,7 @@
 - `FactionsList` - статический список всех 13 фракций игры с предустановленными настройками. Использует `FactionTemplate` entity из Domain layer (hasWork, hasCertificate, orderReward). Наличие заказов определяется наличием `orderReward` (если `orderReward != null`, значит фракция имеет заказы)
 - `AppSettings` - константы настроек приложения, организованные по функциональности (фракции, карта, брактеат)
 - `QuestionsData` - источник данных для загрузки вопросов из JSON файла (`assets/questions/questions_club.json`). Загружает вопросы при первом обращении, используется `QuestionRepositoryImpl` для кэширования данных в памяти
+- `TesseractTextRecognizer` - источник данных для распознавания текста с помощью Tesseract OCR. Использует библиотеку `flutter_tesseract_ocr` для работы с OCR. Поддерживает русский язык (`rus`). Применяет предобработку изображения для улучшения качества распознавания
 
 #### Repositories (Реализации репозиториев)
 - `FactionRepositoryImpl` - реализация FactionRepository
@@ -100,6 +107,7 @@
 - `FileImporterImpl` - реализация FileImporter (использует file_picker для выбора файла при импорте)
 - `DatabaseInitializerImpl` - реализация DatabaseInitializer (использует `FactionDao.createTable()` для создания таблиц). Позволяет Presentation layer не зависеть напрямую от Data layer datasources
 - `QuestionRepositoryImpl` - реализация QuestionRepository (использует QuestionsData для загрузки данных из JSON). Кэширует вопросы в памяти для быстрого поиска. Реализует поиск по тексту вопроса и всем элементам массива ответов без учета регистра
+- `TextRecognizerImpl` - реализация TextRecognizer (использует TesseractTextRecognizer для работы с Tesseract OCR). Является оберткой над TesseractTextRecognizer для соответствия интерфейсу из Domain layer
 
 #### Factory (Фабрика репозиториев)
 - `RepositoryFactory` - фабрика для создания репозиториев. Инкапсулирует создание репозиториев с их зависимостями внутри Data layer. Предоставляет метод `createFactionRepository(Database db)` для создания `FactionRepositoryImpl` с `FactionDao`. **Важно:** Фабрика позволяет Presentation layer (ServiceLocator) создавать репозитории без прямого знания о datasources (FactionDao), что соответствует принципам Clean Architecture и Dependency Inversion.
@@ -116,7 +124,8 @@
 - `pages/faction/factions_list_page.dart` - список видимых фракций с возможностью скрытия свайпом и изменения порядка (drag-and-drop). Получает все зависимости (ReputationHelper, use cases, репозитории) через конструктор
 - `pages/faction/faction_detail_page.dart` - детальная информация и редактирование фракции (оптимизированная версия с компактными секциями). Название фракции отображается в заголовке AppBar. Получает `FactionTemplateRepository` через конструктор
 - `pages/map/map_page.dart` - заглушка для будущей карты ресурсов
-- `pages/quiz_club/quiz_club_page.dart` - страница поиска вопросов "Клуба знатоков" с поисковой строкой и списком результатов. Получает use cases `GetAllQuestions` и `SearchQuestions` через конструктор
+- `pages/quiz/quiz_page.dart` - страница поиска вопросов "Клуба знатоков" с поисковой строкой, кнопкой сканирования через камеру и списком результатов. Получает use cases `GetAllQuestions`, `SearchQuestions` и `RecognizeQuestionFromImage` через конструктор
+- `pages/quiz/camera_scan_page.dart` - страница съемки вопроса с камеры с фиксированной рамкой (80% ширины экрана, 16:9). Автоматически обрабатывает изображение для улучшения качества OCR
 
 #### Widgets (Виджеты)
 
@@ -134,7 +143,7 @@
 - `FactionActivitiesSection` - секция активностей и сертификата (не используется в текущей реализации)
 - `FactionBasicInfoSection` - секция базовой информации о фракции (не используется в текущей реализации)
 
-**Виджеты Клуба знатоков** (`widgets/quiz_club/`):
+**Виджеты Клуба знатоков** (`widgets/quiz/`):
 - `QuestionCard` - карточка вопроса/ответа для отображения результатов поиска. Отображает текст вопроса (белый, жирный) и ответы в виде чипсов под ним (каждый ответ в отдельном чипсе с оранжевым цветом, автоматический перенос на новую строку)
 
 **Виджеты валюты** (`widgets/currency/`):
@@ -173,7 +182,7 @@
   - **Методы:** `getHiddenFactions()` - получение скрытых фракций для диалога выбора
 
 #### Dependency Injection
-- `di/service_locator.dart` - простой DI контейнер для управления зависимостями. Создает и управляет всеми репозиториями и провайдерами (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider, FileExporter, FileImporter, DatabasePathProvider, DatabaseInitializer, QuestionRepository). Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров. **Важно:** ServiceLocator работает только с интерфейсами из Domain layer и не использует приведение типов к конкретным реализациям. Использует `DatabaseInitializer` через интерфейс из Domain layer для инициализации базы данных и `RepositoryFactory` для создания репозиториев, что позволяет избежать прямых зависимостей от Data layer datasources (FactionDao). Предоставляет методы `getDatabasePath()` и `reinitializeDatabase()` для работы с импортом/экспортом БД.
+- `di/service_locator.dart` - простой DI контейнер для управления зависимостями. Создает и управляет всеми репозиториями и провайдерами (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider, FileExporter, FileImporter, DatabasePathProvider, DatabaseInitializer, QuestionRepository, TextRecognizer, RecognizeQuestionFromImage). Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров. **Важно:** ServiceLocator работает только с интерфейсами из Domain layer и не использует приведение типов к конкретным реализациям. Использует `DatabaseInitializer` через интерфейс из Domain layer для инициализации базы данных и `RepositoryFactory` для создания репозиториев, что позволяет избежать прямых зависимостей от Data layer datasources (FactionDao). Предоставляет методы `getDatabasePath()` и `reinitializeDatabase()` для работы с импортом/экспортом БД.
 
 **Правила использования ServiceLocator:**
 - ServiceLocator используется **только на уровне страниц (Pages)** для создания зависимостей

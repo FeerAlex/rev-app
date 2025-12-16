@@ -25,7 +25,8 @@ lib/
 │   │   ├── file_importer.dart
 │   │   ├── database_path_provider.dart
 │   │   ├── database_initializer.dart
-│   │   └── question_repository.dart
+│   │   ├── question_repository.dart
+│   │   └── text_recognizer.dart
 │   ├── usecases/                      # Сценарии использования
 │   │   ├── add_faction.dart
 │   │   ├── calculate_time_to_currency_goal.dart
@@ -41,11 +42,13 @@ lib/
 │   │   ├── update_faction.dart
 │   │   ├── reorder_factions.dart
 │   │   ├── get_all_questions.dart
-│   │   └── search_questions.dart
+│   │   ├── search_questions.dart
+│   │   └── recognize_question_from_image.dart
 │   ├── utils/                         # Утилиты
 │   │   ├── daily_reset_helper.dart    # Сброс ежедневных отметок
 │   │   ├── reputation_exp.dart         # Утилита для работы с опытом репутации
-│   │   └── reputation_helper.dart      # Утилита для работы с уровнями отношения
+│   │   ├── reputation_helper.dart      # Утилита для работы с уровнями отношения
+│   │   └── text_similarity.dart        # Утилиты для текстового сходства и fuzzy search
 │   └── value_objects/                 # Value Objects
 │       ├── order_reward.dart
 │       └── work_reward.dart
@@ -54,7 +57,8 @@ lib/
 │   │   ├── faction_dao.dart           # DAO для фракций
 │   │   ├── factions_list.dart        # Статический список фракций
 │   │   ├── app_settings.dart          # Константы настроек приложения
-│   │   └── questions_data.dart        # Загрузка вопросов из JSON
+│   │   ├── questions_data.dart        # Загрузка вопросов из JSON
+│   │   └── tesseract_text_recognizer.dart # Tesseract OCR для распознавания текста
 │   ├── models/                        # Модели данных
 │   │   └── faction_model.dart
 │   └── repositories/                  # Реализации репозиториев
@@ -67,6 +71,7 @@ lib/
 │       ├── database_path_provider_impl.dart
 │       ├── database_initializer_impl.dart
 │       ├── question_repository_impl.dart
+│       ├── text_recognizer_impl.dart
 │       └── repository_factory.dart
 └── presentation/                       # Слой представления
     ├── di/                            # Dependency Injection
@@ -227,6 +232,9 @@ lib/
 **AppSettings**
 Константы настроек приложения, организованные по функциональности. Структура расширяема для будущих функций (карта, брактеат).
 
+**TesseractTextRecognizer**
+Источник данных для распознавания текста с помощью Tesseract OCR. Использует библиотеку `flutter_tesseract_ocr` для работы с OCR. Поддерживает русский язык (`rus`). Применяет предобработку изображения для улучшения качества распознавания (grayscale, blur, контрастность, бинаризация, удаление шумов, масштабирование).
+
 **FactionsSettings:**
 - `decorationUpgradeCostRespect = 5364` (3 * 1788)
 - `decorationUpgradeCostHonor = 7152` (4 * 1788)
@@ -269,6 +277,9 @@ lib/
 **DatabaseInitializerImpl**
 Реализация интерфейса `DatabaseInitializer` из Domain layer. Использует `FactionDao.createTable()` для создания таблиц базы данных. Позволяет Presentation layer не зависеть напрямую от Data layer datasources, что соответствует принципам Clean Architecture.
 
+**TextRecognizerImpl**
+Реализация интерфейса `TextRecognizer` из Domain layer. Использует `TesseractTextRecognizer` для работы с Tesseract OCR. Является оберткой над TesseractTextRecognizer для соответствия интерфейсу из Domain layer.
+
 #### Factory (Фабрика репозиториев)
 
 **RepositoryFactory**
@@ -279,7 +290,7 @@ lib/
 #### Dependency Injection
 
 **ServiceLocator**
-Централизованный контейнер для управления зависимостями. Расположен в `presentation/di/service_locator.dart`. Инициализирует базу данных (версия 1) и создает экземпляры репозиториев и провайдеров (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider, FileExporter, FileImporter, DatabasePathProvider, DatabaseInitializer). База данных создается при первом запуске через `DatabaseInitializer` (используется интерфейс из Domain layer, реализация из Data layer). **Важно:** ServiceLocator использует `DatabaseInitializer` через интерфейс из Domain layer и `RepositoryFactory` для создания репозиториев, что позволяет избежать прямых зависимостей от Data layer datasources (FactionDao) и соответствует принципам Clean Architecture. Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров. Используется на уровне страниц для создания зависимостей, которые затем передаются в виджеты через конструкторы. Предоставляет методы `getDatabasePath()` для получения пути к БД и `reinitializeDatabase()` для переинициализации БД после импорта (валидация файла, закрытие текущего соединения, копирование импортированного файла, переоткрытие соединения).
+Централизованный контейнер для управления зависимостями. Расположен в `presentation/di/service_locator.dart`. Инициализирует базу данных (версия 1) и создает экземпляры репозиториев и провайдеров (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider, FileExporter, FileImporter, DatabasePathProvider, DatabaseInitializer, QuestionRepository, TextRecognizer, RecognizeQuestionFromImage). База данных создается при первом запуске через `DatabaseInitializer` (используется интерфейс из Domain layer, реализация из Data layer). **Важно:** ServiceLocator использует `DatabaseInitializer` через интерфейс из Domain layer и `RepositoryFactory` для создания репозиториев, что позволяет избежать прямых зависимостей от Data layer datasources (FactionDao) и соответствует принципам Clean Architecture. Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров. Используется на уровне страниц для создания зависимостей, которые затем передаются в виджеты через конструкторы. Предоставляет методы `getDatabasePath()` для получения пути к БД и `reinitializeDatabase()` для переинициализации БД после импорта (валидация файла, закрытие текущего соединения, копирование импортированного файла, переоткрытие соединения).
 
 #### BLoC
 
@@ -299,7 +310,7 @@ lib/
 Главная страница с Drawer для навигации между разделами:
 1. Фракции - открывает FactionsPage
 2. Карта - открывает MapPage
-3. Клуб знатоков - открывает QuizClubPage
+3. Клуб знатоков - открывает QuizPage
 
 **FactionsPage**
 Страница фракций, отображающая список всех фракций. Имеет FloatingActionButton для добавления новой фракции. Создает все необходимые зависимости через ServiceLocator (ReputationHelper, use cases, репозитории) и передает их в FactionsListPage через конструктор.
@@ -344,13 +355,32 @@ lib/
 **MapPage**
 Заглушка для будущей функциональности карты ресурсов.
 
-**QuizClubPage**
+**QuizPage**
 Страница поиска вопросов "Клуба знатоков". Содержит:
-- Поисковую строку в верхней части
+- Поисковую строку в верхней части с кнопкой сканирования через камеру
 - Список результатов поиска в виде карточек вопросов
 - Сообщения об ошибках и пустых результатах
 - Поддержку pull-to-refresh для обновления данных
-- Получает use cases `GetAllQuestions` и `SearchQuestions` через конструктор
+- Получает use cases `GetAllQuestions`, `SearchQuestions` и `RecognizeQuestionFromImage` через конструктор
+- При успешном распознавании вопроса автоматически заполняет поисковую строку
+
+**CameraScanPage**
+Страница для съемки вопроса с камеры с фиксированной рамкой. Отображает:
+- Preview камеры с фиксированной рамкой (80% ширины экрана, 16:9) по центру
+- Затемнение вокруг рамки для лучшей видимости области съемки
+- Кнопку съемки внизу экрана
+- Автоматическую обработку изображения для улучшения качества OCR
+- Автоматическую обработку ориентации изображения
+- Возвращает путь к обработанному изображению или null при отмене
+
+**CameraScanPage**
+Страница для съемки вопроса с камеры с фиксированной рамкой. Отображает:
+- Preview камеры с фиксированной рамкой (80% ширины экрана, 16:9) по центру
+- Затемнение вокруг рамки для лучшей видимости области съемки
+- Кнопку съемки внизу экрана
+- Автоматическую обработку изображения для улучшения качества OCR
+- Автоматическую обработку ориентации изображения
+- Возвращает путь к обработанному изображению или null при отмене
 
 #### Widgets
 
@@ -484,6 +514,6 @@ lib/
 - `FactionActivitiesSection` - секция активностей и сертификата (не используется в текущей реализации, но присутствует в коде, расположен в `widgets/faction/`)
 - `FactionBasicInfoSection` - секция базовой информации о фракции (не используется в текущей реализации, но присутствует в коде, расположен в `widgets/faction/`)
 
-**Виджеты Клуба знатоков** (`widgets/quiz_club/`):
+**Виджеты Клуба знатоков** (`widgets/quiz/`):
 - `QuestionCard` - карточка вопроса/ответа для отображения результатов поиска. Отображает текст вопроса (белый, жирный, 16px) и ответы в виде чипсов под ним (каждый ответ в отдельном чипсе, оранжевый цвет, автоматический перенос на новую строку)
 
