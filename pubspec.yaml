@@ -52,6 +52,13 @@ dependencies:
   # File operations
   share_plus: ^10.0.0
   file_picker: ^8.1.2
+  
+  # OCR and image processing
+  flutter_tesseract_ocr: ^0.4.30
+  image_picker: ^1.2.1
+  camera: ^0.11.3
+  image: ^4.6.0
+  string_similarity: ^2.1.1
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +86,8 @@ flutter:
   assets:
     - assets/questions/questions_club.json
     - assets/questions/questions_theosophy.json
+    - assets/tessdata/
+    - assets/tessdata_config.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

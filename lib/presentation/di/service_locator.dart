@@ -1,23 +1,29 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import '../../../data/repositories/faction_template_repository_impl.dart';
+
+import '../../../data/datasources/tesseract_text_recognizer.dart';
 import '../../../data/repositories/app_settings_repository_impl.dart';
-import '../../../data/repositories/date_time_provider_impl.dart';
-import '../../../data/repositories/file_exporter_impl.dart';
-import '../../../data/repositories/database_path_provider_impl.dart';
-import '../../../data/repositories/file_importer_impl.dart';
 import '../../../data/repositories/database_initializer_impl.dart';
+import '../../../data/repositories/database_path_provider_impl.dart';
+import '../../../data/repositories/date_time_provider_impl.dart';
+import '../../../data/repositories/faction_template_repository_impl.dart';
+import '../../../data/repositories/file_exporter_impl.dart';
+import '../../../data/repositories/file_importer_impl.dart';
 import '../../../data/repositories/question_repository_impl.dart';
 import '../../../data/repositories/repository_factory.dart';
+import '../../../data/repositories/text_recognizer_impl.dart';
+import '../../../domain/repositories/app_settings_repository.dart';
+import '../../../domain/repositories/database_initializer.dart';
+import '../../../domain/repositories/database_path_provider.dart';
+import '../../../domain/repositories/date_time_provider.dart';
 import '../../../domain/repositories/faction_repository.dart';
 import '../../../domain/repositories/faction_template_repository.dart';
-import '../../../domain/repositories/app_settings_repository.dart';
-import '../../../domain/repositories/date_time_provider.dart';
 import '../../../domain/repositories/file_exporter.dart';
 import '../../../domain/repositories/file_importer.dart';
-import '../../../domain/repositories/database_path_provider.dart';
-import '../../../domain/repositories/database_initializer.dart';
 import '../../../domain/repositories/question_repository.dart';
+import '../../../domain/repositories/text_recognizer.dart';
+import '../../../domain/usecases/recognize_question_from_image.dart';
+import '../../../domain/utils/question_source.dart';
 
 class ServiceLocator {
   static final ServiceLocator _instance = ServiceLocator._internal();
@@ -35,7 +41,9 @@ class ServiceLocator {
   DatabasePathProvider? _databasePathProvider;
   DatabaseInitializer? _databaseInitializer;
   QuestionRepository? _clubQuestionRepository;
-  QuestionRepository? _theosophyQuestionRepository;
+  QuestionRepository? _examQuestionRepository;
+  TextRecognizer? _textRecognizer;
+  RecognizeQuestionFromImage? _recognizeQuestionFromImage;
 
   Future<void> init() async {
     final databasesPath = await getDatabasesPath();
@@ -57,9 +65,19 @@ class ServiceLocator {
     _dateTimeProvider = DateTimeProviderImpl();
     _fileExporter = FileExporterImpl();
     _fileImporter = FileImporterImpl();
-    _clubQuestionRepository = QuestionRepositoryImpl();
-    _theosophyQuestionRepository = QuestionRepositoryImpl(
+    _clubQuestionRepository = QuestionRepositoryImpl(
+      source: QuestionSource.club,
+    );
+    _examQuestionRepository = QuestionRepositoryImpl(
       assetPath: 'assets/questions/questions_theosophy.json',
+      source: QuestionSource.exam,
+    );
+
+    _textRecognizer = TextRecognizerImpl(TesseractTextRecognizer());
+    _recognizeQuestionFromImage = RecognizeQuestionFromImage(
+      textRecognizer: _textRecognizer!,
+      clubQuestionRepository: _clubQuestionRepository!,
+      examQuestionRepository: _examQuestionRepository!,
     );
     _databasePathProvider = DatabasePathProviderImpl(
       _database,
@@ -108,6 +126,7 @@ class ServiceLocator {
   FileImporter get fileImporter => _fileImporter!;
   DatabasePathProvider get databasePathProvider => _databasePathProvider!;
   QuestionRepository get clubQuestionRepository => _clubQuestionRepository!;
-  QuestionRepository get theosophyQuestionRepository => _theosophyQuestionRepository!;
+  QuestionRepository get examQuestionRepository => _examQuestionRepository!;
+  RecognizeQuestionFromImage get recognizeQuestionFromImage => _recognizeQuestionFromImage!;
 }
 

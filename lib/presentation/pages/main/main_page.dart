@@ -38,18 +38,19 @@ class _MainPageState extends State<MainPage> {
     final serviceLocator = ServiceLocator();
     final getAllClubQuestions = GetAllQuestions(serviceLocator.clubQuestionRepository);
     final searchClubQuestions = SearchQuestions(serviceLocator.clubQuestionRepository);
-    final getAllTheosophyQuestions = GetAllQuestions(serviceLocator.theosophyQuestionRepository);
-    final searchTheosophyQuestions = SearchQuestions(serviceLocator.theosophyQuestionRepository);
+    final getAllExamQuestions = GetAllQuestions(serviceLocator.examQuestionRepository);
+    final searchExamQuestions = SearchQuestions(serviceLocator.examQuestionRepository);
     
     _pages = [
       FactionsPage(scaffoldKey: _scaffoldKey),
       MapPage(scaffoldKey: _scaffoldKey),
-      QuizTabsPage(
+      QuizPage(
         scaffoldKey: _scaffoldKey,
         clubGetAllQuestions: getAllClubQuestions,
         clubSearchQuestions: searchClubQuestions,
-        examGetAllQuestions: getAllTheosophyQuestions,
-        examSearchQuestions: searchTheosophyQuestions,
+        examGetAllQuestions: getAllExamQuestions,
+        examSearchQuestions: searchExamQuestions,
+        recognizeQuestionFromImage: serviceLocator.recognizeQuestionFromImage,
       ),
     ];
   }

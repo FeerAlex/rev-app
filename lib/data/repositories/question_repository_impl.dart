@@ -1,15 +1,24 @@
 import '../../domain/entities/question.dart';
 import '../../domain/repositories/question_repository.dart';
+import '../../domain/utils/question_source.dart';
 import '../datasources/questions_data.dart';
 
 class QuestionRepositoryImpl implements QuestionRepository {
   final String _assetPath;
+  final QuestionSource _source;
   List<Question>? _cachedQuestions;
 
-  QuestionRepositoryImpl({String assetPath = QuestionsData.defaultAssetPath}) : _assetPath = assetPath;
+  QuestionRepositoryImpl({
+    String assetPath = QuestionsData.defaultAssetPath,
+    required QuestionSource source,
+  })  : _assetPath = assetPath,
+        _source = source;
 
   Future<List<Question>> _loadQuestions() async {
-    _cachedQuestions ??= await QuestionsData.loadQuestionsFromJson(assetPath: _assetPath);
+    _cachedQuestions ??= await QuestionsData.loadQuestionsFromJson(
+      assetPath: _assetPath,
+      source: _source,
+    );
     return _cachedQuestions!;
   }
 

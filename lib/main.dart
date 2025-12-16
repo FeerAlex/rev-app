@@ -24,17 +24,10 @@ void main() async {
   // Глобальная обработка ошибок Flutter
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
-    if (kReleaseMode) {
-      // В release режиме логируем ошибку
-      debugPrint('Flutter Error: ${details.exception}');
-      debugPrint('Stack trace: ${details.stack}');
-    }
   };
   
   // Обработка асинхронных ошибок
   PlatformDispatcher.instance.onError = (error, stack) {
-    debugPrint('Platform Error: $error');
-    debugPrint('Stack trace: $stack');
     return true;
   };
   

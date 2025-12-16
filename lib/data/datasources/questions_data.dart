@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import '../../domain/entities/question.dart';
+import '../../domain/utils/question_source.dart';
 
 /// Источник данных для загрузки вопросов из JSON файла
 class QuestionsData {
@@ -9,7 +10,10 @@ class QuestionsData {
   static const defaultAssetPath = 'assets/questions/questions_club.json';
 
   /// Загружает вопросы из JSON файла по указанному пути
-  static Future<List<Question>> loadQuestionsFromJson({String assetPath = defaultAssetPath}) async {
+  static Future<List<Question>> loadQuestionsFromJson({
+    String assetPath = defaultAssetPath,
+    required QuestionSource source,
+  }) async {
     try {
       final String jsonString = await rootBundle.loadString(assetPath);
       final List<dynamic> jsonList = json.decode(jsonString) as List<dynamic>;
@@ -20,6 +24,7 @@ class QuestionsData {
         answers: (json['answers'] as List<dynamic>)
             .map((e) => e as String)
             .toList(),
+        source: source,
       )).toList();
     } catch (e) {
       // Если файл не найден или произошла ошибка, возвращаем пустой список
