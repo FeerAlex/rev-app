@@ -1,7 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-import '../../../data/datasources/tesseract_text_recognizer.dart';
 import '../../../data/repositories/app_settings_repository_impl.dart';
 import '../../../data/repositories/database_initializer_impl.dart';
 import '../../../data/repositories/database_path_provider_impl.dart';
@@ -11,7 +10,7 @@ import '../../../data/repositories/file_exporter_impl.dart';
 import '../../../data/repositories/file_importer_impl.dart';
 import '../../../data/repositories/question_repository_impl.dart';
 import '../../../data/repositories/repository_factory.dart';
-import '../../../data/repositories/text_recognizer_impl.dart';
+import '../../../data/repositories/text_recognizer_factory.dart';
 import '../../../domain/repositories/app_settings_repository.dart';
 import '../../../domain/repositories/database_initializer.dart';
 import '../../../domain/repositories/database_path_provider.dart';
@@ -73,7 +72,7 @@ class ServiceLocator {
       source: QuestionSource.exam,
     );
 
-    _textRecognizer = TextRecognizerImpl(TesseractTextRecognizer());
+    _textRecognizer = TextRecognizerFactory.createTextRecognizer();
     _recognizeQuestionFromImage = RecognizeQuestionFromImage(
       textRecognizer: _textRecognizer!,
       clubQuestionRepository: _clubQuestionRepository!,

@@ -97,11 +97,11 @@ flutter analyze
 
 **Проект полностью соответствует принципам Clean Architecture без компромиссов.**
 
-**Результаты проверки (Декабрь 2024):**
-- ✅ Проверено **77 файлов** проекта (29 Domain, 13 Data, 32 Presentation, 2 Core, 1 main.dart)
+**Результаты проверки (Январь 2025):**
+- ✅ Проверено **93 файла** проекта (37 Domain, 18 Data, 35 Presentation, 2 Core, 1 main.dart)
 - ✅ **Нарушений архитектуры не обнаружено**
 - ✅ Все зависимости между слоями соответствуют правилам Clean Architecture
-- ✅ Все паттерны (ServiceLocator, BLoC, виджеты, use cases) используются корректно
+- ✅ Все паттерны (ServiceLocator, BLoC, виджеты, use cases, фабрики) используются корректно
 
 **Правила зависимостей:**
 - ✅ **Domain Layer** - не зависит от внешних слоев (Data, Presentation, Core)
@@ -114,8 +114,9 @@ flutter analyze
 - ✅ Виджеты получают зависимости через конструкторы (не используют ServiceLocator напрямую)
 - ✅ BLoC зависит только от Use Cases
 - ✅ ServiceLocator используется только на уровне Pages
-- ✅ Нет прямых обращений к Data layer datasources из Presentation layer (используется RepositoryFactory)
+- ✅ Нет прямых обращений к Data layer datasources из Presentation layer (используются фабрики)
 - ✅ ServiceLocator использует RepositoryFactory для создания репозиториев, не обращается напрямую к FactionDao
+- ✅ ServiceLocator использует TextRecognizerFactory для создания TextRecognizer, не обращается напрямую к TesseractTextRecognizer
 
 Подробные результаты проверки с матрицей зависимостей см. в [documentation/ARCHITECTURE.md](documentation/ARCHITECTURE.md).
 

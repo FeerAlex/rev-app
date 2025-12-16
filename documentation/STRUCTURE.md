@@ -48,7 +48,8 @@ lib/
 │   │   ├── daily_reset_helper.dart    # Сброс ежедневных отметок
 │   │   ├── reputation_exp.dart         # Утилита для работы с опытом репутации
 │   │   ├── reputation_helper.dart      # Утилита для работы с уровнями отношения
-│   │   └── text_similarity.dart        # Утилиты для текстового сходства и fuzzy search
+│   │   ├── text_similarity.dart        # Утилиты для текстового сходства и fuzzy search
+│   │   └── question_source.dart        # Enum для определения источника вопроса (club/exam)
 │   └── value_objects/                 # Value Objects
 │       ├── order_reward.dart
 │       └── work_reward.dart
@@ -72,7 +73,8 @@ lib/
 │       ├── database_initializer_impl.dart
 │       ├── question_repository_impl.dart
 │       ├── text_recognizer_impl.dart
-│       └── repository_factory.dart
+│       ├── repository_factory.dart
+│       └── text_recognizer_factory.dart
 └── presentation/                       # Слой представления
     ├── di/                            # Dependency Injection
     │   └── service_locator.dart       # DI контейнер
@@ -88,8 +90,11 @@ lib/
     │   │   └── factions_page.dart
     │   ├── main/                      # Главная страница
     │   │   └── main_page.dart
-    │   └── map/                       # Страница карты
-    │       └── map_page.dart
+    │   ├── map/                       # Страница карты
+    │   │   └── map_page.dart
+    │   └── quiz/                      # Страницы Клуба знатоков и Теософского экзамена
+    │       ├── quiz_page.dart
+    │       └── camera_scan_page.dart
     └── widgets/                       # Виджеты
         ├── activity/                  # Виджеты активностей
         │   └── activity_badge.dart
@@ -116,6 +121,8 @@ lib/
         │   └── tabs/                  # Вкладки страницы редактирования фракции
         │       ├── faction_inventory_tab.dart
         │       └── faction_settings_tab.dart
+        ├── quiz/                     # Виджеты Клуба знатоков
+        │   └── question_card.dart
         ├── reputation/                # Виджеты репутации
         │   └── reputation_progress_bar.dart
         └── time_to_goal/              # Виджеты времени до цели
@@ -175,6 +182,12 @@ lib/
 
 **ReputationHelper**
 Утилита для работы с уровнями отношения и опытом (вычисление общего опыта, нужного опыта и т.д.).
+
+**QuestionSource**
+Enum для определения источника вопроса. Используется в `QuestionRepositoryImpl` для различения вопросов из разных источников:
+- `club` - Клуб знатоков
+- `exam` - Теософский экзамен
+Extension `QuestionSourceExtension` предоставляет метод `displayName` для получения отображаемого названия источника.
 
 #### Entities
 
@@ -280,17 +293,20 @@ lib/
 **TextRecognizerImpl**
 Реализация интерфейса `TextRecognizer` из Domain layer. Использует `TesseractTextRecognizer` для работы с Tesseract OCR. Является оберткой над TesseractTextRecognizer для соответствия интерфейсу из Domain layer.
 
-#### Factory (Фабрика репозиториев)
+#### Factory (Фабрики)
 
 **RepositoryFactory**
 Фабрика для создания репозиториев в Data layer. Инкапсулирует создание репозиториев с их зависимостями внутри Data layer, что позволяет Presentation layer (ServiceLocator) создавать репозитории без прямого знания о datasources (FactionDao). Предоставляет статический метод `createFactionRepository(Database db)` для создания `FactionRepositoryImpl` с `FactionDao`. **Важно:** Фабрика обеспечивает соблюдение принципов Clean Architecture и Dependency Inversion, скрывая детали реализации Data layer от Presentation layer.
+
+**TextRecognizerFactory**
+Фабрика для создания TextRecognizer в Data layer. Инкапсулирует создание TextRecognizer с его зависимостями внутри Data layer, что позволяет Presentation layer (ServiceLocator) создавать TextRecognizer без прямого знания о datasources (TesseractTextRecognizer). Предоставляет статический метод `createTextRecognizer()` для создания `TextRecognizerImpl` с `TesseractTextRecognizer`. **Важно:** Фабрика обеспечивает соблюдение принципов Clean Architecture и Dependency Inversion, скрывая детали реализации Data layer от Presentation layer.
 
 ### Presentation Layer
 
 #### Dependency Injection
 
 **ServiceLocator**
-Централизованный контейнер для управления зависимостями. Расположен в `presentation/di/service_locator.dart`. Инициализирует базу данных (версия 1) и создает экземпляры репозиториев и провайдеров (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider, FileExporter, FileImporter, DatabasePathProvider, DatabaseInitializer, QuestionRepository, TextRecognizer, RecognizeQuestionFromImage). База данных создается при первом запуске через `DatabaseInitializer` (используется интерфейс из Domain layer, реализация из Data layer). **Важно:** ServiceLocator использует `DatabaseInitializer` через интерфейс из Domain layer и `RepositoryFactory` для создания репозиториев, что позволяет избежать прямых зависимостей от Data layer datasources (FactionDao) и соответствует принципам Clean Architecture. Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров. Используется на уровне страниц для создания зависимостей, которые затем передаются в виджеты через конструкторы. Предоставляет методы `getDatabasePath()` для получения пути к БД и `reinitializeDatabase()` для переинициализации БД после импорта (валидация файла, закрытие текущего соединения, копирование импортированного файла, переоткрытие соединения).
+Централизованный контейнер для управления зависимостями. Расположен в `presentation/di/service_locator.dart`. Инициализирует базу данных (версия 1) и создает экземпляры репозиториев и провайдеров (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider, FileExporter, FileImporter, DatabasePathProvider, DatabaseInitializer, QuestionRepository, TextRecognizer, RecognizeQuestionFromImage). База данных создается при первом запуске через `DatabaseInitializer` (используется интерфейс из Domain layer, реализация из Data layer). **Важно:** ServiceLocator использует `DatabaseInitializer` через интерфейс из Domain layer, `RepositoryFactory` для создания репозиториев и `TextRecognizerFactory` для создания TextRecognizer, что позволяет избежать прямых зависимостей от Data layer datasources (FactionDao, TesseractTextRecognizer) и соответствует принципам Clean Architecture. Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров. Используется на уровне страниц для создания зависимостей, которые затем передаются в виджеты через конструкторы. Предоставляет методы `getDatabasePath()` для получения пути к БД и `reinitializeDatabase()` для переинициализации БД после импорта (валидация файла, закрытие текущего соединения, копирование импортированного файла, переоткрытие соединения).
 
 #### BLoC
 
@@ -356,22 +372,14 @@ lib/
 Заглушка для будущей функциональности карты ресурсов.
 
 **QuizPage**
-Страница поиска вопросов "Клуба знатоков". Содержит:
+Страница поиска вопросов "Клуба знатоков" и "Теософского экзамена". Содержит:
 - Поисковую строку в верхней части с кнопкой сканирования через камеру
-- Список результатов поиска в виде карточек вопросов
+- Список результатов поиска в виде карточек вопросов (объединенные результаты из обоих источников)
 - Сообщения об ошибках и пустых результатах
 - Поддержку pull-to-refresh для обновления данных
-- Получает use cases `GetAllQuestions`, `SearchQuestions` и `RecognizeQuestionFromImage` через конструктор
+- Получает use cases `GetAllQuestions`, `SearchQuestions` и `RecognizeQuestionFromImage` через конструктор для обоих источников (club и exam)
 - При успешном распознавании вопроса автоматически заполняет поисковую строку
-
-**CameraScanPage**
-Страница для съемки вопроса с камеры с фиксированной рамкой. Отображает:
-- Preview камеры с фиксированной рамкой (80% ширины экрана, 16:9) по центру
-- Затемнение вокруг рамки для лучшей видимости области съемки
-- Кнопку съемки внизу экрана
-- Автоматическую обработку изображения для улучшения качества OCR
-- Автоматическую обработку ориентации изображения
-- Возвращает путь к обработанному изображению или null при отмене
+- Визуальное различие вопросов: вопросы Клуба знатоков с оранжевыми чипсами ответов, вопросы Теософского экзамена с синими чипсами ответов
 
 **CameraScanPage**
 Страница для съемки вопроса с камеры с фиксированной рамкой. Отображает:

@@ -60,6 +60,10 @@
   - `normalizeText()` - нормализация текста для сравнения
   - `calculateSimilarity()` - вычисление коэффициента сходства (Levenshtein distance)
   - `findBestMatch()` - поиск лучшего совпадения вопроса в списке
+- `question_source.dart` - enum для определения источника вопроса (`QuestionSource`):
+  - `club` - Клуб знатоков
+  - `exam` - Теософский экзамен
+  - Extension `QuestionSourceExtension` для получения отображаемого названия источника
 
 #### Use Cases (Сценарии использования)
 - `GetAllFactions` - получение видимых фракций
@@ -109,8 +113,9 @@
 - `QuestionRepositoryImpl` - реализация QuestionRepository (использует QuestionsData для загрузки данных из JSON). Кэширует вопросы в памяти для быстрого поиска. Реализует поиск по тексту вопроса и всем элементам массива ответов без учета регистра
 - `TextRecognizerImpl` - реализация TextRecognizer (использует TesseractTextRecognizer для работы с Tesseract OCR). Является оберткой над TesseractTextRecognizer для соответствия интерфейсу из Domain layer
 
-#### Factory (Фабрика репозиториев)
+#### Factory (Фабрики)
 - `RepositoryFactory` - фабрика для создания репозиториев. Инкапсулирует создание репозиториев с их зависимостями внутри Data layer. Предоставляет метод `createFactionRepository(Database db)` для создания `FactionRepositoryImpl` с `FactionDao`. **Важно:** Фабрика позволяет Presentation layer (ServiceLocator) создавать репозитории без прямого знания о datasources (FactionDao), что соответствует принципам Clean Architecture и Dependency Inversion.
+- `TextRecognizerFactory` - фабрика для создания TextRecognizer. Инкапсулирует создание TextRecognizer с его зависимостями внутри Data layer. Предоставляет метод `createTextRecognizer()` для создания `TextRecognizerImpl` с `TesseractTextRecognizer`. **Важно:** Фабрика позволяет Presentation layer (ServiceLocator) создавать TextRecognizer без прямого знания о datasources (TesseractTextRecognizer), что соответствует принципам Clean Architecture и Dependency Inversion.
 
 ### 3. Presentation Layer (Слой представления)
 
@@ -124,7 +129,7 @@
 - `pages/faction/factions_list_page.dart` - список видимых фракций с возможностью скрытия свайпом и изменения порядка (drag-and-drop). Получает все зависимости (ReputationHelper, use cases, репозитории) через конструктор
 - `pages/faction/faction_detail_page.dart` - детальная информация и редактирование фракции (оптимизированная версия с компактными секциями). Название фракции отображается в заголовке AppBar. Получает `FactionTemplateRepository` через конструктор
 - `pages/map/map_page.dart` - заглушка для будущей карты ресурсов
-- `pages/quiz/quiz_page.dart` - страница поиска вопросов "Клуба знатоков" с поисковой строкой, кнопкой сканирования через камеру и списком результатов. Получает use cases `GetAllQuestions`, `SearchQuestions` и `RecognizeQuestionFromImage` через конструктор
+- `pages/quiz/quiz_page.dart` - страница поиска вопросов "Клуба знатоков" и "Теософского экзамена" с поисковой строкой, кнопкой сканирования через камеру и списком результатов. Поддерживает два источника вопросов (club и exam). Получает use cases `GetAllQuestions`, `SearchQuestions` и `RecognizeQuestionFromImage` через конструктор для обоих источников
 - `pages/quiz/camera_scan_page.dart` - страница съемки вопроса с камеры с фиксированной рамкой (80% ширины экрана, 16:9). Автоматически обрабатывает изображение для улучшения качества OCR
 
 #### Widgets (Виджеты)
@@ -182,7 +187,7 @@
   - **Методы:** `getHiddenFactions()` - получение скрытых фракций для диалога выбора
 
 #### Dependency Injection
-- `di/service_locator.dart` - простой DI контейнер для управления зависимостями. Создает и управляет всеми репозиториями и провайдерами (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider, FileExporter, FileImporter, DatabasePathProvider, DatabaseInitializer, QuestionRepository, TextRecognizer, RecognizeQuestionFromImage). Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров. **Важно:** ServiceLocator работает только с интерфейсами из Domain layer и не использует приведение типов к конкретным реализациям. Использует `DatabaseInitializer` через интерфейс из Domain layer для инициализации базы данных и `RepositoryFactory` для создания репозиториев, что позволяет избежать прямых зависимостей от Data layer datasources (FactionDao). Предоставляет методы `getDatabasePath()` и `reinitializeDatabase()` для работы с импортом/экспортом БД.
+- `di/service_locator.dart` - простой DI контейнер для управления зависимостями. Создает и управляет всеми репозиториями и провайдерами (FactionRepository, FactionTemplateRepository, AppSettingsRepository, DateTimeProvider, FileExporter, FileImporter, DatabasePathProvider, DatabaseInitializer, QuestionRepository, TextRecognizer, RecognizeQuestionFromImage). Импортирует интерфейсы репозиториев из Domain layer для типизации и реализации из Data layer для создания экземпляров. **Важно:** ServiceLocator работает только с интерфейсами из Domain layer и не использует приведение типов к конкретным реализациям. Использует `DatabaseInitializer` через интерфейс из Domain layer для инициализации базы данных, `RepositoryFactory` для создания репозиториев и `TextRecognizerFactory` для создания TextRecognizer, что позволяет избежать прямых зависимостей от Data layer datasources (FactionDao, TesseractTextRecognizer). Предоставляет методы `getDatabasePath()` и `reinitializeDatabase()` для работы с импортом/экспортом БД.
 
 **Правила использования ServiceLocator:**
 - ServiceLocator используется **только на уровне страниц (Pages)** для создания зависимостей
@@ -331,7 +336,7 @@ Domain Layer
 └── ❌ Core Layer (запрещено)
 ```
 
-**Проверено:** Все 29 файлов Domain layer не содержат импортов из внешних слоев.
+**Проверено:** Все 37 файлов Domain layer не содержат импортов из внешних слоев.
 
 #### Data Layer → другие слои
 ```
@@ -341,7 +346,7 @@ Data Layer
 └── ❌ Core Layer (запрещено)
 ```
 
-**Проверено:** Все 11 файлов Data layer импортируют только из Domain layer и внешних библиотек.
+**Проверено:** Все 18 файлов Data layer импортируют только из Domain layer и внешних библиотек.
 
 #### Presentation Layer → другие слои
 ```
@@ -352,7 +357,7 @@ Presentation Layer
 └── ✅ Presentation Layer (разрешено - внутренние зависимости)
 ```
 
-**Проверено:** Все 32 файла Presentation layer следуют правилам зависимостей:
+**Проверено:** Все 35 файлов Presentation layer следуют правилам зависимостей:
 - Виджеты получают зависимости через конструкторы
 - ServiceLocator используется только на уровне Pages
 - Нет прямых обращений к Data layer datasources (FactionsList, AppSettings)
@@ -371,25 +376,25 @@ Core Layer
 
 **Статус:** ✅ Проект полностью соответствует принципам Clean Architecture без компромиссов.
 
-**Дата проверки:** Декабрь 2024 - Полная проверка всех 77 файлов проекта выполнена.
+**Дата проверки:** Январь 2025 - Полная проверка всех 93 файлов проекта выполнена. Нарушений архитектуры не обнаружено.
 
 **Метод проверки:**
-1. ✅ Проверка всех импортов в каждом файле (29 файлов Domain, 13 файлов Data, 32 файла Presentation, 2 файла Core, 1 файл main.dart - всего 77 файлов)
+1. ✅ Проверка всех импортов в каждом файле (37 файлов Domain, 18 файлов Data, 35 файлов Presentation, 2 файла Core, 1 файл main.dart - всего 93 файла)
 2. ✅ Проверка зависимостей между слоями через grep поиск
-3. ✅ Проверка использования ServiceLocator (исправлено нарушение: теперь использует DatabaseInitializer через интерфейс и RepositoryFactory для создания репозиториев, не обращается напрямую к FactionDao)
+3. ✅ Проверка использования ServiceLocator (исправлено нарушение: теперь использует DatabaseInitializer через интерфейс, RepositoryFactory для создания репозиториев и TextRecognizerFactory для создания TextRecognizer, не обращается напрямую к Data layer datasources)
 4. ✅ Проверка передачи зависимостей через конструкторы
 5. ✅ Проверка отсутствия прямых обращений к Data layer datasources из Presentation layer
 
 ### Детальные результаты проверки по слоям
 
-#### ✅ Domain Layer (29 файлов проверено)
+#### ✅ Domain Layer (37 файлов проверено)
 
 **Проверенные файлы:**
-- Entities: `faction.dart`, `faction_template.dart`, `reputation_level.dart` (3 файла)
+- Entities: `faction.dart`, `faction_template.dart`, `question.dart`, `reputation_level.dart` (4 файла)
 - Value Objects: `work_reward.dart`, `order_reward.dart` (2 файла)
-- Repository интерфейсы: `faction_repository.dart`, `faction_template_repository.dart`, `app_settings_repository.dart`, `date_time_provider.dart`, `file_exporter.dart`, `file_importer.dart`, `database_path_provider.dart`, `database_initializer.dart` (8 файлов)
-- Use Cases: `get_all_factions.dart`, `get_hidden_factions.dart`, `initialize_factions.dart`, `add_faction.dart`, `update_faction.dart`, `delete_faction.dart`, `show_faction.dart`, `calculate_time_to_currency_goal.dart`, `calculate_time_to_reputation_goal.dart`, `reset_daily_flags.dart`, `reorder_factions.dart`, `export_database.dart`, `import_database.dart` (13 файлов)
-- Utils: `daily_reset_helper.dart`, `reputation_exp.dart`, `reputation_helper.dart` (3 файла)
+- Repository интерфейсы: `faction_repository.dart`, `faction_template_repository.dart`, `app_settings_repository.dart`, `date_time_provider.dart`, `file_exporter.dart`, `file_importer.dart`, `database_path_provider.dart`, `database_initializer.dart`, `question_repository.dart`, `text_recognizer.dart` (10 файлов)
+- Use Cases: `get_all_factions.dart`, `get_hidden_factions.dart`, `initialize_factions.dart`, `add_faction.dart`, `update_faction.dart`, `delete_faction.dart`, `show_faction.dart`, `calculate_time_to_currency_goal.dart`, `calculate_time_to_reputation_goal.dart`, `reset_daily_flags.dart`, `reorder_factions.dart`, `export_database.dart`, `import_database.dart`, `get_all_questions.dart`, `search_questions.dart`, `recognize_question_from_image.dart` (16 файлов)
+- Utils: `daily_reset_helper.dart`, `reputation_exp.dart`, `reputation_helper.dart`, `text_similarity.dart`, `question_source.dart` (5 файлов)
 
 **Результаты:**
 - ✅ Не содержит импортов из Data, Presentation, Core слоев
@@ -411,13 +416,13 @@ import 'dart:math';
 
 **Нарушений не обнаружено.**
 
-#### ✅ Data Layer (13 файлов проверено)
+#### ✅ Data Layer (18 файлов проверено)
 
 **Проверенные файлы:**
 - Models: `faction_model.dart` (1 файл)
-- Data Sources: `faction_dao.dart`, `factions_list.dart`, `app_settings.dart` (3 файла)
-- Repository реализации: `faction_repository_impl.dart`, `faction_template_repository_impl.dart`, `app_settings_repository_impl.dart`, `date_time_provider_impl.dart`, `file_exporter_impl.dart`, `file_importer_impl.dart`, `database_path_provider_impl.dart`, `database_initializer_impl.dart` (8 файлов)
-- Factory: `repository_factory.dart` (1 файл)
+- Data Sources: `faction_dao.dart`, `factions_list.dart`, `app_settings.dart`, `questions_data.dart`, `tesseract_text_recognizer.dart` (5 файлов)
+- Repository реализации: `faction_repository_impl.dart`, `faction_template_repository_impl.dart`, `app_settings_repository_impl.dart`, `date_time_provider_impl.dart`, `file_exporter_impl.dart`, `file_importer_impl.dart`, `database_path_provider_impl.dart`, `database_initializer_impl.dart`, `question_repository_impl.dart`, `text_recognizer_impl.dart` (10 файлов)
+- Factory: `repository_factory.dart`, `text_recognizer_factory.dart` (2 файла)
 
 **Результаты:**
 - ✅ Зависит только от Domain layer (реализует интерфейсы репозиториев)
@@ -438,13 +443,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 **Нарушений не обнаружено.**
 
-#### ✅ Presentation Layer (32 файла проверено)
+#### ✅ Presentation Layer (35 файлов проверено)
 
 **Проверенные файлы:**
 - DI: `service_locator.dart` (1 файл)
 - BLoC: `faction_bloc.dart`, `faction_event.dart`, `faction_state.dart` (3 файла)
-- Pages: `main_page.dart`, `factions_page.dart`, `factions_list_page.dart`, `faction_detail_page.dart`, `map_page.dart` (5 файлов)
-- Widgets: 23 файла виджетов
+- Pages: `main_page.dart`, `factions_page.dart`, `factions_list_page.dart`, `faction_detail_page.dart`, `map_page.dart`, `quiz_page.dart`, `camera_scan_page.dart` (7 файлов)
+- Widgets: 25 файлов виджетов
 
 **Результаты:**
 - ✅ Импортирует только из Domain layer (use cases, entities, repository интерфейсы)
@@ -524,10 +529,11 @@ import 'package:flutter/material.dart';
 - ✅ Импортирует реализации репозиториев из Data layer только для создания экземпляров
 - ✅ Использует `DatabaseInitializer` через интерфейс из Domain layer для инициализации БД (не обращается напрямую к `FactionDao`)
 - ✅ Использует `RepositoryFactory` для создания репозиториев (не обращается напрямую к `FactionDao`)
+- ✅ Использует `TextRecognizerFactory` для создания TextRecognizer (не обращается напрямую к `TesseractTextRecognizer`)
 - ✅ Используется только на уровне Pages и в `main.dart`
 - ✅ Не использует приведение типов к конкретным реализациям
 - ✅ Все геттеры возвращают интерфейсы из Domain layer
-- ✅ Не импортирует datasources из Data layer (FactionDao)
+- ✅ Не импортирует datasources из Data layer (FactionDao, TesseractTextRecognizer)
 
 **Код ServiceLocator:**
 ```dart
@@ -540,6 +546,7 @@ import '../../../domain/repositories/database_initializer.dart';
 import '../../../data/repositories/app_settings_repository_impl.dart';
 import '../../../data/repositories/database_initializer_impl.dart';
 import '../../../data/repositories/repository_factory.dart';
+import '../../../data/repositories/text_recognizer_factory.dart';
 
 // ✅ Правильно - использование DatabaseInitializer через интерфейс
 _databaseInitializer = DatabaseInitializerImpl();
@@ -547,6 +554,9 @@ await _databaseInitializer!.initializeDatabase(db);
 
 // ✅ Правильно - использование RepositoryFactory для создания репозиториев
 _factionRepository = RepositoryFactory.createFactionRepository(_database!);
+
+// ✅ Правильно - использование TextRecognizerFactory для создания TextRecognizer
+_textRecognizer = TextRecognizerFactory.createTextRecognizer();
 
 // ✅ Правильно - геттер возвращает интерфейс из Domain
 FactionRepository get factionRepository => _factionRepository!;
@@ -598,12 +608,12 @@ class FactionBloc extends Bloc<FactionEvent, FactionState> {
 
 | Слой            | Файлов проверено | Нарушений | Статус |
 |----------------|------------------|-----------|--------|
-| **Domain**      | 29               | 0         | ✅     |
-| **Data**        | 13               | 0         | ✅     |
-| **Presentation**| 32               | 0         | ✅     |
+| **Domain**      | 37               | 0         | ✅     |
+| **Data**        | 18               | 0         | ✅     |
+| **Presentation**| 35               | 0         | ✅     |
 | **Core**        | 2                | 0         | ✅     |
 | **main.dart**   | 1                | 0         | ✅     |
-| **Всего**       | **77**           | **0**     | ✅     |
+| **Всего**       | **93**           | **0**     | ✅     |
 
 ### Соответствие Clean Architecture
 
@@ -618,12 +628,12 @@ class FactionBloc extends Bloc<FactionEvent, FactionState> {
 
 ### Выводы
 
-1. ✅ **Все 77 файлов проекта проверены** на соответствие Clean Architecture
+1. ✅ **Все 93 файла проекта проверены** на соответствие Clean Architecture
 2. ✅ **Нарушений архитектуры не обнаружено**
 3. ✅ **Все зависимости соответствуют правилам Clean Architecture**
-4. ✅ **ServiceLocator используется корректно** - только на уровне Pages, использует `DatabaseInitializer` через интерфейс из Domain layer и `RepositoryFactory` для создания репозиториев (не обращается напрямую к Data layer datasources, включая FactionDao)
+4. ✅ **ServiceLocator используется корректно** - только на уровне Pages, использует `DatabaseInitializer` через интерфейс из Domain layer, `RepositoryFactory` для создания репозиториев и `TextRecognizerFactory` для создания TextRecognizer (не обращается напрямую к Data layer datasources, включая FactionDao и TesseractTextRecognizer)
 5. ✅ **Виджеты получают зависимости через конструкторы** - соблюдается Dependency Inversion
 6. ✅ **Нет прямых обращений к Data layer datasources** из Presentation layer
 7. ✅ **Domain layer полностью изолирован** от внешних слоев
-8. ✅ **Исправлено нарушение архитектуры**: ServiceLocator теперь использует `RepositoryFactory` для создания репозиториев вместо прямого импорта и создания `FactionDao` из Data layer datasources
+8. ✅ **Исправлено нарушение архитектуры**: ServiceLocator теперь использует фабрики (`RepositoryFactory`, `TextRecognizerFactory`) для создания всех зависимостей вместо прямого импорта и создания datasources из Data layer
 
